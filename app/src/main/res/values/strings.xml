@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">LiquorLog</string>
+    <string name="add_string">Add</string>
+    <string name="your_list">Your cocktail recipes</string>
+</resources>
