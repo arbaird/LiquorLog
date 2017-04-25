@@ -14,9 +14,10 @@ import android.view.Menu;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import java.util.ArrayList;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
-public class MainActivity extends Activity
+public class MainActivity extends AppCompatActivity
 {
 
 
