@@ -12,6 +12,39 @@ import java.util.ArrayList;
 import android.util.Log;
 
 
+class RowItem
+{
+    private String drinkName;
+    private int imageID;
+
+    public RowItem(String drinkName, int imageID)
+    {
+        this.drinkName = drinkName;
+        this.imageID = imageID;
+    }
+
+    public String getName()
+    {
+        return drinkName;
+    }
+
+    public int getImageID()
+    {
+        return imageID;
+    }
+
+    public void setName(String drinkName)
+    {
+        this.drinkName = drinkName;
+    }
+
+    public void setImageID(int imageID)
+    {
+        this.imageID = imageID;
+    }
+
+}
+
 
 public class CustomListAdapter extends BaseAdapter {
 
