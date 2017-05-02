@@ -1,11 +1,13 @@
 package com.austinbaird.liquorlog;
 
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import android.app.Activity;
 import android.view.Menu;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
 
 import android.os.Bundle;
@@ -27,6 +29,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
@@ -77,8 +80,22 @@ public class MainActivity extends AppCompatActivity
 
 
         adapter = new CustomListAdapter(this, rowItems);
-        ListView listView = (ListView) findViewById(R.id.mobile_list);
+        final ListView listView = (ListView) findViewById(R.id.mobile_list);
         listView.setAdapter(adapter);
+
+        /*listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            public void onItemClick(AdapterView<?> parent, View view,
+                                    int position, long id) {
+
+                RowItem newsInfo = (RowItem)listView.getItemAtPosition(position);
+                //String url = newsInfo.getURL();
+                Toast toast= Toast.makeText(getBaseContext() ,url,Toast.LENGTH_SHORT);
+                toast.show();
+                Intent intent = new Intent(MainActivity.this, ReaderActivity.class);
+                intent.putExtra("URL", url);
+                startActivity(intent);
+            }
+        });*/
 
     }
 

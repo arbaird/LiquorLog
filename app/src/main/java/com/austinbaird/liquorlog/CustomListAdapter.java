@@ -12,10 +12,13 @@ import java.util.ArrayList;
 import android.util.Log;
 
 
+
 class RowItem
 {
     private String drinkName;
     private int imageID;
+    private String message;
+    private ArrayList<String> ingredients;
 
     public RowItem(String drinkName, int imageID)
     {
@@ -23,9 +26,27 @@ class RowItem
         this.imageID = imageID;
     }
 
+    public RowItem(String drinkName, int imageID, String message, ArrayList<String> ingredients)
+    {
+        this.drinkName = drinkName;
+        this.imageID = imageID;
+        this.message = message;
+        this.ingredients = ingredients;
+    }
+
     public String getName()
     {
         return drinkName;
+    }
+
+    public String getMessage()
+    {
+        return message;
+    }
+
+    public ArrayList<String> getIngredients()
+    {
+        return ingredients;
     }
 
     public int getImageID()
@@ -41,6 +62,18 @@ class RowItem
     public void setImageID(int imageID)
     {
         this.imageID = imageID;
+    }
+
+    public void setMessage(String message) {this.message= message;}
+
+    public void setIngredients(ArrayList<String> ingredients)
+    {
+        this.ingredients = ingredients;
+    }
+
+    public void addIngredient(String ingredient)
+    {
+        this.ingredients.add(ingredient);
     }
 
 }
