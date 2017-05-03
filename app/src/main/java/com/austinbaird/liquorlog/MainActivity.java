@@ -109,15 +109,30 @@ public class MainActivity extends AppCompatActivity
 
         //sample list of ingredients to add. In final version, these will be extracted from
         //a view that the user enters their input into
-        String[] ingredients = {"rum", "tequilla", "whiskey"};
+        //String[] ingredients = {"rum", "tequilla", "whiskey"};
         Map<String, String> params = new HashMap<String, String>();
         params.put("name", "Mind Eraser");
         params.put("msg", "drinkIt");
 
         JSONArray jArray = new JSONArray();
-        jArray.put("rum");
-        jArray.put("tequilla");
-        jArray.put("whiskey");
+        JSONArray ingredients = new JSONArray();
+        ingredients.put("1");
+        ingredients.put("cup");
+        ingredients.put("tequilla");
+
+        JSONArray ingredients2 = new JSONArray();
+        ingredients2.put("3");
+        ingredients2.put("dashes");
+        ingredients2.put("rum");
+
+        //jArray.put("rum");
+        //jArray.put("tequilla");
+        //jArray.put("whiskey");
+
+        jArray.put(ingredients);
+        jArray.put(ingredients2);
+
+
         final String ing = jArray.toString();
 
         params.put("ingredients", ing);
@@ -167,6 +182,11 @@ public class MainActivity extends AppCompatActivity
         adapter.add(new RowItem("Default", R.drawable.ic_launcher));
     }
 
+    public void goToEdit(View v)
+    {
+        Intent intent = new Intent(MainActivity.this, EditDrinkActivity.class);
+        startActivity(intent);
+    }
     /*
     This function prints every recipe in the cloud datastore to the console.
      */

@@ -18,7 +18,7 @@ class RowItem
     private String drinkName;
     private int imageID;
     private String message;
-    private ArrayList<String> ingredients;
+    private ArrayList<IngredientList> ingredients;
 
     public RowItem(String drinkName, int imageID)
     {
@@ -26,7 +26,7 @@ class RowItem
         this.imageID = imageID;
     }
 
-    public RowItem(String drinkName, int imageID, String message, ArrayList<String> ingredients)
+    public RowItem(String drinkName, int imageID, String message, ArrayList<IngredientList> ingredients)
     {
         this.drinkName = drinkName;
         this.imageID = imageID;
@@ -44,7 +44,7 @@ class RowItem
         return message;
     }
 
-    public ArrayList<String> getIngredients()
+    public ArrayList<IngredientList> getIngredients()
     {
         return ingredients;
     }
@@ -66,12 +66,9 @@ class RowItem
 
     public void setMessage(String message) {this.message= message;}
 
-    public void setIngredients(ArrayList<String> ingredients)
-    {
-        this.ingredients = ingredients;
-    }
+    public void setIngredients(ArrayList<IngredientList> ingredients) {this.ingredients = ingredients;}
 
-    public void addIngredient(String ingredient)
+    public void addIngredient(IngredientList ingredient)
     {
         this.ingredients.add(ingredient);
     }
@@ -152,6 +149,9 @@ public class CustomListAdapter extends BaseAdapter {
         }
 
         //set xml view's data fields to data fields in row
+
+
+
         RowItem rowItem = data.get(position);
         holder.name.setText(rowItem.getName());
         holder.imgIcon.setImageResource(rowItem.getImageID());
