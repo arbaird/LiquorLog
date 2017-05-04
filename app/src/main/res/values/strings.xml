@@ -5,7 +5,8 @@
 
     <string name="scrollPrompt">-</string>
 
-    <string-array name="country_arrays">
+    <string-array name="qty_array">
+        <item></item>
         <item>1</item>
         <item>2</item>
         <item>3</item>
@@ -17,4 +18,20 @@
         <item>9</item>
         <item>10</item>
     </string-array>
+
+    <string-array name="measure_array">
+        <item></item>
+        <item>Pint</item>
+        <item>OZ</item>
+        <item>ML</item>
+        <item>Dash</item>
+        <item>TSP</item>
+        <item>TBSP</item>
+        <item>Cup</item>
+        <item>L</item>
+        <item>Drop</item>
+        <item>Pinch</item>
+
+    </string-array>
+
 </resources>

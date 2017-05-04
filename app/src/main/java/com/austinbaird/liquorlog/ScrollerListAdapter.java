@@ -21,7 +21,7 @@ import java.util.Map;
 import java.util.HashMap;
 
 
-class ScrollerRowItem
+/*class ScrollerRowItem
 {
     public IngredientList ingredientList;
     private String name;
@@ -32,36 +32,49 @@ class ScrollerRowItem
         this.ingredientList = ingredientList;
     }
 
+    public ScrollerRowItem(String name, IngredientList ingredientList, String msg)
+    {
+        this.name = name;
+        this.ingredientList = ingredientList;
+        this.msg = msg;
+    }
+
 
     public String getQty() {return ingredientList.getQty();}
     public String getMeasure() {return ingredientList.getMeasure();}
     public String getIngredient() {return ingredientList.getIngredient();}
 
+    public IngredientList getIngredientList() {return ingredientList;}
+
+
     public void setQty(String qty) {ingredientList.setQty(qty);}
     public void setMeasure(String measure) {ingredientList.setMeasure(measure);}
     public void setIngredient(String ingredient) {ingredientList.setIngredient(ingredient);}
+    public void setName(String name) {this.name = name;}
+    public void setMsg(String msg) {this.msg = msg;}
 
 
 
 
-}
+}*/
 
 
 public class ScrollerListAdapter extends BaseAdapter
 {
 
     private String logTag = "tag";
-    Map<Integer, Integer> myMap;
+    Map<Integer, Integer> qtyMap;
+    Map<Integer, Integer> measureMap;
 
     private final Activity context;
-    private ArrayList<ScrollerRowItem> data;
-
-    public ScrollerListAdapter(Activity context, ArrayList<ScrollerRowItem> data)
+    private ArrayList<Ingredient> data;
+    public ScrollerListAdapter(Activity context, ArrayList<Ingredient> data)
     {
         this.context=context;
         this.data = data;
 
-        myMap = new HashMap<Integer, Integer>();
+        qtyMap = new HashMap<Integer, Integer>();
+        measureMap = new HashMap<Integer, Integer>();
     }
 
     //the following mehtods must be implemented since this extends an abstract class
@@ -84,7 +97,7 @@ public class ScrollerListAdapter extends BaseAdapter
     }
 
     //add another row item
-    public void add(ScrollerRowItem rItem)
+    public void add(Ingredient rItem)
     {
         data.add(rItem);
         notifyDataSetChanged();
@@ -92,7 +105,7 @@ public class ScrollerListAdapter extends BaseAdapter
 
     public void add()
     {
-        data.add(new ScrollerRowItem(new IngredientList("","","")));
+        data.add(new Ingredient("","",""));
         notifyDataSetChanged();
     }
 
@@ -132,7 +145,7 @@ public class ScrollerListAdapter extends BaseAdapter
         }
 
         //Fill EditText with the value you have in data source
-        holder.ingredientName.setText(data.get(position).ingredientList.ingredientComponents[2]);
+        holder.ingredientName.setText(data.get(position).getIngredient());
         holder.ingredientName.setId(position);
 
         //we need to update adapter once we finish with editing
@@ -141,20 +154,19 @@ public class ScrollerListAdapter extends BaseAdapter
                 if (!hasFocus){
                     final int position = v.getId();
                     final EditText Caption = (EditText) v;
-                    data.get(position).ingredientList.ingredientComponents[2] = Caption.getText().toString();
+                    data.get(position).setIngredient(Caption.getText().toString());
                 }
             }
         });
 
 
-        holder.qty.setPrompt(data.get(position).ingredientList.ingredientComponents[0]);
+        holder.qty.setPrompt(data.get(position).getQty());
         //holder.qty.setId(position);
 
-        //final String selected = (String)holder.qty.getSelectedItem().toString();
-        if (myMap.containsKey(position)) {
-            holder.qty.setSelection(myMap.get(position));
+        //if we have a saved value set this value as the selection
+        if (qtyMap.containsKey(position)) {
+            holder.qty.setSelection(qtyMap.get(position));
         }
-
 
         holder.qty.setOnItemSelectedListener(new OnItemSelectedListener() {
             int count=0;
@@ -162,12 +174,12 @@ public class ScrollerListAdapter extends BaseAdapter
             public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int pos, long id)
             {
 
-                ScrollerRowItem item = data.get(position);
+                Ingredient item = data.get(position);
                 String selected = parentView.getItemAtPosition(pos).toString();
 
-                myMap.put(position, pos);
+                qtyMap.put(position, pos);
 
-                item.ingredientList.ingredientComponents[0] = selected;
+                item.setQty(selected);
                 //Log.d(logTag, selected);
                 //Log.d(logTag, "CLICK: " + data.get(position).ingredientList.ingredientComponents[0]);
 
@@ -176,27 +188,43 @@ public class ScrollerListAdapter extends BaseAdapter
 
             @Override
             public void onNothingSelected(AdapterView<?> parentView) {
-                                                     // your code here
+                //nothing to do
             }
 
         });
 
-        Log.d(logTag, "View change from position: " + position + " " +  data.get(position).ingredientList.ingredientComponents[0]);
-        /*holder.qty.setOnFocusChangeListener(new OnFocusChangeListener() {
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (!hasFocus){
-                    final int position = v.getId();
-                    final Spinner Caption = (Spinner) v;
-                    data.get(position).ingredientList.ingredientComponents[0] = Caption.getPrompt().toString();
-                }
-            }
-        });*/
+        holder.measurement.setPrompt(data.get(position).getMeasure());
+        //holder.qty.setId(position);
 
-        //set xml view's data fields to data fields in row
-        ScrollerRowItem rowItem = data.get(position);
-        /*holder.qty.setPrompt("1");
-        holder.measurement.setPrompt("-");
-        holder.ingredientName.setText("ingredient");*/
+        //if we have a saved value set this value as the selection
+        if (measureMap.containsKey(position)) {
+            holder.measurement.setSelection(measureMap.get(position));
+        }
+
+        holder.measurement.setOnItemSelectedListener(new OnItemSelectedListener() {
+            int count=0;
+            @Override
+            public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int pos, long id)
+            {
+
+                Ingredient item = data.get(position);
+                String selected = parentView.getItemAtPosition(pos).toString();
+
+                measureMap.put(position, pos);
+
+                item.setMeasure(selected);
+                //Log.d(logTag, selected);
+                //Log.d(logTag, "CLICK: " + data.get(position).ingredientList.ingredientComponents[0]);
+
+            }
+
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parentView) {
+                //nothing to do
+            }
+
+        });
 
         return row;
     }

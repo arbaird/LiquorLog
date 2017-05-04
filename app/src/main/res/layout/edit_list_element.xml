@@ -10,13 +10,14 @@
         android:id="@+id/qtySpinner"
         android:layout_width="75dp"
         android:layout_height="wrap_content"
-        android:entries="@array/country_arrays"
+        android:entries="@array/qty_array"
         android:prompt="@+string/editPrompt"
         />
     <Spinner
         android:id="@+id/measureSpinner"
         android:layout_width="75dp"
         android:layout_height="wrap_content"
+        android:entries="@array/measure_array"
         android:layout_toRightOf="@+id/qtySpinner"
 
         />

@@ -13,12 +13,12 @@ import android.util.Log;
 
 
 
-class RowItem
+/*class RowItem
 {
     private String drinkName;
     private int imageID;
     private String message;
-    private ArrayList<IngredientList> ingredients;
+    private ArrayList<Ingredient> ingredients;
 
     public RowItem(String drinkName, int imageID)
     {
@@ -26,7 +26,7 @@ class RowItem
         this.imageID = imageID;
     }
 
-    public RowItem(String drinkName, int imageID, String message, ArrayList<IngredientList> ingredients)
+    public RowItem(String drinkName, int imageID, String message, ArrayList<Ingredient> ingredients)
     {
         this.drinkName = drinkName;
         this.imageID = imageID;
@@ -44,7 +44,7 @@ class RowItem
         return message;
     }
 
-    public ArrayList<IngredientList> getIngredients()
+    public ArrayList<Ingredient> getIngredients()
     {
         return ingredients;
     }
@@ -66,14 +66,14 @@ class RowItem
 
     public void setMessage(String message) {this.message= message;}
 
-    public void setIngredients(ArrayList<IngredientList> ingredients) {this.ingredients = ingredients;}
+    public void setIngredients(ArrayList<Ingredient> ingredients) {this.ingredients = ingredients;}
 
-    public void addIngredient(IngredientList ingredient)
+    public void addIngredient(Ingredient ingredient)
     {
         this.ingredients.add(ingredient);
     }
 
-}
+}*/
 
 
 public class CustomListAdapter extends BaseAdapter {
@@ -81,9 +81,9 @@ public class CustomListAdapter extends BaseAdapter {
     private String logTag = "tag";
 
     private final Activity context;
-    private ArrayList<RowItem> data;
+    private ArrayList<DrinkRecipe> data;
 
-    public CustomListAdapter(Activity context, ArrayList<RowItem> data)
+    public CustomListAdapter(Activity context, ArrayList<DrinkRecipe> data)
     {
         this.context=context;
         this.data = data;
@@ -109,7 +109,7 @@ public class CustomListAdapter extends BaseAdapter {
     }
 
     //add another row item
-    public void add(RowItem rItem)
+    public void add(DrinkRecipe rItem)
     {
         data.add(rItem);
         notifyDataSetChanged();
@@ -152,7 +152,7 @@ public class CustomListAdapter extends BaseAdapter {
 
 
 
-        RowItem rowItem = data.get(position);
+        DrinkRecipe rowItem = data.get(position);
         holder.name.setText(rowItem.getName());
         holder.imgIcon.setImageResource(rowItem.getImageID());
 
