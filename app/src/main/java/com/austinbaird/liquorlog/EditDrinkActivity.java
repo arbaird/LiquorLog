@@ -7,6 +7,8 @@ import android.widget.ListView;
 import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.content.Intent;
+import android.widget.AdapterView.OnItemSelectedListener;
+import android.widget.AdapterView;
 
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -19,9 +21,11 @@ import java.util.Map;
 
 import android.view.View;
 import android.util.Log;
+import android.widget.ArrayAdapter;
 
 import android.widget.FrameLayout;
 import android.widget.Toast;
+import android.widget.Spinner;
 
 import android.os.Parcelable;
 
@@ -35,6 +39,12 @@ public class EditDrinkActivity extends AppCompatActivity
 
     ArrayList<Ingredient> rowItems; //the row items that are displayed in the list
     ScrollerListAdapter adapter; //used to make viewable items on screem from data in rowItems
+
+    Spinner qtySpinner;
+    Spinner measureSpinner;
+    EditText editName;
+
+    EditText editIngredientName;
 
     String logTag = "tag";
 
@@ -55,17 +65,75 @@ public class EditDrinkActivity extends AppCompatActivity
 
 
         rowItems = new ArrayList<>();
-        adapter = new ScrollerListAdapter(this, rowItems);
+        //adapter = new ScrollerListAdapter(this, rowItems);
+        adapter = new ScrollerListAdapter(this, R.layout.edit_list_element, rowItems);
         final ListView listView = (ListView) findViewById(R.id.mobile_list);
         listView.setAdapter(adapter);
 
 
-        FrameLayout footerLayout = (FrameLayout) getLayoutInflater().inflate(R.layout.button_footerview,null);
-        //btnPostYourEnquiry = (Button) footerLayout.findViewById(R.id.btnAddIngredient);
+        qtySpinner = (Spinner) findViewById(R.id.qtySpinner);
+        // Spinner click listener
+        qtySpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int pos, long id)
+            {
 
-        listView.addFooterView(footerLayout);
+                // On selecting a spinner item
+                String item = parentView.getItemAtPosition(pos).toString();
 
-        EditText editName = (EditText) findViewById(R.id.editName);
+                // Showing selected spinner item
+                Toast.makeText(parentView.getContext(), "Selected: " + item, Toast.LENGTH_LONG).show();
+
+
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> parentView) {
+                //nothing to do
+            }
+
+        });
+
+        // Spinner Drop down elements
+        ArrayList<String> qtys = new ArrayList<String>();
+        qtys.add("");
+        for(int i = 1; i < 11; i++)
+        {
+            qtys.add(Integer.toString(i));
+        }
+
+        // Creating adapter for spinner
+        ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, qtys);
+
+        // Drop down layout style - list view with radio button
+        dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+        // attaching data adapter to spinner
+        qtySpinner.setAdapter(dataAdapter);
+
+
+        measureSpinner = (Spinner) findViewById(R.id.measureSpinner);
+
+        /*
+        ArrayList<String> measures = new ArrayList<String>();
+        measures.add("");
+        measures.add("O");
+        measures.add("ML");
+        measures.add("Dash");
+        measures.add("TSP");
+        measures.add("Cup");
+        measures.add("L");
+        measures.add("Drop");
+        measures.add("Pinch");
+
+        ArrayAdapter<String> measureAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, measures);
+        measureAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        measureSpinner.setAdapter(measureAdapter);*/
+
+
+
+        editName = (EditText) findViewById(R.id.editName);
+
+        editIngredientName = (EditText)findViewById(R.id.ingredientEdit);
 
         editName.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             public void onFocusChange(View v, boolean hasFocus) {
@@ -89,14 +157,21 @@ public class EditDrinkActivity extends AppCompatActivity
             }
         });
 
-        Button addBtn = (Button) findViewById(R.id.btnSaveDrink);
+        //Button addBtn = (Button) findViewById(R.id.btnSaveDrink);
 
     }
 
     public void add(View v)
     {
         //ScrollerRowItem blank = new ScrollerRowItem(new IngredientList("","",""));
-        adapter.add();
+        String qty = (String)qtySpinner.getSelectedItem();
+        String measure = (String)measureSpinner.getSelectedItem();
+        String name = (String)editIngredientName.getText().toString();
+
+
+        rowItems.add(new Ingredient(qty, measure, name));
+        adapter.notifyDataSetChanged();
+        //adapter.add();
     }
 
     public void saveDrink(View v)

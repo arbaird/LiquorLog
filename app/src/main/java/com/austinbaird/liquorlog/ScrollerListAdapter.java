@@ -12,6 +12,13 @@ import java.util.ArrayList;
 import android.util.Log;
 import android.widget.Spinner;
 import android.widget.EditText;
+import android.content.Context;
+import android.widget.RelativeLayout;
+import android.widget.LinearLayout;
+import android.widget.Button;
+import android.widget.Toast;
+
+
 import android.view.View.OnFocusChangeListener;
 
 import android.widget.AdapterView.OnItemSelectedListener;
@@ -59,176 +66,77 @@ import java.util.HashMap;
 }*/
 
 
-public class ScrollerListAdapter extends BaseAdapter
-{
+class ScrollerListAdapter extends ArrayAdapter<Ingredient> {
 
-    private String logTag = "tag";
-    Map<Integer, Integer> qtyMap;
-    Map<Integer, Integer> measureMap;
+    int resource;
+    Context context;
+    String logTag ="";
+    ArrayList<Ingredient> data;
 
-    private final Activity context;
-    private ArrayList<Ingredient> data;
-    public ScrollerListAdapter(Activity context, ArrayList<Ingredient> data)
-    {
-        this.context=context;
-        this.data = data;
-
-        qtyMap = new HashMap<Integer, Integer>();
-        measureMap = new HashMap<Integer, Integer>();
-    }
-
-    //the following mehtods must be implemented since this extends an abstract class
-    @Override
-    public int getCount()
-    {
-        return data.size();
+    public ScrollerListAdapter(Context _context, int _resource, ArrayList<Ingredient> items) {
+        super(_context, _resource, items);
+        resource = _resource;
+        context = _context;
+        this.data = items;
     }
 
     @Override
-    public Object getItem(int position)
-    {
-        return data.get(position);
-    }
+    public View getView(int position, View convertView, ViewGroup parent) {
+        LinearLayout newView;
 
-    @Override
-    public long getItemId(int position)
-    {
-        return data.indexOf(getItem(position));
-    }
+        Ingredient w = getItem(position);
 
-    //add another row item
-    public void add(Ingredient rItem)
-    {
-        data.add(rItem);
-        notifyDataSetChanged();
-    }
-
-    public void add()
-    {
-        data.add(new Ingredient("","",""));
-        notifyDataSetChanged();
-    }
-
-    //used in getView to help convert code data items to View types that appear on screen
-    class ViewHolder
-    {
-        Spinner qty;
-        Spinner measurement;
-        EditText ingredientName;
-    }
-
-
-    @Override
-    public View getView(final int position, View convertView, ViewGroup parent)
-    {
-
-        View row = convertView;
-        ViewHolder holder = null;
-
-        if(row == null)
-        {
-            //get xml info for the row and assign the appropriate view ids to the holder
-            LayoutInflater inflater = ((Activity)context).getLayoutInflater();
-            row = inflater.inflate(R.layout.edit_list_element, parent, false);
-
-            holder = new ViewHolder();
-            holder.qty = (Spinner)row.findViewById(R.id.qtySpinner);
-            holder.measurement = (Spinner)row.findViewById(R.id.measureSpinner);
-            holder.ingredientName = (EditText)row.findViewById(R.id.ingredientEdit);
-
-            row.setTag(holder);
-        }
-        else
-        {
-            //initialize holder to the values in the row's ViewHolder tag
-            holder = (ViewHolder)row.getTag();
+        // Inflate a new view if necessary.
+        if (convertView == null) {
+            newView = new LinearLayout(getContext());
+            LayoutInflater vi = (LayoutInflater)
+                    getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            vi.inflate(resource,  newView, true);
+        } else {
+            newView = (LinearLayout) convertView;
         }
 
-        //Fill EditText with the value you have in data source
-        holder.ingredientName.setText(data.get(position).getIngredient());
-        holder.ingredientName.setId(position);
+        // Fills in the view.
+        TextView tv = (TextView) newView.findViewById(R.id.itemText);
+        Button b = (Button) newView.findViewById(R.id.itemButton);
+        tv.setText((w.getQty() + " " + w.getMeasure() + " " + w.getIngredient().trim()));
+        b.setText("Delete");
 
-        //we need to update adapter once we finish with editing
-        holder.ingredientName.setOnFocusChangeListener(new OnFocusChangeListener() {
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (!hasFocus){
-                    final int position = v.getId();
-                    final EditText Caption = (EditText) v;
-                    data.get(position).setIngredient(Caption.getText().toString());
-                }
+        // Sets a listener for the button, and a tag for the button as well.
+        b.setTag(new Integer(position));
+        b.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Reacts to a button press.
+                // Gets the integer tag of the button.
+                String s = v.getTag().toString();
+                int duration = Toast.LENGTH_SHORT;
+                Toast toast = Toast.makeText(context, s, duration);
+                toast.show();
+                // Let's remove the list item.
+                int i = Integer.parseInt(s);
+                data.remove(i);
+                notifyDataSetChanged();
             }
         });
 
-
-        holder.qty.setPrompt(data.get(position).getQty());
-        //holder.qty.setId(position);
-
-        //if we have a saved value set this value as the selection
-        if (qtyMap.containsKey(position)) {
-            holder.qty.setSelection(qtyMap.get(position));
-        }
-
-        holder.qty.setOnItemSelectedListener(new OnItemSelectedListener() {
-            int count=0;
+        // Set a listener for the whole list item.
+        newView.setTag(w.getQty() + " " + w.getMeasure() + w.getIngredient());
+        newView.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int pos, long id)
-            {
-
-                Ingredient item = data.get(position);
-                String selected = parentView.getItemAtPosition(pos).toString();
-
-                qtyMap.put(position, pos);
-
-                item.setQty(selected);
-                //Log.d(logTag, selected);
-                //Log.d(logTag, "CLICK: " + data.get(position).ingredientList.ingredientComponents[0]);
-
+            public void onClick(View v) {
+                String s = v.getTag().toString();
+                int duration = Toast.LENGTH_SHORT;
+                Toast toast = Toast.makeText(context, s, duration);
+                toast.show();
             }
-
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parentView) {
-                //nothing to do
-            }
-
         });
 
-        holder.measurement.setPrompt(data.get(position).getMeasure());
-        //holder.qty.setId(position);
-
-        //if we have a saved value set this value as the selection
-        if (measureMap.containsKey(position)) {
-            holder.measurement.setSelection(measureMap.get(position));
-        }
-
-        holder.measurement.setOnItemSelectedListener(new OnItemSelectedListener() {
-            int count=0;
-            @Override
-            public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int pos, long id)
-            {
-
-                Ingredient item = data.get(position);
-                String selected = parentView.getItemAtPosition(pos).toString();
-
-                measureMap.put(position, pos);
-
-                item.setMeasure(selected);
-                //Log.d(logTag, selected);
-                //Log.d(logTag, "CLICK: " + data.get(position).ingredientList.ingredientComponents[0]);
-
-            }
-
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parentView) {
-                //nothing to do
-            }
-
-        });
-
-        return row;
+        return newView;
     }
-
 }
+
+
+
 
 

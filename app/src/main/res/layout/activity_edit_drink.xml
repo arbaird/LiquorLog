@@ -15,6 +15,50 @@ android:layout_height="fill_parent"
     android:layout_alignParentTop="true">
 </EditText>
 
+    <Spinner
+        android:id="@+id/qtySpinner"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:prompt="@+string/editPrompt"
+        android:layout_below="@+id/editName"
+
+        />
+    <Spinner
+        android:id="@+id/measureSpinner"
+        android:entries="@array/measure_array"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@+id/qtySpinner"
+        android:layout_below="@+id/editName"
+        />
+
+    <EditText xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/ingredientEdit"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+
+        android:layout_toRightOf="@+id/measureSpinner"
+        android:layout_below="@+id/editName"
+        android:layout_alignBaseline="@+id/measureSpinner"
+        android:layout_marginLeft="50dp"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:text="txt" >
+    </EditText>
+
+    <Button
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:id="@+id/btnAddIngredient"
+        android:layout_toRightOf="@+id/ingredientEdit"
+        android:layout_alignBaseline="@+id/ingredientEdit"
+
+        android:layout_marginLeft="10dp"
+        android:text="+"
+        android:textSize="10sp"
+        android:onClick="add"
+        />
+
 
 <Button
     android:id="@+id/btnSaveDrink"
@@ -51,7 +95,7 @@ android:layout_height="fill_parent"
     android:layout_marginBottom="2dip"
     android:drawSelectorOnTop="false"
     android:visibility="visible"
-    android:layout_below="@+id/editName"
+    android:layout_below="@+id/measureSpinner"
     android:layout_above="@+id/messageEnter"
     />
 </RelativeLayout>
