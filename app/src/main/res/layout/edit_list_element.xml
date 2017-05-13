@@ -1,37 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_height="fill_parent"
-    android:layout_width="fill_parent"
-    android:padding="2dp"
-    >
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="8dp">
 
-
-    <Spinner
-        android:id="@+id/qtySpinner"
-        android:layout_width="75dp"
+    <TextView
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:entries="@array/qty_array"
-        android:prompt="@+string/editPrompt"
-        />
-    <Spinner
-        android:id="@+id/measureSpinner"
-        android:layout_width="75dp"
+        android:text="New Text"
+        android:id="@+id/itemText"
+        android:layout_weight="1" />
+
+    <Button
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:entries="@array/measure_array"
-        android:layout_toRightOf="@+id/qtySpinner"
+        android:text="New Button"
+        android:id="@+id/itemButton"
+        android:layout_weight="0" />
 
-        />
-
-    <EditText xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/ingredientEdit"
-        android:layout_width="100dp"
-        android:layout_height="wrap_content"
-
-        android:layout_toRightOf="@+id/measureSpinner"
-        android:layout_marginLeft="50dp"
-        android:textSize="16sp"
-        android:textStyle="bold"
-        android:text="txt" >
-    </EditText>
-
-</RelativeLayout>
+</LinearLayout>

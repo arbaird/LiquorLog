@@ -56,7 +56,14 @@ public class DrinkRecipe
     {
         this.imageID = imageID;
     }
-
+    public void setIngredientList(ArrayList<Ingredient> ingredientList)
+    {
+        this.ingredientList.clear();
+        for (Ingredient ingredient : ingredientList)
+        {
+            this.ingredientList.add(ingredient);
+        }
+    }
 
 
 

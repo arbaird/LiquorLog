@@ -110,6 +110,7 @@ public class DisplayDrink extends AppCompatActivity {
             name = displayedDrink.getName();
             ingredients = displayedDrink.getIngredientList();
 
+            aList.clear();
             for(int i = 0; i < ingredients.size(); i++)
             {
                 qty = ingredients.get(i).getQty();
@@ -119,14 +120,6 @@ public class DisplayDrink extends AppCompatActivity {
                 aList.add(new ListElement(total));
                 aa.notifyDataSetChanged();
 
-                /*if(tv2.getText() != null) // doesnt work
-                {
-                    tv2.setText(qty + " " + measure + " of " + ingredient);
-                }
-                else if(tv5.getText() == null) // doesnt work
-                {
-                    tv5.setText(qty + " " + measure + " of " + ingredient);
-                }*/
             }
 
             msg = displayedDrink.getMsg();
@@ -167,8 +160,15 @@ public class DisplayDrink extends AppCompatActivity {
         //appInfo.setColor1(text1);
         appInfo.sharedString2 = text2;*/
 
+        DrinkRecipe displayedDrink = appInfo.savedDrinks.get(mydrink);
+        appInfo.setIngredientsToEdit(displayedDrink.getIngredientList());
+
         // Go to first activity
+
         Intent intent = new Intent(this, EditDrinkActivity.class);
+
+        intent.putExtra("alreadyCreated", true); //setFlag that drink being edited has already been created
+        intent.putExtra("drinkPosition", mydrink);
         //intent.putExtra("name", name);
         //intent.putExtra("qty", qty);
         //intent.putExtra("measure", measure);

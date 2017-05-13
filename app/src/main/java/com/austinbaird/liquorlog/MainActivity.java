@@ -2,12 +2,16 @@ package com.austinbaird.liquorlog;
 
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import android.app.Activity;
+import android.view.ContextMenu;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 
@@ -55,12 +59,16 @@ public class MainActivity extends AppCompatActivity
 
     RequestQueue queue;
 
+    Button contextMenuButton;
+
     ArrayList<DrinkRecipe> rowItems; //the row items that are displayed in the list
     CustomListAdapter adapter; //used to make viewable items on screem from data in rowItems
 
     String logTag = "tag";
 
     AppInfo appInfo;
+
+    static final public String MYPREFS = "myprefs";
 
     Boolean fromPause = false;
 
@@ -75,27 +83,23 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         queue = Volley.newRequestQueue(this);
 
+        Log.d(logTag, "OnCreate()");
+
+
+        contextMenuButton = (Button)findViewById(R.id.butt1);
+        registerForContextMenu(contextMenuButton);
+
         rowItems = new ArrayList<>();
-        //add values to test rowItems and adapter properly display to screen
-        rowItems.add(new DrinkRecipe("Long Island", R.drawable.ic_launcher));
-        rowItems.add(new DrinkRecipe("Manhattan", R.drawable.ic_launcher));
-        rowItems.add(new DrinkRecipe("Black and Tan", R.drawable.ic_launcher));
-
-
-
 
         adapter = new CustomListAdapter(this, rowItems);
         final ListView listView = (ListView) findViewById(R.id.mobile_list);
         listView.setAdapter(adapter);
-
-        appInfo = AppInfo.getInstance(this);
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View view,
                                     int position, long id) {
 
                 DrinkRecipe drink = (DrinkRecipe)listView.getItemAtPosition(position);
-                //String url = newsInfo.getURL();
                 String toastMsg = "Going to " + drink.getName();
                 try
                 {
@@ -108,49 +112,156 @@ public class MainActivity extends AppCompatActivity
 
                 Toast toast= Toast.makeText(getBaseContext() ,toastMsg,Toast.LENGTH_SHORT);
                 toast.show();
-                /*Intent intent = new Intent(MainActivity.this, ReaderActivity.class);
-                intent.putExtra("URL", url);
-                startActivity(intent);*/
+
+                Intent intent = new Intent(MainActivity.this, DisplayDrink.class);
+                intent.putExtra("drinkPosition", position);
+                startActivity(intent);
             }
         });
 
+
+        appInfo = AppInfo.getInstance(this);
+
+
+
+        SharedPreferences settings = getSharedPreferences(MainActivity.MYPREFS, 0);
+        SharedPreferences.Editor editor = settings.edit();
+
+        //editor.putString("drinksAsJSON", null);
+        //editor.commit();
+        //editor.putBoolean("first_time", true);
+        //editor.commit();
+
+        if (settings.getBoolean("first_time", true)) {
+            //the app is being launched for first time, do something
+            Log.d(logTag, "First time");
+
+
+            ArrayList<Ingredient> ingredients1 = new ArrayList();
+            ingredients1.add(new Ingredient("3", "dashes", "rum"));
+            ingredients1.add(new Ingredient("9", "quarts", "beer"));
+            ingredients1.add(new Ingredient("9", "quarts", "beer"));
+            ingredients1.add(new Ingredient("9", "quarts", "beer"));
+            ingredients1.add(new Ingredient("9", "quarts", "beer"));
+            ingredients1.add(new Ingredient("9", "quarts", "beer"));
+            ingredients1.add(new Ingredient("9", "quarts", "beer"));
+            ingredients1.add(new Ingredient("9", "quarts", "beer"));
+            ingredients1.add(new Ingredient("9", "quarts", "beer"));
+            ingredients1.add(new Ingredient("9", "quarts", "beer"));
+            ingredients1.add(new Ingredient("9", "quarts", "beer"));
+
+
+            ArrayList<Ingredient> ingredients2 = new ArrayList();
+            ingredients2.add(new Ingredient("1", "pint", "whiskey"));
+
+            ArrayList<Ingredient> ingredients3 = new ArrayList();
+            ingredients3.add(new Ingredient("2", "oz", "tequila"));
+
+            appInfo.addDrink(new DrinkRecipe("Long Island", ingredients1, "Stir some shit"));
+            appInfo.addDrink(new DrinkRecipe("Manhattan", ingredients2, "Pour some shit"));
+            appInfo.addDrink(new DrinkRecipe("Black and Tan", ingredients3, "Bake some shit hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh"));
+
+
+
+            editor.putBoolean("first_time", false);
+            editor.commit();
+            saveDrinksAsJSON();
+        }
+
+        loadDrinksFromPrefs();
+
     }
+
+    /*@Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
+        getMenuInflater().inflate(R.menu.main_menu,menu);
+    }*/
+
+    /*private void addOnClickListener()
+    {
+        contextMenuButton.setOnItemClickListener(new AdapterView.OnItemClickListener()
+        {
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id)
+            {
+                view.showContextMenu();
+            }
+        })
+    }*/
+
+    /*@Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+
+        MenuInflater menuInflater = getMenuInflater();
+        menuInflater.inflate(R.menu.menu_main,menu);
+        return super.onCreateOptionsMenu(menu);
+
+    }*/
+
+    /*@Override
+    public boolean onContextItemSelected(MenuItem item) {
+
+        switch (item.getItemId()){
+            case R.id.item_option1:
+                String toastMsg1 = "Creating new drink";
+                Toast.makeText(getApplicationContext(),toastMsg1,Toast.LENGTH_SHORT).show();
+                //addDrink(null);
+                goToEdit(null);
+                break;
+
+            case R.id.item_option2:
+                String toastMsg2 = "Adding from Library ";
+                Toast.makeText(getApplicationContext(),toastMsg2,Toast.LENGTH_SHORT).show();
+                break;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    /*@Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        switch (item.getItemId()){
+            case R.id.item_option1:
+                Toast.makeText(getApplicationContext(),item.toString(),Toast.LENGTH_SHORT).show();
+                break;
+
+            case R.id.item_option2:
+                Toast.makeText(getApplicationContext(),item.toString(),Toast.LENGTH_SHORT).show();
+                break;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }*/
+
 
     @Override
     protected void onResume()
     {
 
-        Log.d(logTag, "fromPause is " + fromPause);
-        if(!fromPause)
-        {
-            for (DrinkRecipe recipe : appInfo.savedDrinks)
-            {
-                rowItems.add(recipe);
-            }
 
+        super.onResume();
+
+
+
+        rowItems.clear();
+        for (DrinkRecipe recipe : appInfo.savedDrinks)
+        {
+            rowItems.add(recipe);
         }
+
+
+
+        //rowItems = new ArrayList<DrinkRecipe>(appInfo.savedDrinks);
+        //rowItems = appInfo.savedDrinks;
+
 
         adapter.notifyDataSetChanged();
         //Log.d(logTag, "rowItems size before add: " + rowItems.size());
 
 
-        Bundle extras = getIntent().getExtras();
-        /*if(extras != null)
-        {
-            if(extras.getBoolean("drinkAdded") && !fromPause)
-            {
-
-                //rowItems.add(appInfo.savedDrinks.get(appInfo.savedDrinks.size()-1)); //add last recipe in appInfo, since this will be the newest element
-                //adapter.notifyDataSetChanged();
-                addDrinkToNDB(null, appInfo.savedDrinks.get(appInfo.savedDrinks.size()-1));
-                //Log.d(logTag, "rowItems size after add: " + rowItems.size());
-                fromPause = false;
 
 
-            }
-
-        }*/
-        super.onResume();
 
 
     }
@@ -170,7 +281,7 @@ public class MainActivity extends AppCompatActivity
     {
         fromPause = true;
         Log.d(logTag, "We paused main");
-
+        saveDrinksAsJSON();
 
         super.onPause();
     }
@@ -185,163 +296,12 @@ public class MainActivity extends AppCompatActivity
     }
 
 
-
-    public void addDrinkToNDB(View v, DrinkRecipe recipe)
-    {
-        Map<String, String> params = new HashMap<String, String>();
-        params.put("name", recipe.getName());
-        params.put("msg", recipe.getMsg());
-
-        JSONArray jArray = new JSONArray();
-        for(Ingredient ingredient : recipe.getIngredientList())
-        {
-            JSONArray ingredientComponents = new JSONArray();
-            ingredientComponents.put(ingredient.getQty());
-            ingredientComponents.put(ingredient.getMeasure());
-            ingredientComponents.put(ingredient.getIngredient());
-            jArray.put(ingredientComponents);
-            //jArray.put(new JSONArray(ingredient)); this would be ideal, but is unsupported before API 19 for android
-        }
-
-
-
-        final String ing = jArray.toString();
-        Log.d(logTag, ing);
-
-        params.put("ingredients", ing);
-        //need to use JSON array so we store array properly in JSON format, i.e with "" around each element in list
-
-
-        //copy pasted from hw3, changed url
-        JsonObjectRequest jsobj = new JsonObjectRequest(
-                "https://backendtest-165520.appspot.com/ndb_api/add_recipe", new JSONObject(params),
-                new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject response)
-                    {
-                        Log.d(logTag, "Received: " + response.toString());
-                        try
-                        {
-
-                            String responseString = response.getString("result");
-                            //detailView.setText(responseString);
-                        }
-                        catch(Exception e)
-                        {
-                            //mapped value was not a string, didn't exist, etc
-                            Log.d(logTag, "Couldn't get mapped value for key 'result' ");
-                            //detailView.setText("Couldn't get mapped value for key 'result' ");
-                        }
-
-
-                    }
-                }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error)
-            {
-                //no error respsonse handling
-            }
-        });
-
-
-        appInfo.queue.add(jsobj);
-
-        //calling loadRecipes directly from add recipes to check in the console that recipes
-        //are being added properly. A lot of repeats will be printed, I've been testing with the
-        //same recipes via android, local host, app engine, etc.
-
-
-        //add an actual row item on screen
-        //adapter.add(new DrinkRecipe("Default", R.drawable.ic_launcher));
-    }
-    /*
-    adds a default drink to the visible list on screen and a hardcoded drink recipe to the database.
-    We'll adapt this later to add a user inputed drink recipe to the listview and database
-     */
-    public void addDrink(View v)
-    {
-        //add a row item
-
-        //sample list of ingredients to add. In final version, these will be extracted from
-        //a view that the user enters their input into
-        //String[] ingredients = {"rum", "tequilla", "whiskey"};
-        Map<String, String> params = new HashMap<String, String>();
-        params.put("name", "Mind Eraser");
-        params.put("msg", "drinkIt");
-
-        JSONArray jArray = new JSONArray();
-        JSONArray ingredients = new JSONArray();
-        ingredients.put("1");
-        ingredients.put("cup");
-        ingredients.put("tequilla");
-
-        JSONArray ingredients2 = new JSONArray();
-        ingredients2.put("3");
-        ingredients2.put("dashes");
-        ingredients2.put("rum");
-
-        //jArray.put("rum");
-        //jArray.put("tequilla");
-        //jArray.put("whiskey");
-
-        jArray.put(ingredients);
-        jArray.put(ingredients2);
-
-
-        final String ing = jArray.toString();
-        Log.d(logTag, ing);
-
-        params.put("ingredients", ing);
-        //need to use JSON array so we store array properly in JSON format, i.e with "" around each element in list
-
-
-        //copy pasted from hw3, changed url
-        JsonObjectRequest jsobj = new JsonObjectRequest(
-                "https://backendtest-165520.appspot.com/ndb_api/add_recipe", new JSONObject(params),
-                new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject response)
-                    {
-                        Log.d(logTag, "Received: " + response.toString());
-                        try
-                        {
-
-                            String responseString = response.getString("result");
-                            //detailView.setText(responseString);
-                        }
-                        catch(Exception e)
-                        {
-                            //mapped value was not a string, didn't exist, etc
-                            Log.d(logTag, "Couldn't get mapped value for key 'result' ");
-                            //detailView.setText("Couldn't get mapped value for key 'result' ");
-                        }
-
-
-                    }
-                }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error)
-            {
-                //no error respsonse handling
-            }
-        });
-
-
-        appInfo.queue.add(jsobj);
-
-        //calling loadRecipes directly from add recipes to check in the console that recipes
-        //are being added properly. A lot of repeats will be printed, I've been testing with the
-        //same recipes via android, local host, app engine, etc.
-        loadRecipes(v);
-
-        //add an actual row item on screen
-        adapter.add(new DrinkRecipe("Default", R.drawable.ic_launcher));
-    }
-
     public void goToEdit(View v)
     {
         Intent intent = new Intent(MainActivity.this, EditDrinkActivity.class);
-        Log.d(logTag, "rowItems size before going to new activity: " + rowItems.size());
+        //Log.d(logTag, "rowItems size before going to new activity: " + rowItems.size());
+        appInfo.sharedString1 = null;
+        appInfo.sharedString2 = null;
         startActivity(intent);
     }
     /*
@@ -385,5 +345,89 @@ public class MainActivity extends AppCompatActivity
         // jsObjRequest.setShouldCache(false);
 
         appInfo.queue.add(jsObjRequest);
+    }
+
+    public void saveDrinksAsJSON()
+    {
+
+        JSONArray jArray = new JSONArray();
+        for(DrinkRecipe savedRecipe : appInfo.savedDrinks)
+        {
+            try {
+                JSONObject drinkRecipe = new JSONObject();
+                drinkRecipe.put("name", savedRecipe.getName());
+
+                JSONArray ingredientArray = new JSONArray();
+                for (Ingredient ingredient : savedRecipe.getIngredientList()) {
+                    try {
+                        JSONObject ingredientComponents = new JSONObject();
+                        ingredientComponents.put("qty", ingredient.getQty());
+                        ingredientComponents.put("measure", ingredient.getMeasure());
+                        ingredientComponents.put("name", ingredient.getIngredient());
+                        ingredientArray.put(ingredientComponents);
+                    } catch (Exception e) {
+
+                    }
+                    //jArray.put(new JSONArray(ingredient)); this would be ideal, but is unsupported before API 19 for android
+                }
+                drinkRecipe.put("ingredients",ingredientArray);
+                drinkRecipe.put("msg", savedRecipe.getMsg());
+                jArray.put(drinkRecipe);
+            }
+            catch(Exception e)
+            {
+                //json key access didn't work
+            }
+        }
+        //Log.d(logTag, "After saving, json array is: " + jArray.toString());
+
+        SharedPreferences settings = getSharedPreferences(MYPREFS, 0);
+        SharedPreferences.Editor editor = settings.edit();
+        editor.putString("drinksAsJSON", jArray.toString());
+        editor.commit();
+    }
+
+    public void loadDrinksFromPrefs()
+    {
+
+        SharedPreferences settings = getSharedPreferences(MYPREFS, 0);
+        String drinksAsJSON = settings.getString("drinksAsJSON", null);
+        if(drinksAsJSON == null)
+        {
+            Log.d(logTag, "No drinks!");
+            return;
+        }
+        try
+        {
+            JSONArray jArray = new JSONArray(drinksAsJSON);
+            Log.d(logTag, jArray.toString());
+
+            appInfo.savedDrinks.clear();
+            for(int i = 0; i < jArray.length(); i++)//JSONArray drinkRecipe : jArray)
+            {
+                JSONObject jsonDrinkRecipe = jArray.getJSONObject(i);
+                String name = jsonDrinkRecipe.getString("name"); //name of drink is first element in each list
+
+                JSONArray jsonIngredients = jsonDrinkRecipe.getJSONArray("ingredients");
+                ArrayList<Ingredient> ingredients = new ArrayList<>();
+                for(int j = 0; j < jsonIngredients.length(); j++)
+                {
+                    JSONObject jsonIngredientComponents = jsonIngredients.getJSONObject(j);
+                    String qty = jsonIngredientComponents.getString("qty");
+                    String measure = jsonIngredientComponents.getString("measure");
+                    String ingName = jsonIngredientComponents.getString("name");
+                    ingredients.add(new Ingredient(qty, measure, ingName));
+                }
+
+                String msg = jsonDrinkRecipe.getString("msg");
+                appInfo.savedDrinks.add(new DrinkRecipe(name, ingredients, msg));
+            }
+
+        }
+        catch(Exception e)
+        {
+            Log.d(logTag, "JSON loading failed");
+        }
+
     }
 }

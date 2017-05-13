@@ -1,23 +1,13 @@
 <resources>
     <string name="app_name">LiquorLog</string>
     <string name="add_string">Add</string>
+    <string name="edit_string">Edit</string>
+    <string name="edit_name">Drink Name:</string>
     <string name="your_list">Your cocktail recipes</string>
 
     <string name="scrollPrompt">-</string>
 
-    <string-array name="qty_array">
-        <item></item>
-        <item>1</item>
-        <item>2</item>
-        <item>3</item>
-        <item>4</item>
-        <item>5</item>
-        <item>6</item>
-        <item>7</item>
-        <item>8</item>
-        <item>9</item>
-        <item>10</item>
-    </string-array>
+
 
     <string-array name="measure_array">
         <item></item>

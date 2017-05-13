@@ -14,9 +14,12 @@ public class Ingredient
     public Ingredient(String qty, String measure, String ingredient)
     {
         components = new String[3];
-        components[0] = qty; this.qty = qty;
-        components[1] = measure; this.measure = measure;
-        components[2] = ingredient; this.ingredient = ingredient;
+        components[0] = qty;
+        this.qty = qty;
+        components[1] = measure;
+        this.measure = measure;
+        components[2] = ingredient;
+        this.ingredient = ingredient;
     }
 
     public String getQty() {return components[0];}
