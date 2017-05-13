@@ -18,9 +18,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".EditDrinkActivity"  ></activity>
-        <activity android:name=".DisplayDrink"  ></activity>
-
+        <activity android:name=".EditDrinkActivity" />
+        <activity android:name=".DisplayDrink" />
+        <activity android:name=".LibraryActivity"></activity>
     </application>
 
 </manifest>

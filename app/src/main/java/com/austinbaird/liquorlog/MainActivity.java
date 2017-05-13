@@ -279,8 +279,8 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onPause()
     {
-        fromPause = true;
-        Log.d(logTag, "We paused main");
+        //fromPause = true;
+        //Log.d(logTag, "We paused main");
         saveDrinksAsJSON();
 
         super.onPause();
@@ -304,48 +304,17 @@ public class MainActivity extends AppCompatActivity
         appInfo.sharedString2 = null;
         startActivity(intent);
     }
-    /*
-    This function prints every recipe in the cloud datastore to the console.
-     */
-    public void loadRecipes(View v)
+
+    public void goToLibrary(View v)
     {
-        String url = "https://backendtest-165520.appspot.com/ndb_api/get_recipes";
-
-        JsonObjectRequest jsObjRequest = new JsonObjectRequest
-                (Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
-
-                    @Override
-                    public void onResponse(JSONObject response) {
-
-                        Log.d(logTag, "Received: " + response.toString());
-                        // Ok, let's disassemble a bit the json object.
-                        try {
-                            JSONArray receivedList = response.getJSONArray("results");
-                            String allTogether = "(";
-                            for (int i = 0; i < receivedList.length(); i++) {
-                                JSONObject obj = receivedList.getJSONObject(i);
-                                Log.d(logTag, "got " + obj.get("ingredients"));
-                            }
-                            allTogether += ")";
-
-                        } catch (Exception e) {
-                            Log.d(logTag, "Aaauuugh, received bad json: " + e.getStackTrace());
-                        }
-                    }
-                }, new Response.ErrorListener() {
-
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        // TODO Auto-generated method stub
-                        Log.d(logTag, error.toString());
-                    }
-                });
-
-        // In some cases, we don't want to cache the request.
-        // jsObjRequest.setShouldCache(false);
-
-        appInfo.queue.add(jsObjRequest);
+        Intent intent = new Intent(MainActivity.this, LibraryActivity.class);
+        Log.d(logTag, "GOTOFUCKINGLIBRARY");
+        //Log.d(logTag, "rowItems size before going to new activity: " + rowItems.size());
+        appInfo.sharedString1 = null;
+        appInfo.sharedString2 = null;
+        startActivity(intent);
     }
+
 
     public void saveDrinksAsJSON()
     {
@@ -354,25 +323,22 @@ public class MainActivity extends AppCompatActivity
         for(DrinkRecipe savedRecipe : appInfo.savedDrinks)
         {
             try {
-                JSONObject drinkRecipe = new JSONObject();
+                /*JSONObject drinkRecipe = new JSONObject();
                 drinkRecipe.put("name", savedRecipe.getName());
 
                 JSONArray ingredientArray = new JSONArray();
                 for (Ingredient ingredient : savedRecipe.getIngredientList()) {
                     try {
-                        JSONObject ingredientComponents = new JSONObject();
-                        ingredientComponents.put("qty", ingredient.getQty());
-                        ingredientComponents.put("measure", ingredient.getMeasure());
-                        ingredientComponents.put("name", ingredient.getIngredient());
-                        ingredientArray.put(ingredientComponents);
+
+                        ingredientArray.put(ingredient.getJsonIngredient());
                     } catch (Exception e) {
 
                     }
                     //jArray.put(new JSONArray(ingredient)); this would be ideal, but is unsupported before API 19 for android
                 }
                 drinkRecipe.put("ingredients",ingredientArray);
-                drinkRecipe.put("msg", savedRecipe.getMsg());
-                jArray.put(drinkRecipe);
+                drinkRecipe.put("msg", savedRecipe.getMsg());*/
+                jArray.put(savedRecipe.drinkAsJSON);
             }
             catch(Exception e)
             {

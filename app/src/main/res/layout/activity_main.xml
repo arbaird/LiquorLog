@@ -21,6 +21,16 @@
         android:layout_alignParentBottom="true"
         android:onClick="goToEdit">
     </Button>
+    <Button
+        android:id="@+id/butt2"
+        android:text="library"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@+id/butt1"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true"
+        android:onClick="goToLibrary">
+    </Button>
     <ListView
         android:id="@+id/mobile_list"
         android:layout_width="fill_parent"

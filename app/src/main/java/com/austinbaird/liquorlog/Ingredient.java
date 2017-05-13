@@ -1,5 +1,9 @@
 package com.austinbaird.liquorlog;
 
+import android.util.Log;
+
+import org.json.JSONObject;
+
 /**
  * Created by austinbaird on 5/2/17.
  */
@@ -10,23 +14,71 @@ public class Ingredient
     public String qty;
     public String measure;
     public String ingredient;
+    public JSONObject jsonIngredientComponents;
+    public String logTag = "";
 
     public Ingredient(String qty, String measure, String ingredient)
     {
-        components = new String[3];
-        components[0] = qty;
+
         this.qty = qty;
-        components[1] = measure;
+
         this.measure = measure;
-        components[2] = ingredient;
+
         this.ingredient = ingredient;
+
+        try {
+            jsonIngredientComponents = new JSONObject();
+            jsonIngredientComponents.put("qty", qty);
+            jsonIngredientComponents.put("measure", measure);
+            jsonIngredientComponents.put("name", ingredient);
+        }
+        catch(Exception e)
+        {
+            Log.d(logTag, "Didn't set JSON properly in Ingredient class" );
+        }
     }
 
-    public String getQty() {return components[0];}
-    public String getMeasure() {return components[1];}
-    public String getIngredient() {return components[2];}
+    public String getQty() {return qty;}
+    public String getMeasure() {return measure;}
+    public String getIngredient() {return ingredient;}
 
-    public void setQty(String qty) {components[0] = qty; this.qty = qty;}
-    public void setMeasure(String measure) {components[1] = measure;this.measure = measure;}
-    public void setIngredient(String ingredient) {components[2] = ingredient; this.ingredient =ingredient;}
+    public void setQty(String qty) {
+        this.qty = qty;
+        try {
+            jsonIngredientComponents.put("qty", qty);
+        }
+        catch(Exception e)
+        {
+
+        }
+    }
+    public void setMeasure(String measure)
+    {
+        this.measure = measure;
+        try {
+            jsonIngredientComponents.put("measure", measure);
+        }
+        catch(Exception e)
+        {
+
+        }
+    }
+    public void setIngredient(String ingredient)
+    {
+        this.ingredient =ingredient;
+        try {
+            jsonIngredientComponents.put("name", ingredient);
+        }
+        catch(Exception e)
+        {
+            Log.d(logTag, "Didn't set JSON properly in Ingredient class" );
+        }
+    }
+
+    public JSONObject getJsonIngredient()
+    {
+        return jsonIngredientComponents;
+    }
+
+
 }

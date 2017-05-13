@@ -252,11 +252,12 @@ public class EditDrinkActivity extends AppCompatActivity
         {
             try
             {
-                JSONObject ingredientComponents = new JSONObject();
-                ingredientComponents.put("qty", ingredient.getQty());
-                ingredientComponents.put("measure",ingredient.getMeasure());
-                ingredientComponents.put("name", ingredient.getIngredient());
-                jArray.put(ingredientComponents);
+                /*JSONObject ingredientComponents = new JSONObject();
+                        ingredientComponents.put("qty", ingredient.getQty());
+                        ingredientComponents.put("measure", ingredient.getMeasure());
+                        ingredientComponents.put("name", ingredient.getIngredient());
+                        ingredientArray.put(ingredientComponents);*/
+                jArray.put(ingredient.getJsonIngredient());
             }
             catch(Exception e)
             {
@@ -388,25 +389,22 @@ public class EditDrinkActivity extends AppCompatActivity
         for(DrinkRecipe savedRecipe : appInfo.savedDrinks)
         {
             try {
-                JSONObject drinkRecipe = new JSONObject();
+                /*JSONObject drinkRecipe = new JSONObject();
                 drinkRecipe.put("name", savedRecipe.getName());
 
                 JSONArray ingredientArray = new JSONArray();
                 for (Ingredient ingredient : savedRecipe.getIngredientList()) {
                     try {
-                        JSONObject ingredientComponents = new JSONObject();
-                        ingredientComponents.put("qty", ingredient.getQty());
-                        ingredientComponents.put("measure", ingredient.getMeasure());
-                        ingredientComponents.put("name", ingredient.getIngredient());
-                        ingredientArray.put(ingredientComponents);
+
+                        ingredientArray.put(ingredient.getJsonIngredient());
                     } catch (Exception e) {
 
                     }
                     //jArray.put(new JSONArray(ingredient)); this would be ideal, but is unsupported before API 19 for android
                 }
                 drinkRecipe.put("ingredients",ingredientArray);
-                drinkRecipe.put("msg", savedRecipe.getMsg());
-                jArray.put(drinkRecipe);
+                drinkRecipe.put("msg", savedRecipe.getMsg());*/
+                jArray.put(savedRecipe.drinkAsJSON);
             }
             catch(Exception e)
             {
