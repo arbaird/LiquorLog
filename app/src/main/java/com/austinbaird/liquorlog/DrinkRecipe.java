@@ -15,18 +15,20 @@ public class DrinkRecipe {
     private String msg;
     private int imageID;
     public JSONObject drinkAsJSON;
+    public boolean userMade;
+
     public String logTag = "";
 
-    public DrinkRecipe(String drinkName, int imageID) {
-        this.name = drinkName;
-        this.imageID = imageID;
+    public DrinkRecipe(String name, ArrayList<Ingredient> ingredientList, String msg, boolean userMade) {
+        this.name = name;
+        this.ingredientList = ingredientList;
+        this.msg = msg;
+        this.imageID = R.drawable.ic_launcher;
+        drinkAsJSON = new JSONObject();
+        this.userMade = userMade;
         setDrinksAsJSON();
     }
 
-    public DrinkRecipe(ArrayList<Ingredient> ingredientList) {
-        this.ingredientList = ingredientList;
-        setDrinksAsJSON();
-    }
 
     public DrinkRecipe(String name, ArrayList<Ingredient> ingredientList, String msg) {
         this.name = name;
@@ -34,6 +36,7 @@ public class DrinkRecipe {
         this.msg = msg;
         this.imageID = R.drawable.ic_launcher;
         drinkAsJSON = new JSONObject();
+        this.userMade = false;
         setDrinksAsJSON();
     }
 
@@ -100,6 +103,7 @@ public class DrinkRecipe {
             drinkAsJSON.put("name", name);
             drinkAsJSON.put("ingredients", ingredientArray);
             drinkAsJSON.put("msg", msg);
+            drinkAsJSON.put("userMade", userMade);
             //jArray.put(drinkRecipe);
         }
         catch (Exception e) {

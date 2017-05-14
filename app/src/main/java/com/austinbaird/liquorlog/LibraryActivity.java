@@ -39,7 +39,6 @@ public class LibraryActivity extends AppCompatActivity
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        Log.d(logTag, "FUCKING LIBRARY");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_library);
         appInfo = AppInfo.getInstance(this);
@@ -60,20 +59,6 @@ public class LibraryActivity extends AppCompatActivity
         mRecyclerView.setAdapter(mAdapter);
 
 
-        /*mRecyclerView.addOnItemTouchListener(
-                new RecyclerItemClickListener(this, mRecyclerView, new RecyclerItemClickListener.OnItemClickListener() {
-                    @Override public void onItemClick(View view, int position) {
-                        Log.d(logTag, "You clicked " + position);
-                        appInfo.drinkFromLib = databaseDrinks.get(position);
-                        Intent intent = new Intent(LibraryActivity.this, DisplayDrink.class);
-                        intent.putExtra("fromLib", true);
-                        startActivity(intent);
-                    }
-                    @Override public void onItemLongClick(View v, int pos)
-                    {
-                        //nothing
-                    }
-                }));*/
         mRecyclerView.addOnItemTouchListener(
                 new RecyclerItemClickListener(this, mRecyclerView, new RecyclerItemClickListener.OnItemClickListener() {
                     @Override public void onItemClick(View view, int position) {
@@ -99,10 +84,6 @@ public class LibraryActivity extends AppCompatActivity
 
         super.onResume();
 
-
-
-
-        Log.d(logTag, "PLEEEAAASSSEEEE");
 
 
 

@@ -4,6 +4,10 @@ package com.austinbaird.liquorlog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.support.v7.widget.PopupMenu;
+import android.view.ContextMenu;
+import android.view.Menu;
+import android.view.MenuItem;
 
 import android.app.Activity;
 import android.view.ContextMenu;
@@ -14,6 +18,7 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+
 
 import android.os.Bundle;
 import android.app.Activity;
@@ -59,6 +64,8 @@ public class MainActivity extends AppCompatActivity
 
     RequestQueue queue;
 
+
+    Button popupMenuButton;
     Button contextMenuButton;
 
     ArrayList<DrinkRecipe> rowItems; //the row items that are displayed in the list
@@ -85,9 +92,49 @@ public class MainActivity extends AppCompatActivity
 
         Log.d(logTag, "OnCreate()");
 
+        //registerForContextMenu(contextMenuButton);
+        //contextMenuButton = (Button)findViewById(R.id.butt1);
+        //registerForContextMenu(contextMenuButton);
 
-        contextMenuButton = (Button)findViewById(R.id.butt1);
-        registerForContextMenu(contextMenuButton);
+        popupMenuButton = (Button)findViewById(R.id.butt1);
+
+        popupMenuButton.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View view)
+            {
+                PopupMenu popupMenu = new PopupMenu(MainActivity.this, popupMenuButton);
+                popupMenu.getMenuInflater().inflate(R.menu.main_menu, popupMenu.getMenu());
+
+                popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener()
+                {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item)
+                    {
+                        switch (item.getItemId()){
+                            case R.id.item_option1:
+                                String toastMsg1 = "Creating new drink";
+                                Toast.makeText(getApplicationContext(),toastMsg1,Toast.LENGTH_SHORT).show();
+                                //addDrink(null);
+                                goToEdit(null);
+                                break;
+
+                            case R.id.item_option2:
+                                String toastMsg2 = "Adding from Library ";
+                                Toast.makeText(getApplicationContext(),toastMsg2,Toast.LENGTH_SHORT).show();
+                                break;
+                        }
+                        //Toast.makeText(MainActivity.this, "" + item.getTitle(), Toast.LENGTH_SHORT).show();
+                        return true;
+                    }
+
+                });
+
+                popupMenu.show();
+
+            }
+        });
+
 
         rowItems = new ArrayList<>();
 
@@ -172,7 +219,7 @@ public class MainActivity extends AppCompatActivity
 
     }
 
-    /*@Override
+   /* @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
         getMenuInflater().inflate(R.menu.main_menu,menu);
@@ -187,7 +234,7 @@ public class MainActivity extends AppCompatActivity
                 view.showContextMenu();
             }
         })
-    }*/
+    }
 
     /*@Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -323,21 +370,7 @@ public class MainActivity extends AppCompatActivity
         for(DrinkRecipe savedRecipe : appInfo.savedDrinks)
         {
             try {
-                /*JSONObject drinkRecipe = new JSONObject();
-                drinkRecipe.put("name", savedRecipe.getName());
 
-                JSONArray ingredientArray = new JSONArray();
-                for (Ingredient ingredient : savedRecipe.getIngredientList()) {
-                    try {
-
-                        ingredientArray.put(ingredient.getJsonIngredient());
-                    } catch (Exception e) {
-
-                    }
-                    //jArray.put(new JSONArray(ingredient)); this would be ideal, but is unsupported before API 19 for android
-                }
-                drinkRecipe.put("ingredients",ingredientArray);
-                drinkRecipe.put("msg", savedRecipe.getMsg());*/
                 jArray.put(savedRecipe.drinkAsJSON);
             }
             catch(Exception e)
@@ -386,7 +419,8 @@ public class MainActivity extends AppCompatActivity
                 }
 
                 String msg = jsonDrinkRecipe.getString("msg");
-                appInfo.savedDrinks.add(new DrinkRecipe(name, ingredients, msg));
+                Boolean userMade = jsonDrinkRecipe.getBoolean("userMade");
+                appInfo.savedDrinks.add(new DrinkRecipe(name, ingredients, msg, userMade));
             }
 
         }

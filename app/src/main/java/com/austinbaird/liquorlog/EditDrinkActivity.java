@@ -1,5 +1,7 @@
 package com.austinbaird.liquorlog;
 
+import java.io.*;
+
 import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -202,8 +204,6 @@ public class EditDrinkActivity extends AppCompatActivity
             recipe.setIngredientList(ingredients);
             recipe.setMsg(msg);
         }
-        //Log.d(logTag, "DrinkName: " + drinkName);
-        //Log.d(logTag, "Message: " + msg);
         else
         {
             recipe = new DrinkRecipe(drinkName, ingredients, msg);
@@ -388,22 +388,8 @@ public class EditDrinkActivity extends AppCompatActivity
         JSONArray jArray = new JSONArray();
         for(DrinkRecipe savedRecipe : appInfo.savedDrinks)
         {
-            try {
-                /*JSONObject drinkRecipe = new JSONObject();
-                drinkRecipe.put("name", savedRecipe.getName());
-
-                JSONArray ingredientArray = new JSONArray();
-                for (Ingredient ingredient : savedRecipe.getIngredientList()) {
-                    try {
-
-                        ingredientArray.put(ingredient.getJsonIngredient());
-                    } catch (Exception e) {
-
-                    }
-                    //jArray.put(new JSONArray(ingredient)); this would be ideal, but is unsupported before API 19 for android
-                }
-                drinkRecipe.put("ingredients",ingredientArray);
-                drinkRecipe.put("msg", savedRecipe.getMsg());*/
+            try
+            {
                 jArray.put(savedRecipe.drinkAsJSON);
             }
             catch(Exception e)
@@ -418,4 +404,41 @@ public class EditDrinkActivity extends AppCompatActivity
         editor.putString("drinksAsJSON", jArray.toString());
         editor.commit();
     }
+
+    /*public void addPreDefined()TODO
+    {
+        ArrayList<DrinkRecipe> recipes = new ArrayList<DrinkRecipe>();
+
+        try
+        {
+            BufferedReader br = new BufferedReader(new FileReader("Library.txt"));
+            String line;
+            int lineNum = 1; //used for error reporting
+            while ((line = br.readLine()) != null)
+            {
+                try
+                {
+                    Item item = parseItemInfo(line);
+                    basket.add(item);
+                }
+                catch(Exception ex)
+                {
+                    System.err.println("Invalid item format in file at line " +
+                            lineNum +". Item not added. Must format as follows:\n"
+                            + "<qty> (imported) <name> at <price>");
+                }
+                lineNum++;
+
+            }
+        }
+        catch(FileNotFoundException ex)
+        {
+            System.err.printf("File " + fileName + " not found");
+        }
+        catch(Exception e)
+        {
+
+        }
+
+    }*/
 }

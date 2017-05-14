@@ -11,6 +11,9 @@ import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Button;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,6 +29,7 @@ public class DisplayDrink extends AppCompatActivity {
     String ingredient = "";
     String msg = "";
     String total;
+    DrinkRecipe displayedDrink;
 
     private class ListElement {
         ListElement() {};
@@ -93,13 +97,21 @@ public class DisplayDrink extends AppCompatActivity {
     {
         super.onResume();
         Bundle extras = getIntent().getExtras();
-        DrinkRecipe displayedDrink;
+        //DrinkRecipe displayedDrink;
         if(extras.containsKey("fromLib") && extras.getBoolean("fromLib"))
         {
-            View b = findViewById(R.id.butt_edit);
-            b.setVisibility(View.GONE);
+            Button b = (Button)findViewById(R.id.butt_edit);
+            //b.setVisibility(View.GONE);
+            b.setOnClickListener(new View.OnClickListener() {
+                public void onClick(View v) {
+                    // Perform action on click
+                    saveDrink();
+                }
+            });
+            b.setText("Add to Log");
             displayedDrink = appInfo.drinkFromLib;
         }
+
         else {
             mydrink = extras.getInt("drinkPosition");
             displayedDrink = appInfo.savedDrinks.get(mydrink);
@@ -185,5 +197,59 @@ public class DisplayDrink extends AppCompatActivity {
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP); //May neee to change this location to other activities instead
         startActivity(intent);
     }
+
+    public void saveDrink()
+    {
+
+        if(isDuplicateName(displayedDrink.getName()))
+        {
+            duplicateDialog();
+        }
+        else
+        {
+            appInfo.addDrink(displayedDrink);
+
+            Intent intent = new Intent(DisplayDrink.this, LibraryActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(intent);
+        }
+    }
+
+    public boolean isDuplicateName(String name)
+    {
+        for(DrinkRecipe recipe : appInfo.savedDrinks)
+        {
+            if(name.equals(recipe.getName()))
+                return true;
+        }
+        return false;
+    }
+
+    public void duplicateDialog()
+    {
+        AlertDialog.Builder alertDialog = new AlertDialog.Builder(DisplayDrink.this);//.create();
+        alertDialog.setTitle("Add Duplicate");
+
+
+        alertDialog.setMessage("A drink with this name already exists in your log.\nAdd this drink anyway?(Existing drink will remain)")
+                .setPositiveButton("Add", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        appInfo.addDrink(displayedDrink);
+
+                        Intent intent = new Intent(DisplayDrink.this, LibraryActivity.class);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        startActivity(intent);
+                    }
+                })
+                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        dialog.dismiss();
+                    }
+                });
+
+        alertDialog.show();
+    }
+
+
 }
 
