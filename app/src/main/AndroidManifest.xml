@@ -20,7 +20,8 @@
         </activity>
         <activity android:name=".EditDrinkActivity" />
         <activity android:name=".DisplayDrink" />
-        <activity android:name=".LibraryActivity"></activity>
+        <activity android:name=".LibraryActivity" />
+
     </application>
 
 </manifest>

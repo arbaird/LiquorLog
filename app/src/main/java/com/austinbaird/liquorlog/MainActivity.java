@@ -310,8 +310,8 @@ public class MainActivity extends AppCompatActivity
         Intent intent = new Intent(MainActivity.this, LibraryActivity.class);
         Log.d(logTag, "GOTOFUCKINGLIBRARY");
         //Log.d(logTag, "rowItems size before going to new activity: " + rowItems.size());
-        appInfo.sharedString1 = null;
-        appInfo.sharedString2 = null;
+        //appInfo.sharedString1 = null;
+        //appInfo.sharedString2 = null;
         startActivity(intent);
     }
 

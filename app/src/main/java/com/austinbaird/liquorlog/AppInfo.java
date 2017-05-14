@@ -31,6 +31,8 @@ public class AppInfo {
     // Here are some values we want to keep global.
     public ArrayList<DrinkRecipe> savedDrinks;
 
+    public DrinkRecipe drinkFromLib;
+
     public RequestQueue queue;
 
     public ArrayList<Ingredient> ingredientsToEdit;

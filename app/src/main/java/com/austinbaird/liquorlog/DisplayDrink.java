@@ -93,10 +93,18 @@ public class DisplayDrink extends AppCompatActivity {
     {
         super.onResume();
         Bundle extras = getIntent().getExtras();
-        if(extras == null) {
-            finish(); // No idea what else to do
-        } else {
+        DrinkRecipe displayedDrink;
+        if(extras.containsKey("fromLib") && extras.getBoolean("fromLib"))
+        {
+            View b = findViewById(R.id.butt_edit);
+            b.setVisibility(View.GONE);
+            displayedDrink = appInfo.drinkFromLib;
+        }
+        else {
             mydrink = extras.getInt("drinkPosition");
+            displayedDrink = appInfo.savedDrinks.get(mydrink);
+            View b = findViewById(R.id.butt_edit);
+            b.setVisibility(View.VISIBLE);
         }
 
         TextView tv1 = (TextView) findViewById(R.id.textView1);
@@ -105,8 +113,8 @@ public class DisplayDrink extends AppCompatActivity {
        // TextView tv5 = (TextView) findViewById(R.id.textView5);
         //TextView tv6 = (TextView) findViewById(R.id.textView6);
         //TextView tv4 = (TextView) findViewById(R.id.textView3); // THIS SHOULD BE WHATEVER THE VIEW IS FOR IMAGES
-        if (appInfo.savedDrinks.get(mydrink) != null) {
-            DrinkRecipe displayedDrink = appInfo.savedDrinks.get(mydrink);
+        //if (appInfo.savedDrinks.get(mydrink) != null) {
+          //  DrinkRecipe displayedDrink = appInfo.savedDrinks.get(mydrink);
             name = displayedDrink.getName();
             ingredients = displayedDrink.getIngredientList();
 
@@ -130,7 +138,7 @@ public class DisplayDrink extends AppCompatActivity {
             //tv6.setText("Directions: ");
             tv3.setText(msg);
             //tv4.setText(imageID) //THIS SHOULD BE DIFFERENT
-        }
+
     }
 
     public void clickEdit(View V) {
