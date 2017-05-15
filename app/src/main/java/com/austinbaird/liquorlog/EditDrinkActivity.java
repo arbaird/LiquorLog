@@ -76,7 +76,7 @@ public class EditDrinkActivity extends AppCompatActivity
         setContentView(R.layout.activity_edit_drink);
         appInfo = AppInfo.getInstance(this);
 
-        addPreDefined();
+        //addPreDefined(); //uncomment to add library dirnks to data base. make sure to clear these first before re adding
 
         drinkName = "";
         msg = "";
