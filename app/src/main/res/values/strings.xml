@@ -23,4 +23,13 @@
 
     </string-array>
 
+    <string-array name="fraction_array">
+        <item></item>
+        <item>&#188;</item>
+        <item>&#8531;</item>
+        <item>&#189;</item>
+        <item>&#190;</item>
+
+    </string-array>
+
 </resources>

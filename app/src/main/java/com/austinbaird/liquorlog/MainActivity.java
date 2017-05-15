@@ -90,7 +90,8 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         queue = Volley.newRequestQueue(this);
 
-        Log.d(logTag, "OnCreate()");
+
+        Log.d(logTag, "\u00BC");
 
         //registerForContextMenu(contextMenuButton);
         //contextMenuButton = (Button)findViewById(R.id.butt1);

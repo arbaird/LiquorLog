@@ -47,6 +47,7 @@ public class EditDrinkActivity extends AppCompatActivity
     ScrollerListAdapter adapter; //used to make viewable items on screem from data in rowItems
 
     Spinner qtySpinner;
+    Spinner fractionSpinner;
     Spinner measureSpinner;
     EditText editName;
 
@@ -70,6 +71,8 @@ public class EditDrinkActivity extends AppCompatActivity
         setContentView(R.layout.activity_edit_drink);
         appInfo = AppInfo.getInstance(this);
 
+        addPreDefined();
+
         drinkName = "";
         msg = "";
         alreadyCreated = false;
@@ -82,6 +85,7 @@ public class EditDrinkActivity extends AppCompatActivity
 
 
         qtySpinner = (Spinner) findViewById(R.id.qtySpinner);
+        fractionSpinner = (Spinner) findViewById(R.id.fractionSpinner);
         // Spinner click listener
         qtySpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
             @Override
@@ -163,11 +167,15 @@ public class EditDrinkActivity extends AppCompatActivity
         //ScrollerRowItem blank = new ScrollerRowItem(new IngredientList("","",""));
         String qty = (String)qtySpinner.getSelectedItem();
         String measure = (String)measureSpinner.getSelectedItem();
+        String fraction = (String)fractionSpinner.getSelectedItem();
         String name = (String)editIngredientName.getText().toString();
 
         Log.d(logTag, "qty " +  qty);
         Log.d(logTag, "msr " +  measure);
         Log.d(logTag, "name " +  name);
+
+        if(!fraction.equals(""))
+            qty += " " + fraction;
 
         rowItems.add(new Ingredient(qty, measure, name));
         adapter.notifyDataSetChanged();
@@ -405,27 +413,43 @@ public class EditDrinkActivity extends AppCompatActivity
         editor.commit();
     }
 
-    /*public void addPreDefined()TODO
+    public void addPreDefined()
     {
         ArrayList<DrinkRecipe> recipes = new ArrayList<DrinkRecipe>();
 
         try
         {
-            BufferedReader br = new BufferedReader(new FileReader("Library.txt"));
+            BufferedReader br = new BufferedReader(
+                    new InputStreamReader(getAssets().open("Drinks.txt")));
             String line;
             int lineNum = 1; //used for error reporting
+
             while ((line = br.readLine()) != null)
             {
                 try
                 {
-                    Item item = parseItemInfo(line);
-                    basket.add(item);
+
+                    String drinkName = line;
+                    ArrayList<Ingredient> ingredients = new ArrayList<>();
+                    String ings;
+                    ings = br.readLine();
+                    while(!ings.equals("-"))
+                    {
+                        lineNum++;
+                        Map<String, String> ingInfo = parseFileLine(ings);
+                        ingredients.add(new Ingredient(ingInfo.get("qty"), ingInfo.get("measure"), ingInfo.get("ingredient")));
+                        ings = br.readLine();
+                    }
+                    String msg = br.readLine();
+                    recipes.add(new DrinkRecipe(drinkName, ingredients, msg));
+                    lineNum++;
+                    br.readLine(); // clear newline
+
                 }
                 catch(Exception ex)
                 {
                     System.err.println("Invalid item format in file at line " +
-                            lineNum +". Item not added. Must format as follows:\n"
-                            + "<qty> (imported) <name> at <price>");
+                            lineNum);
                 }
                 lineNum++;
 
@@ -433,12 +457,60 @@ public class EditDrinkActivity extends AppCompatActivity
         }
         catch(FileNotFoundException ex)
         {
-            System.err.printf("File " + fileName + " not found");
+            Log.d(logTag, "File not found");
         }
         catch(Exception e)
         {
-
+            Log.d(logTag, "Fucked up");
+        }
+        for(DrinkRecipe recipe : recipes)
+        {
+            Log.d(logTag, recipe.drinkAsJSON.toString());
         }
 
-    }*/
+    }
+
+    Map<String,String> parseFileLine(String line)
+    {
+        Map<String, String> lineInfo = new HashMap<>(); //= new String[];
+        String[] tokens = line.split(" ");
+        if(tokens[0].equals("/")) //this means no qty or measure is specified
+        {
+            lineInfo.put("qty", "");
+            lineInfo.put("measure", "");
+            String name = "";
+            for(int i = 1; i < tokens.length; i++)
+            {
+                name += tokens[i] + " ";
+            }
+            name = name.trim();
+            lineInfo.put("ingredient", name);
+        }
+        else if(tokens[1].equals("/")) //this means no measure is specified
+        {
+            lineInfo.put("qty", tokens[0]);
+            lineInfo.put("measure", "");
+            String name = "";
+            for(int i = 2; i < tokens.length; i++)
+            {
+                name += tokens[i] + " ";
+            }
+            name = name.trim();
+            lineInfo.put("ingredient", name);
+        }
+        else
+        {
+            lineInfo.put("qty", tokens[0]);
+            lineInfo.put("measure", tokens[1]);
+            String name = "";
+            for(int i = 2; i < tokens.length; i++)
+            {
+                name += tokens[i] + " ";
+            }
+            name = name.trim();
+            lineInfo.put("ingredient", name);
+        }
+        return lineInfo;
+
+    }
 }
