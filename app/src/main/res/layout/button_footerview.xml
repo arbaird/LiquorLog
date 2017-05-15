@@ -2,13 +2,55 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     >
-    <Button
+    <RelativeLayout
+        android:id="@+id/content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" >
+    <Spinner
+        android:id="@+id/qtySpinner"
+        android:layout_width="75dp"
+        android:layout_height="wrap_content"
+        android:prompt="@+string/editPrompt"
+
+        />
+    <Spinner
+        android:id="@+id/fractionSpinner"
+        android:entries="@array/fraction_array"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@+id/qtySpinner"
+        />
+    <Spinner
+        android:id="@+id/measureSpinner"
+        android:entries="@array/measure_array"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@+id/fractionSpinner"
+        />
+
+    <EditText xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/ingredientEdit"
         android:layout_width="100dp"
         android:layout_height="wrap_content"
-        android:id="@+id/btnAddIngredient"
-        android:layout_marginLeft="10dp"
-        android:text="Add Ingredient"
-        android:textSize="10sp"
-        android:onClick="add"
-        />
+
+        android:layout_toRightOf="@+id/measureSpinner"
+        android:layout_alignBaseline="@+id/measureSpinner"
+
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:text="txt" >
+    </EditText>
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/btnAddIngredient"
+            android:layout_centerHorizontal="true"
+            android:layout_below="@+id/ingredientEdit"
+
+            android:layout_marginLeft="10dp"
+            android:text="+"
+            android:textSize="10sp"
+            android:onClick="add"
+            />
+    </RelativeLayout>
 </FrameLayout>

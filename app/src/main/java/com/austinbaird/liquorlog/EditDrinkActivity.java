@@ -3,9 +3,11 @@ package com.austinbaird.liquorlog;
 import java.io.*;
 
 import android.content.SharedPreferences;
+import android.media.Image;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Button;
 import android.widget.RelativeLayout;
@@ -36,6 +38,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import static com.austinbaird.liquorlog.R.id.editDrinkName;
+import static com.austinbaird.liquorlog.R.id.imageViewDrink;
 import static com.austinbaird.liquorlog.R.id.messageEnter;
 
 public class EditDrinkActivity extends AppCompatActivity
@@ -47,9 +50,10 @@ public class EditDrinkActivity extends AppCompatActivity
     ScrollerListAdapter adapter; //used to make viewable items on screem from data in rowItems
 
     Spinner qtySpinner;
-    Spinner fractionSpinner;
     Spinner measureSpinner;
+    Spinner fractionSpinner;
     EditText editName;
+    EditText editMsg;
 
     EditText editIngredientName;
 
@@ -57,6 +61,7 @@ public class EditDrinkActivity extends AppCompatActivity
 
     String drinkName;
     String msg;
+    int image;
 
     AppInfo appInfo;
 
@@ -75,6 +80,7 @@ public class EditDrinkActivity extends AppCompatActivity
 
         drinkName = "";
         msg = "";
+        image = R.drawable.emptysmall;
         alreadyCreated = false;
 
         rowItems = new ArrayList<>();
@@ -82,6 +88,10 @@ public class EditDrinkActivity extends AppCompatActivity
         adapter = new ScrollerListAdapter(this, R.layout.edit_list_element, rowItems);
         final ListView listView = (ListView) findViewById(R.id.mobile_list);
         listView.setAdapter(adapter);
+
+        //FrameLayout footerLayout = (FrameLayout) getLayoutInflater().inflate(R.layout.button_footerview,null);
+        //btnPostYourEnquiry = (Button) footerLayout.findViewById(R.id.btnAddIngredient);
+        //listView.addFooterView(footerLayout);
 
 
         qtySpinner = (Spinner) findViewById(R.id.qtySpinner);
@@ -132,6 +142,7 @@ public class EditDrinkActivity extends AppCompatActivity
 
 
         editName = (EditText) findViewById(editDrinkName);
+        editMsg = (EditText)findViewById(messageEnter);
 
         editIngredientName = (EditText)findViewById(R.id.ingredientEdit);
 
@@ -145,30 +156,48 @@ public class EditDrinkActivity extends AppCompatActivity
             }
         });
 
-        EditText editMsg = (EditText) findViewById(messageEnter);
-        editMsg.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (!hasFocus){
-                    final int position = v.getId();
-                    final EditText Caption = (EditText) v;
-                    msg = Caption.getText().toString();
-                    Log.d(logTag, "Changed Msg to" + msg);
-                }
-            }
-        });
 
         //Button addBtn = (Button) findViewById(R.id.btnSaveDrink);
 
     }
 
+    public void editDrinkImage(View v)
+    {
+        String toastMsg = "Editing drink";
+        Toast toast= Toast.makeText(getBaseContext(),toastMsg,Toast.LENGTH_SHORT);
+        toast.show();
+        Intent intent = new Intent(EditDrinkActivity.this, EditDrinkImage.class);
+        intent.putExtra("alreadyCreated", alreadyCreated);
+        intent.putExtra("drinkPosition", drinkPos);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
+        EditText editMsg = (EditText)findViewById(messageEnter);
+
+        appInfo.drinkToEdit.setName(editName.getText().toString());
+
+        appInfo.drinkToEdit.setMsg(editMsg.getText().toString());
+
+        appInfo.drinkToEdit.setIngredientList(rowItems);
+
+        startActivity(intent);
+    }
 
     public void add(View v)
     {
         //ScrollerRowItem blank = new ScrollerRowItem(new IngredientList("","",""));
+        String name = (String)editIngredientName.getText().toString();
+        if(name.trim().equals(""))
+        {
+            String toastMsg = "Specify ingredient name!";
+            Toast toast= Toast.makeText(getBaseContext() ,toastMsg,Toast.LENGTH_SHORT);
+            toast.show();
+            return;
+        }
+
         String qty = (String)qtySpinner.getSelectedItem();
         String measure = (String)measureSpinner.getSelectedItem();
         String fraction = (String)fractionSpinner.getSelectedItem();
-        String name = (String)editIngredientName.getText().toString();
+
 
         Log.d(logTag, "qty " +  qty);
         Log.d(logTag, "msr " +  measure);
@@ -195,6 +224,9 @@ public class EditDrinkActivity extends AppCompatActivity
         EditText editName = (EditText)findViewById(editDrinkName);
         drinkName = editName.getText().toString();
 
+        //ImageView imageId = (ImageView) findViewById(imageViewDrink);
+        //image;= imageId.getId();
+
         ArrayList<Ingredient> ingredients = new ArrayList<>();
 
         //Log.d(logTag, "Rowitems size: " + Integer.toString(rowItems.size()));
@@ -211,10 +243,12 @@ public class EditDrinkActivity extends AppCompatActivity
             recipe.setName(drinkName);
             recipe.setIngredientList(ingredients);
             recipe.setMsg(msg);
+            recipe.setImageID(image);
         }
         else
         {
             recipe = new DrinkRecipe(drinkName, ingredients, msg);
+            recipe.setImageID(image);
             appInfo.addDrink(recipe);
         }
 
@@ -234,8 +268,7 @@ public class EditDrinkActivity extends AppCompatActivity
         String text2 = edv2.getText().toString();
         appInfo.setColor2(text2);
 
-        appInfo.sharedString1 = null;
-        appInfo.sharedString2 = null;
+        appInfo.drinkToEdit = new DrinkRecipe("",null,"");
 
         saveDrinksAsJSON();
 
@@ -251,40 +284,33 @@ public class EditDrinkActivity extends AppCompatActivity
 
     public void addDrinkToNDB(View v, DrinkRecipe recipe)
     {
-        Map<String, String> params = new HashMap<String, String>();
-        params.put("name", recipe.getName());
-        params.put("msg", recipe.getMsg());
 
-        JSONArray jArray = new JSONArray();
-        for (Ingredient ingredient : recipe.getIngredientList())
+        JSONObject obj = new JSONObject();
+        try
         {
-            try
-            {
-                /*JSONObject ingredientComponents = new JSONObject();
-                        ingredientComponents.put("qty", ingredient.getQty());
-                        ingredientComponents.put("measure", ingredient.getMeasure());
-                        ingredientComponents.put("name", ingredient.getIngredient());
-                        ingredientArray.put(ingredientComponents);*/
-                jArray.put(ingredient.getJsonIngredient());
-            }
-            catch(Exception e)
-            {
+            obj.put("name", recipe.getName());
+            obj.put("msg", recipe.getMsg());
+            obj.put("imgId", recipe.getImageID());
 
+            JSONArray jArray = new JSONArray();
+            for (Ingredient ingredient : recipe.getIngredientList())
+            {
+                jArray.put(ingredient.getJsonIngredient());
+                //jArray.put(new JSONArray(ingredient)); this would be ideal, but is unsupported before API 19 for android
             }
-            //jArray.put(new JSONArray(ingredient)); this would be ideal, but is unsupported before API 19 for android
+            final String ing = jArray.toString();
+            obj.put("ingredients", ing);
+            obj.put("userCreated", recipe.userMade);
+
+        }
+        catch(Exception e)
+        {
+
         }
 
 
-        final String ing = jArray.toString();
-        Log.d(logTag, ing);
-
-        params.put("ingredients", ing);
-        //need to use JSON array so we store array properly in JSON format, i.e with "" around each element in list
-
-
-        //copy pasted from hw3, changed url
         JsonObjectRequest jsobj = new JsonObjectRequest(
-                "https://backendtest-165520.appspot.com/ndb_api/add_recipe", new JSONObject(params),
+                "https://backendtest-165520.appspot.com/ndb_api/add_recipe", obj,/*new JSONObject(params),*/
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response)
@@ -344,39 +370,44 @@ public class EditDrinkActivity extends AppCompatActivity
 
     @Override
     protected void onResume() {
+
         EditText editName = (EditText) findViewById(editDrinkName);
-        if (appInfo.sharedString1 != null) {
-            editName.setText(appInfo.sharedString1);
-        }
+
+        editName.setText(appInfo.drinkToEdit.getName() ); //sharedString1);
 
         EditText editMsg = (EditText) findViewById(messageEnter);
-        if (appInfo.sharedString2 != null) {
-            editMsg.setText(appInfo.sharedString2);
-        }
 
+        editMsg.setText(appInfo.drinkToEdit.getMsg());
 
+        image = appInfo.drinkToEdit.getImageID();
 
         Bundle extras = getIntent().getExtras();
 
         if(extras != null)
         {
+            //image = extras.getInt("imageId");
             drinkPos = extras.getInt("drinkPosition");
             alreadyCreated = extras.getBoolean("alreadyCreated");
             Log.d(logTag, "editing already created?" + alreadyCreated);
         }
-        if(alreadyCreated)
+        if(appInfo.drinkToEdit.getIngredientList() != null)
         {
             //for(int i = 0; i < appInfo.ingredientsToEdit.size(); i++)
 
-            for(Ingredient ingredient : appInfo.ingredientsToEdit)
+            for(Ingredient ingredient : appInfo.drinkToEdit.getIngredientList())
             {
 
                 rowItems.add(new Ingredient(ingredient.getQty(), ingredient.getMeasure(), ingredient.getIngredient()));
 
             }
+
+
+
             adapter.notifyDataSetChanged();
         }
 
+        ImageView editImage = (ImageView) findViewById(imageViewDrink);
+        editImage.setImageResource(image);
 
         super.onResume();
     }
@@ -415,7 +446,7 @@ public class EditDrinkActivity extends AppCompatActivity
 
     public void addPreDefined()
     {
-        ArrayList<DrinkRecipe> recipes = new ArrayList<DrinkRecipe>();
+        ArrayList<DrinkRecipe> recipes = new ArrayList<>();
 
         try
         {
@@ -441,7 +472,7 @@ public class EditDrinkActivity extends AppCompatActivity
                         ings = br.readLine();
                     }
                     String msg = br.readLine();
-                    recipes.add(new DrinkRecipe(drinkName, ingredients, msg));
+                    recipes.add(new DrinkRecipe(drinkName, ingredients, msg, false));
                     lineNum++;
                     br.readLine(); // clear newline
 
@@ -466,7 +497,9 @@ public class EditDrinkActivity extends AppCompatActivity
         for(DrinkRecipe recipe : recipes)
         {
             Log.d(logTag, recipe.drinkAsJSON.toString());
+            addDrinkToNDB(null, recipe);
         }
+
 
     }
 

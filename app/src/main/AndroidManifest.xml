@@ -18,10 +18,12 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".EditDrinkActivity" />
+        <activity android:name=".EditDrinkActivity" android:windowSoftInputMode="adjustPan"/>
         <activity android:name=".DisplayDrink" />
         <activity android:name=".LibraryActivity" />
+        <activity android:name=".EditDrinkImage">
 
+        </activity>
     </application>
 
 </manifest>

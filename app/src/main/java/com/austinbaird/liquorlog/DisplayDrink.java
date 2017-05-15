@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Button;
 import android.app.AlertDialog;
@@ -122,6 +123,9 @@ public class DisplayDrink extends AppCompatActivity {
         TextView tv1 = (TextView) findViewById(R.id.textView1);
         //TextView tv2 = (TextView) findViewById(R.id.textView2);
         TextView tv3 = (TextView) findViewById(R.id.textView3);
+
+        ImageView imageView = (ImageView) findViewById(R.id.drinkImage);
+
        // TextView tv5 = (TextView) findViewById(R.id.textView5);
         //TextView tv6 = (TextView) findViewById(R.id.textView6);
         //TextView tv4 = (TextView) findViewById(R.id.textView3); // THIS SHOULD BE WHATEVER THE VIEW IS FOR IMAGES
@@ -136,8 +140,8 @@ public class DisplayDrink extends AppCompatActivity {
                 qty = ingredients.get(i).getQty();
                 measure = ingredients.get(i).getMeasure();
                 ingredient = ingredients.get(i).getIngredient();
-                total = qty + " " + measure + " of " + ingredient;
-                aList.add(new ListElement(total));
+                total = qty + " " + measure + " " + ((qty + measure).equals("") ? "" : "of ") + ingredient;
+                aList.add(new ListElement(total.trim()));
                 aa.notifyDataSetChanged();
 
             }
@@ -149,6 +153,8 @@ public class DisplayDrink extends AppCompatActivity {
             //tv2.setText(qty + " " + measure + " of " + ingredient);
             //tv6.setText("Directions: ");
             tv3.setText(msg);
+
+            imageView.setImageResource(displayedDrink.getImageID());
             //tv4.setText(imageID) //THIS SHOULD BE DIFFERENT
 
     }
@@ -181,7 +187,8 @@ public class DisplayDrink extends AppCompatActivity {
         appInfo.sharedString2 = text2;*/
 
         DrinkRecipe displayedDrink = appInfo.savedDrinks.get(mydrink);
-        appInfo.setIngredientsToEdit(displayedDrink.getIngredientList());
+        //appInfo.setIngredientsToEdit(displayedDrink.getIngredientList());
+        appInfo.drinkToEdit = displayedDrink;
 
         // Go to first activity
 

@@ -35,6 +35,7 @@ public class AppInfo {
 
     public RequestQueue queue;
 
+    public DrinkRecipe drinkToEdit;
     public ArrayList<Ingredient> ingredientsToEdit;
 
     public static AppInfo getInstance(Context context) {
@@ -44,6 +45,7 @@ public class AppInfo {
             instance.savedDrinks = new ArrayList<>();
 
             instance.ingredientsToEdit = new ArrayList<>();
+            instance.drinkToEdit = null;
             instance.queue = Volley.newRequestQueue(context);
             SharedPreferences settings = context.getSharedPreferences(MainActivity.MYPREFS, 0);
             instance.sharedString1 = settings.getString(COLOR_NAME1, null);
@@ -84,6 +86,11 @@ public class AppInfo {
         instance.ingredientsToEdit.clear();
         for(Ingredient ingredient : ingredients)
             instance.ingredientsToEdit.add(ingredient);
+    }
+
+    public void clearDrinkToEdit()
+    {
+        instance.drinkToEdit = new DrinkRecipe("", null, "");
     }
 
 }

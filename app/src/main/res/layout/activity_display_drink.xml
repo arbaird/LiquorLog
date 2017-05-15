@@ -27,6 +27,18 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true" />
 
+    <ImageView
+        android:id="@+id/drinkImage"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:src="@drawable/bluesmall"
+
+
+        android:layout_alignTop="@+id/mobileViewDisplay"
+        android:layout_alignLeft="@+id/butt_edit"
+        android:layout_alignStart="@+id/butt_edit"
+        android:layout_marginTop="50dp" />
+
 
     <TextView
         android:id="@+id/textView3"
@@ -35,6 +47,7 @@
         android:layout_alignParentTop="true"
         android:layout_marginTop="250dip"
         android:fontFamily="casual"
+        android:layout_below="@+id/drinkImage"
         android:text="@string/your_list"
         android:textAllCaps="false"></TextView>
 

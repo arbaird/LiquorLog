@@ -23,7 +23,7 @@ public class DrinkRecipe {
         this.name = name;
         this.ingredientList = ingredientList;
         this.msg = msg;
-        this.imageID = R.drawable.ic_launcher;
+        this.imageID = R.drawable.emptysmall;
         drinkAsJSON = new JSONObject();
         this.userMade = userMade;
         setDrinksAsJSON();
@@ -32,11 +32,25 @@ public class DrinkRecipe {
 
     public DrinkRecipe(String name, ArrayList<Ingredient> ingredientList, String msg) {
         this.name = name;
+        if(ingredientList == null)
+            ingredientList = new ArrayList<>();
         this.ingredientList = ingredientList;
         this.msg = msg;
-        this.imageID = R.drawable.ic_launcher;
+        this.imageID = R.drawable.emptysmall;
         drinkAsJSON = new JSONObject();
-        this.userMade = false;
+        this.userMade = true;
+        setDrinksAsJSON();
+    }
+
+    public DrinkRecipe(String name, ArrayList<Ingredient> ingredientList, String msg, int img) {
+        this.name = name;
+        if(ingredientList == null)
+            ingredientList = new ArrayList<>();
+        this.ingredientList = ingredientList;
+        this.msg = msg;
+        drinkAsJSON = new JSONObject();
+        this.userMade = true;
+        this.imageID = img;
         setDrinksAsJSON();
     }
 
@@ -76,8 +90,10 @@ public class DrinkRecipe {
         setDrinksAsJSON();
     }
 
-    public void setImageID(int imageID) {
+    public void setImageID(int imageID)
+    {
         this.imageID = imageID;
+        setDrinksAsJSON();
     }
 
     public void setIngredientList(ArrayList<Ingredient> ingredientList) {
@@ -104,6 +120,7 @@ public class DrinkRecipe {
             drinkAsJSON.put("ingredients", ingredientArray);
             drinkAsJSON.put("msg", msg);
             drinkAsJSON.put("userMade", userMade);
+            drinkAsJSON.put("img", imageID);
             //jArray.put(drinkRecipe);
         }
         catch (Exception e) {

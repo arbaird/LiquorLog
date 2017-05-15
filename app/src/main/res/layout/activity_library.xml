@@ -19,7 +19,28 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@+id/textViewUserDrinks"
+        android:layout_above="@+id/textViewLibraryDrinks"
         />
+
+    <TextView
+        android:id="@+id/textViewLibraryDrinks"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:text="Library Drinks"
+        >
+    </TextView>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/lib_recycler_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/textViewLibraryDrinks"
+
+        />
+
+
 
 
 

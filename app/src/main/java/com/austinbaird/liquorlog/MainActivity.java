@@ -17,6 +17,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.GridView;
 import android.widget.ListView;
 
 
@@ -90,8 +91,7 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         queue = Volley.newRequestQueue(this);
 
-
-        Log.d(logTag, "\u00BC");
+        Log.d(logTag, "OnCreate()");
 
         //registerForContextMenu(contextMenuButton);
         //contextMenuButton = (Button)findViewById(R.id.butt1);
@@ -175,10 +175,10 @@ public class MainActivity extends AppCompatActivity
         SharedPreferences settings = getSharedPreferences(MainActivity.MYPREFS, 0);
         SharedPreferences.Editor editor = settings.edit();
 
-        //editor.putString("drinksAsJSON", null);
-        //editor.commit();
-        //editor.putBoolean("first_time", true);
-        //editor.commit();
+        /*editor.putString("drinksAsJSON", null);
+        editor.commit();
+        editor.putBoolean("first_time", true);
+        editor.commit();*/
 
         if (settings.getBoolean("first_time", true)) {
             //the app is being launched for first time, do something
@@ -348,15 +348,14 @@ public class MainActivity extends AppCompatActivity
     {
         Intent intent = new Intent(MainActivity.this, EditDrinkActivity.class);
         //Log.d(logTag, "rowItems size before going to new activity: " + rowItems.size());
-        appInfo.sharedString1 = null;
-        appInfo.sharedString2 = null;
+        appInfo.drinkToEdit = new DrinkRecipe("", null, "");
         startActivity(intent);
     }
 
     public void goToLibrary(View v)
     {
         Intent intent = new Intent(MainActivity.this, LibraryActivity.class);
-        Log.d(logTag, "GOTOFUCKINGLIBRARY");
+
         //Log.d(logTag, "rowItems size before going to new activity: " + rowItems.size());
         //appInfo.sharedString1 = null;
         //appInfo.sharedString2 = null;
@@ -421,7 +420,9 @@ public class MainActivity extends AppCompatActivity
 
                 String msg = jsonDrinkRecipe.getString("msg");
                 Boolean userMade = jsonDrinkRecipe.getBoolean("userMade");
-                appInfo.savedDrinks.add(new DrinkRecipe(name, ingredients, msg, userMade));
+                int img = jsonDrinkRecipe.getInt("img");
+                appInfo.savedDrinks.add(new DrinkRecipe(name, ingredients, msg, img));
+
             }
 
         }

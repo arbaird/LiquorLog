@@ -27,9 +27,16 @@ public class LibraryActivity extends AppCompatActivity
 {
 
     public ArrayList<DrinkRecipe> databaseDrinks;
-    RecyclerView mRecyclerView;
-    RecyclerView.LayoutManager mLayoutManager;
-    RecyclerView.Adapter mAdapter;
+    RecyclerView userMadeRecyclerView;
+    RecyclerView.LayoutManager userLayoutManager;
+    RecyclerView.Adapter userMadeAdapter;
+
+
+    public ArrayList<DrinkRecipe> libDrinks;
+    RecyclerView libRecyclerView;
+    RecyclerView.Adapter libAdapter;
+    RecyclerView.LayoutManager libLayoutManager;
+    //RecyclerView.Adapter mAdapter;
     //ArrayList<String> alName;
     //ArrayList<Integer> alImage;
 
@@ -47,20 +54,21 @@ public class LibraryActivity extends AppCompatActivity
         databaseDrinks = new ArrayList<>();
 
 
+
         // Calling the RecyclerView
-        mRecyclerView = (RecyclerView) findViewById(R.id.recycler_view);
-        mRecyclerView.setHasFixedSize(false);
+        userMadeRecyclerView = (RecyclerView) findViewById(R.id.recycler_view);
+        userMadeRecyclerView.setHasFixedSize(false);
 
         // The number of Columns
-        mLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
-        mRecyclerView.setLayoutManager(mLayoutManager);
+        userLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
+        userMadeRecyclerView.setLayoutManager(userLayoutManager);
 
-        mAdapter = new HorizontalDrinkAdapter(LibraryActivity.this, databaseDrinks);//databaseDrinks);
-        mRecyclerView.setAdapter(mAdapter);
+        userMadeAdapter = new HorizontalDrinkAdapter(LibraryActivity.this, databaseDrinks);//databaseDrinks);
+        userMadeRecyclerView.setAdapter(userMadeAdapter);
 
 
-        mRecyclerView.addOnItemTouchListener(
-                new RecyclerItemClickListener(this, mRecyclerView, new RecyclerItemClickListener.OnItemClickListener() {
+        userMadeRecyclerView.addOnItemTouchListener(
+                new RecyclerItemClickListener(this, userMadeRecyclerView, new RecyclerItemClickListener.OnItemClickListener() {
                     @Override public void onItemClick(View view, int position) {
                         Log.d(logTag, "You clicked " + position);
                         appInfo.drinkFromLib = databaseDrinks.get(position);
@@ -74,22 +82,44 @@ public class LibraryActivity extends AppCompatActivity
                     }
                 }));
 
-        loadRecipes(null);
+
+        libDrinks = new ArrayList<>();
+
+        libRecyclerView = (RecyclerView) findViewById(R.id.lib_recycler_view);
+        libRecyclerView.setHasFixedSize(false);
+
+        // The number of Columns
+        libLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
+        libRecyclerView.setLayoutManager(libLayoutManager);
+
+        libAdapter = new HorizontalDrinkAdapter(LibraryActivity.this, libDrinks);//databaseDrinks);
+        libRecyclerView.setAdapter(libAdapter);
+
+
+        libRecyclerView.addOnItemTouchListener(
+                new RecyclerItemClickListener(this, userMadeRecyclerView, new RecyclerItemClickListener.OnItemClickListener() {
+                    @Override public void onItemClick(View view, int position) {
+                        Log.d(logTag, "You clicked " + position);
+                        appInfo.drinkFromLib = libDrinks.get(position);
+                        Intent intent = new Intent(LibraryActivity.this, DisplayDrink.class);
+                        intent.putExtra("fromLib", true);
+                        startActivity(intent);
+                    }
+                    @Override public void onItemLongClick(View v, int pos)
+                    {
+                        //nothing
+                    }
+                }));
+
+        loadRecipes(null, "get_userMade_recipes", databaseDrinks, userMadeAdapter);
+        loadRecipes(null, "get_library_recipes", libDrinks, libAdapter);
 
     }
+
     @Override
     protected void onResume()
     {
-
-
         super.onResume();
-
-
-
-
-
-
-
     }
 
 
@@ -97,9 +127,10 @@ public class LibraryActivity extends AppCompatActivity
     /*
     This function prints every recipe in the cloud datastore to the console.
      */
-    public void loadRecipes(View v)
+    public void loadRecipes(View v, String apiMethod, final ArrayList<DrinkRecipe> drinkArrayList, final RecyclerView.Adapter adapter)
     {
-        String url = "https://backendtest-165520.appspot.com/ndb_api/get_recipes";
+
+        String url = "https://backendtest-165520.appspot.com/ndb_api/" + apiMethod;//get_userMade_recipes";
 
         JsonObjectRequest jsObjRequest = new JsonObjectRequest
                 (Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
@@ -111,7 +142,7 @@ public class LibraryActivity extends AppCompatActivity
                         // Ok, let's disassemble a bit the json object.
                         try {
                             JSONArray receivedList = response.getJSONArray("results");
-                            decodeJSON(receivedList);
+                            decodeJSON(receivedList, drinkArrayList, adapter);
 
                         } catch (Exception e) {
                             Log.d(logTag, "Aaauuugh, received bad json: " + e.getStackTrace());
@@ -132,15 +163,14 @@ public class LibraryActivity extends AppCompatActivity
         appInfo.queue.add(jsObjRequest);
     }
 
-    public void decodeJSON(JSONArray jArray)
+    public void decodeJSON(JSONArray jArray, ArrayList<DrinkRecipe> drinkArrayList, RecyclerView.Adapter adapter)
     {
 
         try
         {
             //JSONArray jArray = new JSONArray(drinksAsJSON);
             Log.d(logTag, jArray.toString());
-
-            databaseDrinks.clear();
+            drinkArrayList.clear();
             for(int i = 0; i < jArray.length(); i++)//JSONArray drinkRecipe : jArray)
             {
                 JSONObject jsonDrinkRecipe = jArray.getJSONObject(i);
@@ -157,8 +187,9 @@ public class LibraryActivity extends AppCompatActivity
                     ingredients.add(new Ingredient(qty, measure, ingName));
                 }
 
+                int imgId = Integer.parseInt(jsonDrinkRecipe.getString("imgId"));
                 String msg = jsonDrinkRecipe.getString("msg");
-                databaseDrinks.add(new DrinkRecipe(name, ingredients, msg));
+                drinkArrayList.add(new DrinkRecipe(name, ingredients, msg, imgId));
             }
 
         }
@@ -167,6 +198,6 @@ public class LibraryActivity extends AppCompatActivity
             Log.d(logTag, "JSON loading failed");
         }
 
-        mAdapter.notifyDataSetChanged();
+        adapter.notifyDataSetChanged();
     }
 }
