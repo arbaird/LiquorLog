@@ -13,6 +13,19 @@ import android.util.Log;
  */
 public class AppInfo {
 
+
+    int drinksIcon[] = { R.drawable.bluesmall, R.drawable.blueicesmall, R.drawable.blueumbrellasmall, R.drawable.bluefruitsmall,
+            R.drawable.blueiceumbrellasmall, R.drawable.blueicefruitsmall, R.drawable.blueumbrellafruitsmall, R.drawable.blueiceumbrellafruitsmall,
+            R.drawable.darkbrownsmall, R.drawable.darkbrownicesmall, R.drawable.darkbrownumbrellasmall, R.drawable.darkbrownfruitsmall,
+            R.drawable.darkbrowniceumbrellasmall, R.drawable.darkbrownicefruitsmall, R.drawable.darkbrownumbrellafruitsmall, R.drawable.darkbrowniceumbrellafruitsmall,
+            R.drawable.goldsmall, R.drawable.goldicesmall, R.drawable.goldumbrellasmall, R.drawable.goldfruitsmall,
+            R.drawable.goldiceumbrellasmall, R.drawable.goldicefruitsmall, R.drawable.goldumbrellafruitsmall, R.drawable.goldiceumbrellafruitsmall,
+            R.drawable.greensmall, R.drawable.greenicesmall, R.drawable.greenumbrellasmall, R.drawable.greenfruitsmall,
+            R.drawable.greeniceumbrellasmall, R.drawable.greenicefruitsmall, R.drawable.greenumbrellafruitsmall, R.drawable.greeniceumbrellafruitsmall,
+            R.drawable.redsmall, R.drawable.redicesmall, R.drawable.redumbrellasmall, R.drawable.redfruitsmall,
+            R.drawable.rediceumbrellasmall, R.drawable.redicefruitsmall, R.drawable.redumbrellafruitsmall, R.drawable.rediceumbrellafruitsmall};
+
+
     private static AppInfo instance = null;
     private static final String COLOR_NAME1 = "color1";
     private static final String COLOR_NAME2 = "color2";

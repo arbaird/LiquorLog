@@ -19,11 +19,11 @@ public class DrinkRecipe {
 
     public String logTag = "";
 
-    public DrinkRecipe(String name, ArrayList<Ingredient> ingredientList, String msg, boolean userMade) {
+    public DrinkRecipe(String name, ArrayList<Ingredient> ingredientList, String msg, boolean userMade, int img) {
         this.name = name;
         this.ingredientList = ingredientList;
         this.msg = msg;
-        this.imageID = R.drawable.emptysmall;
+        this.imageID = img;
         drinkAsJSON = new JSONObject();
         this.userMade = userMade;
         setDrinksAsJSON();

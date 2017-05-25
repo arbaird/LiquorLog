@@ -220,67 +220,7 @@ public class MainActivity extends AppCompatActivity
 
     }
 
-   /* @Override
-    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
-        super.onCreateContextMenu(menu, v, menuInfo);
-        getMenuInflater().inflate(R.menu.main_menu,menu);
-    }*/
 
-    /*private void addOnClickListener()
-    {
-        contextMenuButton.setOnItemClickListener(new AdapterView.OnItemClickListener()
-        {
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id)
-            {
-                view.showContextMenu();
-            }
-        })
-    }
-
-    /*@Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-
-        MenuInflater menuInflater = getMenuInflater();
-        menuInflater.inflate(R.menu.menu_main,menu);
-        return super.onCreateOptionsMenu(menu);
-
-    }*/
-
-    /*@Override
-    public boolean onContextItemSelected(MenuItem item) {
-
-        switch (item.getItemId()){
-            case R.id.item_option1:
-                String toastMsg1 = "Creating new drink";
-                Toast.makeText(getApplicationContext(),toastMsg1,Toast.LENGTH_SHORT).show();
-                //addDrink(null);
-                goToEdit(null);
-                break;
-
-            case R.id.item_option2:
-                String toastMsg2 = "Adding from Library ";
-                Toast.makeText(getApplicationContext(),toastMsg2,Toast.LENGTH_SHORT).show();
-                break;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
-
-    /*@Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-
-        switch (item.getItemId()){
-            case R.id.item_option1:
-                Toast.makeText(getApplicationContext(),item.toString(),Toast.LENGTH_SHORT).show();
-                break;
-
-            case R.id.item_option2:
-                Toast.makeText(getApplicationContext(),item.toString(),Toast.LENGTH_SHORT).show();
-                break;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }*/
 
 
     @Override

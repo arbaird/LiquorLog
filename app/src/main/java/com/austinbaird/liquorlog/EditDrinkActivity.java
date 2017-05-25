@@ -208,6 +208,14 @@ public class EditDrinkActivity extends AppCompatActivity
 
         rowItems.add(new Ingredient(qty, measure, name));
         adapter.notifyDataSetChanged();
+
+        qtySpinner.setSelection(0);
+        fractionSpinner.setSelection(0);
+        measureSpinner.setSelection(0);
+
+        editIngredientName.setText("");
+
+
         //adapter.add();
     }
 
@@ -310,7 +318,7 @@ public class EditDrinkActivity extends AppCompatActivity
 
 
         JsonObjectRequest jsobj = new JsonObjectRequest(
-                "https://backendtest-165520.appspot.com/ndb_api/add_recipe", obj,/*new JSONObject(params),*/
+                "https://backendtest-165520.appspot.com/ndb_api/add_recipe_fancy", obj,/*new JSONObject(params),*/
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response)
@@ -320,7 +328,7 @@ public class EditDrinkActivity extends AppCompatActivity
                         {
 
                             String responseString = response.getString("result");
-                            //detailView.setText(responseString);
+                            Log.d(logTag,responseString );
                         }
                         catch(Exception e)
                         {
@@ -471,8 +479,10 @@ public class EditDrinkActivity extends AppCompatActivity
                         ingredients.add(new Ingredient(ingInfo.get("qty"), ingInfo.get("measure"), ingInfo.get("ingredient")));
                         ings = br.readLine();
                     }
+                    int id = Integer.parseInt(br.readLine());
                     String msg = br.readLine();
-                    recipes.add(new DrinkRecipe(drinkName, ingredients, msg, false));
+
+                    recipes.add(new DrinkRecipe(drinkName, ingredients, msg, false, appInfo.drinksIcon[id]));
                     lineNum++;
                     br.readLine(); // clear newline
 

@@ -20,7 +20,8 @@
         </activity>
         <activity android:name=".EditDrinkActivity" android:windowSoftInputMode="adjustPan"/>
         <activity android:name=".DisplayDrink" />
-        <activity android:name=".LibraryActivity" />
+        <activity android:name=".LibraryActivity" android:windowSoftInputMode="adjustPan"
+            />
         <activity android:name=".EditDrinkImage">
 
         </activity>

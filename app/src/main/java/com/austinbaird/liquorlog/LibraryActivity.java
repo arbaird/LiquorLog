@@ -2,11 +2,12 @@ package com.austinbaird.liquorlog;
 
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ListView;
+import android.widget.SearchView;
+import android.widget.ImageView;
 
 import com.android.volley.Request;
 import com.android.volley.Response;
@@ -28,90 +29,86 @@ public class LibraryActivity extends AppCompatActivity
 
     public ArrayList<DrinkRecipe> databaseDrinks;
     RecyclerView userMadeRecyclerView;
-    RecyclerView.LayoutManager userLayoutManager;
     RecyclerView.Adapter userMadeAdapter;
 
+    public ArrayList<DrinkRecipe> searchDrinks;
+    RecyclerView searchRecyclerView;
+    RecyclerView.Adapter searchAdapter;
 
     public ArrayList<DrinkRecipe> libDrinks;
     RecyclerView libRecyclerView;
     RecyclerView.Adapter libAdapter;
-    RecyclerView.LayoutManager libLayoutManager;
-    //RecyclerView.Adapter mAdapter;
-    //ArrayList<String> alName;
-    //ArrayList<Integer> alImage;
+
+    SearchView searchView;
+
 
     public String logTag = "Library";
     AppInfo appInfo;
-    CustomListAdapter adapter; //used to make viewable items on screem from data in rowItems
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_library);
-        appInfo = AppInfo.getInstance(this);
+            super.onCreate(savedInstanceState);
+            setContentView(R.layout.activity_library);
+            appInfo = AppInfo.getInstance(this);
 
+            //Toolbar myToolbar = (Toolbar) findViewById(R.id.toolbar);
+            //setSupportActionBar(myToolbar);
 
-        databaseDrinks = new ArrayList<>();
+            searchView=(SearchView) findViewById(R.id.searchView);
+            //searchView.setQueryHint("Drink Name or Ingredient");
 
+            searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
 
+                @Override
+                public boolean onQueryTextSubmit(String query) {
+                    Toast.makeText(getBaseContext(), query, Toast.LENGTH_LONG).show();
+                    search(query, null, null);
+                    searchView.clearFocus();
+                    return true;
+                }
 
-        // Calling the RecyclerView
-        userMadeRecyclerView = (RecyclerView) findViewById(R.id.recycler_view);
-        userMadeRecyclerView.setHasFixedSize(false);
+                @Override
+                public boolean onQueryTextChange(String newText) {
+                    //Toast.makeText(getBaseContext(), newText, Toast.LENGTH_LONG).show();
 
-        // The number of Columns
-        userLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
-        userMadeRecyclerView.setLayoutManager(userLayoutManager);
+                    return false;
+                }
+            });
+         // Catch event on [x] button inside search view
+             int searchCloseButtonId = searchView.getContext().getResources()
+                .getIdentifier("android:id/search_close_btn", null, null);
+                ImageView closeButton = (ImageView) this.searchView.findViewById(searchCloseButtonId);
+                // Set on click listener
+                closeButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v)
+                {
+                    searchView.onActionViewCollapsed();
+                    searchView.setQuery("", false);
+                    searchView.clearFocus();
 
-        userMadeAdapter = new HorizontalDrinkAdapter(LibraryActivity.this, databaseDrinks);//databaseDrinks);
-        userMadeRecyclerView.setAdapter(userMadeAdapter);
-
-
-        userMadeRecyclerView.addOnItemTouchListener(
-                new RecyclerItemClickListener(this, userMadeRecyclerView, new RecyclerItemClickListener.OnItemClickListener() {
-                    @Override public void onItemClick(View view, int position) {
-                        Log.d(logTag, "You clicked " + position);
-                        appInfo.drinkFromLib = databaseDrinks.get(position);
-                        Intent intent = new Intent(LibraryActivity.this, DisplayDrink.class);
-                        intent.putExtra("fromLib", true);
-                        startActivity(intent);
-                    }
-                    @Override public void onItemLongClick(View v, int pos)
+                    if(searchRecyclerView != null)
                     {
-                        //nothing
+
+                        searchDrinks.clear();
+                        searchAdapter.notifyDataSetChanged();
+                        searchRecyclerView.setVisibility(View.GONE);
+
+                        userMadeRecyclerView.setVisibility(View.VISIBLE);
+                        libRecyclerView.setVisibility(View.VISIBLE);
                     }
-                }));
+                }
+            });
 
 
-        libDrinks = new ArrayList<>();
 
-        libRecyclerView = (RecyclerView) findViewById(R.id.lib_recycler_view);
-        libRecyclerView.setHasFixedSize(false);
+        initRecycleViews();
 
-        // The number of Columns
-        libLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
-        libRecyclerView.setLayoutManager(libLayoutManager);
-
-        libAdapter = new HorizontalDrinkAdapter(LibraryActivity.this, libDrinks);//databaseDrinks);
-        libRecyclerView.setAdapter(libAdapter);
+        Log.d(logTag, userMadeAdapter.toString());
+        Log.d(logTag, libAdapter.toString());
 
 
-        libRecyclerView.addOnItemTouchListener(
-                new RecyclerItemClickListener(this, userMadeRecyclerView, new RecyclerItemClickListener.OnItemClickListener() {
-                    @Override public void onItemClick(View view, int position) {
-                        Log.d(logTag, "You clicked " + position);
-                        appInfo.drinkFromLib = libDrinks.get(position);
-                        Intent intent = new Intent(LibraryActivity.this, DisplayDrink.class);
-                        intent.putExtra("fromLib", true);
-                        startActivity(intent);
-                    }
-                    @Override public void onItemLongClick(View v, int pos)
-                    {
-                        //nothing
-                    }
-                }));
-
-        loadRecipes(null, "get_userMade_recipes", databaseDrinks, userMadeAdapter);
+        loadRecipes(null, /*"get_userMade_recipes"*/"get_recipes_fancy", databaseDrinks, userMadeAdapter);
         loadRecipes(null, "get_library_recipes", libDrinks, libAdapter);
 
     }
@@ -163,6 +160,82 @@ public class LibraryActivity extends AppCompatActivity
         appInfo.queue.add(jsObjRequest);
     }
 
+    public void search(String q, final ArrayList<DrinkRecipe> drinkArrayList, final RecyclerView.Adapter adapter)
+    {
+
+        JSONObject obj = new JSONObject();
+        try
+        {
+            obj.put("q",q);
+
+        }
+        catch(Exception e)
+        {
+
+        }
+
+        if (searchRecyclerView == null)
+        {
+            searchDrinks = new ArrayList<>();
+            searchRecyclerView = (RecyclerView) findViewById(R.id.search_recycler_view);
+            searchRecyclerView.setHasFixedSize(false);
+
+            RecyclerView.LayoutManager userLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
+            searchRecyclerView.setLayoutManager(userLayoutManager);
+
+            searchAdapter = new HorizontalDrinkAdapter(LibraryActivity.this, searchDrinks);//databaseDrinks);
+            searchRecyclerView.setAdapter(searchAdapter);
+            searchRecyclerView.addOnItemTouchListener(
+                    new RecyclerItemClickListener(this, userMadeRecyclerView, new drinkListener(searchDrinks)));
+        }
+
+
+
+        JsonObjectRequest jsobj = new JsonObjectRequest(
+                "https://backendtest-165520.appspot.com/ndb_api/search", obj,/*new JSONObject(params),*/
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response)
+                    {
+                        Log.d(logTag, "Received: " + response.toString());
+                        try
+                        {
+                            userMadeRecyclerView.setVisibility(View.GONE);
+                            libRecyclerView.setVisibility(View.GONE);
+                            searchRecyclerView.setVisibility(View.VISIBLE);
+
+                            String responseString = response.getString("results");
+                            Log.d(logTag,responseString );
+
+                            JSONArray receivedList = response.getJSONArray("results");
+                            decodeJSON(receivedList, searchDrinks, searchAdapter);
+
+                        }
+                        catch(Exception e)
+                        {
+                            //mapped value was not a string, didn't exist, etc
+                            Log.d(logTag, "Couldn't get mapped value for key 'results' ");
+                            //detailView.setText("Couldn't get mapped value for key 'result' ");
+                        }
+
+
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error)
+            {
+                //no error respsonse handling
+            }
+        });
+
+
+        appInfo.queue.add(jsobj);
+
+
+    }
+
+
+
     public void decodeJSON(JSONArray jArray, ArrayList<DrinkRecipe> drinkArrayList, RecyclerView.Adapter adapter)
     {
 
@@ -200,4 +273,71 @@ public class LibraryActivity extends AppCompatActivity
 
         adapter.notifyDataSetChanged();
     }
+
+    public void initRecycleViews()
+    {
+        databaseDrinks = new ArrayList<>();
+
+        // Calling the RecyclerView
+        userMadeRecyclerView = (RecyclerView) findViewById(R.id.recycler_view);
+        userMadeRecyclerView.setHasFixedSize(false);
+
+        // The number of Columns
+        RecyclerView.LayoutManager userLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
+        userMadeRecyclerView.setLayoutManager(userLayoutManager);
+
+        userMadeAdapter = new HorizontalDrinkAdapter(LibraryActivity.this, databaseDrinks);//databaseDrinks);
+        userMadeRecyclerView.setAdapter(userMadeAdapter);
+
+
+        userMadeRecyclerView.addOnItemTouchListener(
+                new RecyclerItemClickListener(this, userMadeRecyclerView, new drinkListener(databaseDrinks)));
+
+
+
+        libDrinks = new ArrayList<>();
+
+        libRecyclerView = (RecyclerView) findViewById(R.id.lib_recycler_view);
+        libRecyclerView.setHasFixedSize(false);
+
+        // The number of Columns
+        RecyclerView.LayoutManager  libLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
+        libRecyclerView.setLayoutManager(libLayoutManager);
+
+        libAdapter = new HorizontalDrinkAdapter(LibraryActivity.this, libDrinks);//databaseDrinks);
+        libRecyclerView.setAdapter(libAdapter);
+
+
+        libRecyclerView.addOnItemTouchListener(
+                new RecyclerItemClickListener(this, userMadeRecyclerView, new drinkListener(libDrinks)));
+    }
+
+
+
+
+
+    class drinkListener implements RecyclerItemClickListener.OnItemClickListener
+    {
+        ArrayList<DrinkRecipe> drinks;
+        drinkListener(ArrayList<DrinkRecipe> drinks)
+        {
+            this.drinks = drinks;
+        }
+
+        @Override public void onItemClick(View view, int position) {
+            //Log.d(logTag, "You clicked " + position);
+            appInfo.drinkFromLib = drinks.get(position);
+            Intent intent = new Intent(LibraryActivity.this, DisplayDrink.class);
+            intent.putExtra("fromLib", true);
+            startActivity(intent);
+        }
+        @Override public void onItemLongClick(View v, int pos)
+        {
+            //nothing
+        }
+    }
+
+
+
+
 }
