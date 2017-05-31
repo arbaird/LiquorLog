@@ -2,10 +2,17 @@ package com.austinbaird.liquorlog;
 
 import java.io.*;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.media.Image;
+import android.media.MediaPlayer;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.Selection;
+import android.text.TextWatcher;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -27,8 +34,10 @@ import java.util.Map;
 import android.view.View;
 import android.util.Log;
 import android.widget.ArrayAdapter;
+import android.view.View.OnClickListener;
 
 import android.widget.FrameLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.Spinner;
 
@@ -40,11 +49,20 @@ import org.json.JSONObject;
 import static com.austinbaird.liquorlog.R.id.editDrinkName;
 import static com.austinbaird.liquorlog.R.id.imageViewDrink;
 import static com.austinbaird.liquorlog.R.id.messageEnter;
+import static com.austinbaird.liquorlog.R.id.textViewCharCount1;
+import static com.austinbaird.liquorlog.R.id.textViewCharCount2;
+import static com.austinbaird.liquorlog.R.id.textViewVharCount3;
 
 public class EditDrinkActivity extends AppCompatActivity
 {
-
     RequestQueue queue;
+
+    MediaPlayer mp1;
+    MediaPlayer mp3;
+    MediaPlayer mp9;
+    MediaPlayer mp7;
+    MediaPlayer mp8;
+    MediaPlayer mp10;
 
     ArrayList<Ingredient> rowItems; //the row items that are displayed in the list
     ScrollerListAdapter adapter; //used to make viewable items on screem from data in rowItems
@@ -54,6 +72,9 @@ public class EditDrinkActivity extends AppCompatActivity
     Spinner fractionSpinner;
     EditText editName;
     EditText editMsg;
+    private TextView charCount;
+    private TextView charCountIng;
+    private TextView charCountMsg;
 
     EditText editIngredientName;
 
@@ -76,6 +97,71 @@ public class EditDrinkActivity extends AppCompatActivity
         setContentView(R.layout.activity_edit_drink);
         appInfo = AppInfo.getInstance(this);
 
+        mp1 = MediaPlayer.create(this, R.raw.zeldafanfare);
+        mp10 = MediaPlayer.create(this, R.raw.backbutton);
+
+        //Button one = (Button)this.findViewById(R.id.btnSaveDrink);
+        //final MediaPlayer mp1 = MediaPlayer.create(this, R.raw.zeldafanfare);
+        //one.setOnClickListener(new OnClickListener(){
+
+            //public void onClick(View v) {
+                //mp1.start();
+                //saveDrink(null);
+            //}
+        //});
+
+        mp9 = MediaPlayer.create(this, R.raw.cantsave);
+
+        Button two = (Button)this.findViewById(R.id.btnAddIngredient);
+        final MediaPlayer mp2 = MediaPlayer.create(this, R.raw.zeldamenuequip);
+        mp3 = MediaPlayer.create(this, R.raw.zeldamenuno);
+        two.setOnClickListener(new OnClickListener(){
+
+            public void onClick(View v) {
+                String name = (String)editIngredientName.getText().toString();
+                if(name.trim().equals(""))
+                {
+                    String toastMsg = "Specify ingredient name!";
+                    Toast toast= Toast.makeText(getBaseContext() ,toastMsg,Toast.LENGTH_SHORT);
+                    toast.show();
+                    mp3.start();
+                }
+                else
+                {
+                    String toastMsg = "Ingredient Added!";
+                    Toast toast= Toast.makeText(getBaseContext() ,toastMsg,Toast.LENGTH_SHORT);
+                    toast.show();
+                    mp2.start();
+                    add(null);
+                }
+            }
+        });
+
+        Button three = (Button)this.findViewById(R.id.EditImageButton);
+        final MediaPlayer mp4 = MediaPlayer.create(this, R.raw.zeldaimageopen);
+        three.setOnClickListener(new OnClickListener(){
+
+            public void onClick(View v) {
+                mp4.start();
+                editDrinkImage(null);
+            }
+        });
+
+        Button four = (Button)this.findViewById(R.id.btnDeleteDrink);
+        final MediaPlayer mp6 = MediaPlayer.create(this, R.raw.zeldadelete1);
+        four.setOnClickListener(new OnClickListener(){
+
+            public void onClick(View v) {
+                mp6.start();
+                deleteDrink(null);
+            }
+        });
+
+        mp7 = MediaPlayer.create(this, R.raw.zeldadelete2);
+        mp8 = MediaPlayer.create(this, R.raw.zeldacancel);
+
+        //mp = MediaPlayer.create(EditDrinkActivity.this, R.raw.zeldafanfare);
+
         //addPreDefined(); //uncomment to add library dirnks to data base. make sure to clear these first before re adding
 
         drinkName = "";
@@ -94,6 +180,9 @@ public class EditDrinkActivity extends AppCompatActivity
         //listView.addFooterView(footerLayout);
 
 
+
+        final MediaPlayer mp5 = MediaPlayer.create(this, R.raw.zeldaselecting); // Didn't use because of weird glitch when starting activity
+
         qtySpinner = (Spinner) findViewById(R.id.qtySpinner);
         fractionSpinner = (Spinner) findViewById(R.id.fractionSpinner);
         // Spinner click listener
@@ -106,7 +195,31 @@ public class EditDrinkActivity extends AppCompatActivity
                 String item = parentView.getItemAtPosition(pos).toString();
 
                 // Showing selected spinner item
-                Toast.makeText(parentView.getContext(), "Selected: " + item, Toast.LENGTH_LONG).show();
+                //Toast.makeText(parentView.getContext(), "Selected: " + item, Toast.LENGTH_LONG).show();
+                //MediaPlayer mp5 = MediaPlayer.create(EditDrinkActivity.this, R.raw.zeldaselecting);
+                //mp5.start();
+
+
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> parentView) {
+                //nothing to do
+            }
+
+        });
+
+        fractionSpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int pos, long id)
+            {
+
+                // On selecting a spinner item
+                String item = parentView.getItemAtPosition(pos).toString();
+
+                // Showing selected spinner item
+                //Toast.makeText(parentView.getContext(), "Selected: " + item, Toast.LENGTH_LONG).show();
+                //MediaPlayer mp5 = MediaPlayer.create(EditDrinkActivity.this, R.raw.zeldaselecting);
+                //mp5.start();
 
 
             }
@@ -136,6 +249,27 @@ public class EditDrinkActivity extends AppCompatActivity
 
 
         measureSpinner = (Spinner) findViewById(R.id.measureSpinner);
+        measureSpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int pos, long id)
+            {
+
+                // On selecting a spinner item
+                String item = parentView.getItemAtPosition(pos).toString();
+
+                // Showing selected spinner item
+                //Toast.makeText(parentView.getContext(), "Selected: " + item, Toast.LENGTH_LONG).show();
+                //MediaPlayer mp5 = MediaPlayer.create(EditDrinkActivity.this, R.raw.zeldaselecting);
+                //mp5.start();
+
+
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> parentView) {
+                //nothing to do
+            }
+
+        });
 
 
 
@@ -143,8 +277,148 @@ public class EditDrinkActivity extends AppCompatActivity
 
         editName = (EditText) findViewById(editDrinkName);
         editMsg = (EditText)findViewById(messageEnter);
-
         editIngredientName = (EditText)findViewById(R.id.ingredientEdit);
+
+        charCount = (TextView) findViewById(textViewCharCount1);
+        charCountIng = (TextView) findViewById(textViewCharCount2);
+        charCountMsg = (TextView) findViewById(textViewVharCount3);
+
+        final TextWatcher txwatcher1 = new TextWatcher() {
+            @Override
+            public void afterTextChanged(Editable arg0)
+            {
+                if(editName.isFocused() && editName.getText().toString().trim().length() > 44){
+                    editName.setText(arg0.toString().substring(0, 44));
+                    editName.setSelection(arg0.length()-1);
+                    mp3.start();
+                    Toast.makeText(EditDrinkActivity.this, "Maximum number of characters reached!", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void beforeTextChanged(CharSequence arg0, int arg1, int arg2, int arg3){}
+
+            @Override
+            public void onTextChanged(CharSequence arg0, int arg1, int arg2, int arg3)
+            {
+                //charCount.setText(44 -   arg0.toString().length());
+                if(editName.isFocused())
+                {
+                    charCount.setVisibility(View.VISIBLE);
+                    charCount.setText("Chars = " + (String.valueOf(44 - arg0.length())));
+                    if(arg0.length() > 34 && arg0.length() != 44) // Less than 10
+                    {
+                        charCount.setTextColor(Color.MAGENTA);
+                    }
+                    else if(arg0.length() == 44) //Equal to 0
+                    {
+                        charCount.setTextColor(Color.RED);
+                    }
+                    else // 10-44
+                    {
+                        charCount.setTextColor(Color.BLUE);
+                    }
+                }
+                else if(editMsg.isFocused())
+                {
+                    charCount.setVisibility(View.VISIBLE);
+                    charCount.setText("Chars = " + (String.valueOf(100 - arg0.length())));
+                    if(arg0.length() > 90 && arg0.length() != 100) // Less than 10
+                    {
+                        charCount.setTextColor(Color.MAGENTA);
+                    }
+                    else if(arg0.length() == 100) //Equal to 0
+                    {
+                        charCount.setTextColor(Color.RED);
+                    }
+                    else // 10-44
+                    {
+                        charCount.setTextColor(Color.BLUE);
+                    }
+                }
+                //else if(etPassword.isFocused() && etPassword.getText().length() == 10)
+                //Toast.makeText(MyActivity.this, "The password must be at most 10 characters!" , Toast.LENGTH_SHORT).show();
+            }
+        };
+
+        final TextWatcher txwatcher2 = new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence arg0, int start, int before, int count) {
+                if (editIngredientName.isFocused()) {
+                    charCountIng.setVisibility(View.VISIBLE);
+                    charCountIng.setText("Chars = " + (String.valueOf(30 - arg0.length())));
+                    if (arg0.length() > 25 && arg0.length() != 30) // Less than 5
+                    {
+                        charCountIng.setTextColor(Color.MAGENTA);
+                    } else if (arg0.length() == 30) //Equal to 0
+                    {
+                        charCountIng.setTextColor(Color.RED);
+                    } else // 5-60
+                    {
+                        charCountIng.setTextColor(Color.BLUE);
+                    }
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable arg0) {
+                if (editIngredientName.isFocused() && editIngredientName.getText().toString().trim().length() > 30) {
+                    editIngredientName.setText(arg0.toString().substring(0, 30));
+                    editIngredientName.setSelection(arg0.length() - 1);
+                    mp3.start();
+                    Toast.makeText(EditDrinkActivity.this, "Maximum number of characters reached!", Toast.LENGTH_SHORT).show();
+                }
+            }
+        };
+
+        final TextWatcher txwatcher3 = new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence arg0, int start, int before, int count) {
+                if (editMsg.isFocused()) {
+                    charCountMsg.setVisibility(View.VISIBLE);
+                    charCountMsg.setText("Chars = " + (String.valueOf(300 - arg0.length())));
+                    if (arg0.length() > 200 && arg0.length() != 300) // Less than 100
+                    {
+                        charCountMsg.setTextColor(Color.MAGENTA);
+                    } else if (arg0.length() == 300) //Equal to 0
+                    {
+                        charCountMsg.setTextColor(Color.RED);
+                    } else // 200-300
+                    {
+                        charCountMsg.setTextColor(Color.BLUE);
+                    }
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable arg0) {
+                if (editMsg.isFocused() && editMsg.getText().toString().trim().length() > 300) {
+                    editMsg.setText(arg0.toString().substring(0, 300));
+                    editMsg.setSelection(arg0.length() - 1);
+                    mp3.start();
+                    Toast.makeText(EditDrinkActivity.this, "Maximum number of characters reached!", Toast.LENGTH_SHORT).show();
+                }
+            }
+        };
+
+        /*if(!(editName.isFocused()))
+        {
+            charCount.setVisibility(View.INVISIBLE);
+        }*/
+
+        editName.addTextChangedListener(txwatcher1);
+        editMsg.addTextChangedListener(txwatcher3);
+        editIngredientName.addTextChangedListener(txwatcher2);
 
         editName.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             public void onFocusChange(View v, boolean hasFocus) {
@@ -161,9 +435,56 @@ public class EditDrinkActivity extends AppCompatActivity
 
     }
 
+    @Override
+    protected void onResume() {
+
+        EditText editName = (EditText) findViewById(editDrinkName);
+
+        editName.setText(appInfo.drinkToEdit.getName() ); //sharedString1);
+
+        //TextView charCountName = (TextView) findViewById(textViewCharCount1);
+        //charCountName.setText(namePass);
+
+        EditText editMsg = (EditText) findViewById(messageEnter);
+
+        editMsg.setText(appInfo.drinkToEdit.getMsg());
+
+        image = appInfo.drinkToEdit.getImageID();
+
+        Bundle extras = getIntent().getExtras();
+
+        if(extras != null)
+        {
+            //image = extras.getInt("imageId");
+            drinkPos = extras.getInt("drinkPosition");
+            alreadyCreated = extras.getBoolean("alreadyCreated");
+            Log.d(logTag, "editing already created?" + alreadyCreated);
+        }
+        if(appInfo.drinkToEdit.getIngredientList() != null)
+        {
+            //for(int i = 0; i < appInfo.ingredientsToEdit.size(); i++)
+            rowItems.clear();
+            for(Ingredient ingredient : appInfo.drinkToEdit.getIngredientList())
+            {
+
+                rowItems.add(new Ingredient(ingredient.getQty(), ingredient.getMeasure(), ingredient.getIngredient()));
+
+            }
+
+
+
+            adapter.notifyDataSetChanged();
+        }
+
+        ImageView editImage = (ImageView) findViewById(imageViewDrink);
+        editImage.setImageResource(image);
+
+        super.onResume();
+    }
+
     public void editDrinkImage(View v)
     {
-        String toastMsg = "Editing drink";
+        String toastMsg = "Editing Drink Image";
         Toast toast= Toast.makeText(getBaseContext(),toastMsg,Toast.LENGTH_SHORT);
         toast.show();
         Intent intent = new Intent(EditDrinkActivity.this, EditDrinkImage.class);
@@ -221,11 +542,6 @@ public class EditDrinkActivity extends AppCompatActivity
 
     public void saveDrink(View v)
     {
-        //remove focus from edit texts so that text in them is saved
-        /*final ListView listView = (ListView) findViewById(R.id.mobile_list);
-        listView.requestFocus();*/
-
-
         EditText editMsg = (EditText)findViewById(messageEnter);
         msg = editMsg.getText().toString();
 
@@ -242,52 +558,64 @@ public class EditDrinkActivity extends AppCompatActivity
         {
             Log.d(logTag, drink.getQty() + " " + drink.getMeasure() + " " + drink.getIngredient());
             ingredients.add(drink);
-
         }
-        DrinkRecipe recipe;
-        if(alreadyCreated)
+
+        if(msg.isEmpty() || drinkName.isEmpty() || ingredients.size() == 0 || image == R.drawable.emptysmall)
         {
-            recipe = appInfo.savedDrinks.get(drinkPos);
-            recipe.setName(drinkName);
-            recipe.setIngredientList(ingredients);
-            recipe.setMsg(msg);
-            recipe.setImageID(image);
+            //Toast.makeText(EditDrinkActivity.this, editName.getText().toString(), Toast.LENGTH_SHORT).show();
+            mp9.start();
+            Toast.makeText(EditDrinkActivity.this, "Drink Invalid! Please provide a Drink Name, Ingredient, Message/Procedure, and Drink Image", Toast.LENGTH_LONG).show();
+            return;
         }
         else
         {
-            recipe = new DrinkRecipe(drinkName, ingredients, msg);
-            recipe.setImageID(image);
-            appInfo.addDrink(recipe);
+            mp1.start();
+            DrinkRecipe recipe;
+            if(alreadyCreated)
+            {
+                recipe = appInfo.savedDrinks.get(drinkPos);
+                recipe.setName(drinkName);
+                recipe.setIngredientList(ingredients);
+                recipe.setMsg(msg);
+                recipe.setImageID(image);
+            }
+            else
+            {
+                recipe = new DrinkRecipe(drinkName, ingredients, msg);
+                recipe.setImageID(image);
+                appInfo.addDrink(recipe);
+            }
+
+            Log.d(logTag, "From edit");
+            for(DrinkRecipe d : appInfo.savedDrinks)
+            {
+                Log.d(logTag, d.getName());
+            }
+
+            addDrinkToNDB(null, recipe);
+
+            EditText edv1 = (EditText) findViewById(editDrinkName);
+            String text1 = edv1.getText().toString();
+            appInfo.setColor1(text1);
+
+            EditText edv2 = (EditText) findViewById(messageEnter);
+            String text2 = edv2.getText().toString();
+            appInfo.setColor2(text2);
+
+            appInfo.drinkToEdit = new DrinkRecipe("",null,"");
+
+            saveDrinksAsJSON();
+
+            String toastMsg = "Drink Saved!";
+            Toast toast= Toast.makeText(getBaseContext() ,toastMsg,Toast.LENGTH_SHORT);
+            toast.show();
+            Intent intent = new Intent(EditDrinkActivity.this, MainActivity.class);
+            //intent.putExtra("alreadyCreated", true); //setFlag that drink being edited has already been created
+            //intent.putExtra("drinkPosition", mydrink);
+            intent.putExtra("drinkAdded", true);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(intent);
         }
-
-        Log.d(logTag, "From edit");
-        for(DrinkRecipe d : appInfo.savedDrinks)
-        {
-            Log.d(logTag, d.getName());
-        }
-
-        addDrinkToNDB(null, recipe);
-
-        EditText edv1 = (EditText) findViewById(editDrinkName);
-        String text1 = edv1.getText().toString();
-        appInfo.setColor1(text1);
-
-        EditText edv2 = (EditText) findViewById(messageEnter);
-        String text2 = edv2.getText().toString();
-        appInfo.setColor2(text2);
-
-        appInfo.drinkToEdit = new DrinkRecipe("",null,"");
-
-        saveDrinksAsJSON();
-
-        String toastMsg = "Drink Saved";
-        Toast toast= Toast.makeText(getBaseContext() ,toastMsg,Toast.LENGTH_SHORT);
-        toast.show();
-        Intent intent = new Intent(EditDrinkActivity.this, MainActivity.class);
-        intent.putExtra("drinkAdded", true);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        startActivity(intent);
-
     }
 
     public void addDrinkToNDB(View v, DrinkRecipe recipe)
@@ -362,62 +690,39 @@ public class EditDrinkActivity extends AppCompatActivity
 
     public void deleteDrink(View v)
     {
-        if(alreadyCreated)
-        {
-            appInfo.savedDrinks.remove(drinkPos);
-        }
-
-        Intent intent = new Intent(EditDrinkActivity.this, MainActivity.class);
-        appInfo.sharedString1 = null;
-        appInfo.sharedString2 = null;
-
-        saveDrinksAsJSON();
-
-        startActivity(intent);
-    }
-
-    @Override
-    protected void onResume() {
-
-        EditText editName = (EditText) findViewById(editDrinkName);
-
-        editName.setText(appInfo.drinkToEdit.getName() ); //sharedString1);
-
-        EditText editMsg = (EditText) findViewById(messageEnter);
-
-        editMsg.setText(appInfo.drinkToEdit.getMsg());
-
-        image = appInfo.drinkToEdit.getImageID();
-
-        Bundle extras = getIntent().getExtras();
-
-        if(extras != null)
-        {
-            //image = extras.getInt("imageId");
-            drinkPos = extras.getInt("drinkPosition");
-            alreadyCreated = extras.getBoolean("alreadyCreated");
-            Log.d(logTag, "editing already created?" + alreadyCreated);
-        }
-        if(appInfo.drinkToEdit.getIngredientList() != null)
-        {
-            //for(int i = 0; i < appInfo.ingredientsToEdit.size(); i++)
-
-            for(Ingredient ingredient : appInfo.drinkToEdit.getIngredientList())
-            {
-
-                rowItems.add(new Ingredient(ingredient.getQty(), ingredient.getMeasure(), ingredient.getIngredient()));
-
-            }
+        AlertDialog.Builder alertDialog = new AlertDialog.Builder(EditDrinkActivity.this);//.create();
+        alertDialog.setTitle("Delete Prompt");
 
 
+        alertDialog.setMessage("Are you sure you want to delete this drink?")
+                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        if(alreadyCreated)
+                        {
+                            appInfo.savedDrinks.remove(drinkPos);
+                        }
 
-            adapter.notifyDataSetChanged();
-        }
+                        mp7.start();
+                        Intent intent = new Intent(EditDrinkActivity.this, MainActivity.class);
+                        appInfo.sharedString1 = null;
+                        appInfo.sharedString2 = null;
+                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
-        ImageView editImage = (ImageView) findViewById(imageViewDrink);
-        editImage.setImageResource(image);
+                        saveDrinksAsJSON();
 
-        super.onResume();
+                        //intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
+                        startActivity(intent);
+                    }
+                })
+                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        mp8.start();
+                        dialog.dismiss();
+                    }
+                });
+
+        alertDialog.show();
     }
 
     @Override
@@ -425,7 +730,7 @@ public class EditDrinkActivity extends AppCompatActivity
     {
         appInfo.sharedString1 = null;
         appInfo.sharedString2 = null;
-
+        mp10.start();
         super.onBackPressed();
     }
 

@@ -2,8 +2,10 @@ package com.austinbaird.liquorlog;
 
 import android.content.Context;
 import android.content.Intent;
+import android.media.MediaPlayer;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +17,13 @@ import android.widget.TextView;
 import android.widget.Button;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.widget.Toast;
+
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,6 +40,11 @@ public class DisplayDrink extends AppCompatActivity {
     String msg = "";
     String total;
     DrinkRecipe displayedDrink;
+    MediaPlayer mp1;
+    MediaPlayer mp2;
+    MediaPlayer mp3;
+    MediaPlayer mp4;
+    MediaPlayer mp5;
 
     private class ListElement {
         ListElement() {};
@@ -91,10 +105,15 @@ public class DisplayDrink extends AppCompatActivity {
         ListView myListView = (ListView) findViewById(R.id.mobileViewDisplay);
         myListView.setAdapter(aa);
         aa.notifyDataSetChanged();
+        mp1 = MediaPlayer.create(this, R.raw.zeldaselecting);
+        mp2 = MediaPlayer.create(this, R.raw.backbutton);
+        mp3 = MediaPlayer.create(this, R.raw.zeldaaddlibrarydrink);
+        mp4 = MediaPlayer.create(this, R.raw.zeldacancel);
+        mp5 = MediaPlayer.create(this, R.raw.zeldadelete1);
     }
 
     @Override
-    protected void onResume() // MAY HAVE TO CHANGE TO ONRESUME
+    protected void onResume() // MAY HAVE TO CHANGE TO ON RESUME
     {
         super.onResume();
         Bundle extras = getIntent().getExtras();
@@ -201,6 +220,8 @@ public class DisplayDrink extends AppCompatActivity {
         //intent.putExtra("measure", measure);
         //intent.putExtra("ingredient", ingredient);
         //intent.putExtra("msg", msg);
+        Toast.makeText(getBaseContext(), "Editing " + text1, Toast.LENGTH_SHORT).show();
+        mp1.start();
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP); //May neee to change this location to other activities instead
         startActivity(intent);
     }
@@ -215,10 +236,10 @@ public class DisplayDrink extends AppCompatActivity {
         else
         {
             appInfo.addDrink(displayedDrink);
+            mp3.start();
 
-            Intent intent = new Intent(DisplayDrink.this, LibraryActivity.class);
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            startActivity(intent);
+            incrementDownloads(displayedDrink);
+
         }
     }
 
@@ -236,20 +257,24 @@ public class DisplayDrink extends AppCompatActivity {
     {
         AlertDialog.Builder alertDialog = new AlertDialog.Builder(DisplayDrink.this);//.create();
         alertDialog.setTitle("Add Duplicate");
-
+        mp5.start();
 
         alertDialog.setMessage("A drink with this name already exists in your log.\nAdd this drink anyway?(Existing drink will remain)")
                 .setPositiveButton("Add", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         appInfo.addDrink(displayedDrink);
-
-                        Intent intent = new Intent(DisplayDrink.this, LibraryActivity.class);
+                        mp3.start();
+                        Toast.makeText(getBaseContext(), "Drink Added!", Toast.LENGTH_SHORT).show();
+                        /*Intent intent = new Intent(DisplayDrink.this, LibraryActivity.class);
                         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                        startActivity(intent);
+                        startActivity(intent);*/
+                        onBackPressed();
+
                     }
                 })
                 .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
+                        mp4.start();
                         dialog.dismiss();
                     }
                 });
@@ -257,6 +282,86 @@ public class DisplayDrink extends AppCompatActivity {
         alertDialog.show();
     }
 
+    @Override
+    public void onBackPressed() {
+        mp2.start();
+        super.onBackPressed();
+    }
 
+
+    public void incrementDownloads(DrinkRecipe recipe)
+    {
+
+        JSONObject obj = new JSONObject();
+        try
+        {
+            obj.put("drinkId", recipe.uniqueId);
+
+
+        }
+        catch(Exception e)
+        {
+
+        }
+
+        //Log.d(logTag, "" + recipe.uniqueId);
+
+
+        JsonObjectRequest jsobj = new JsonObjectRequest(
+                "https://backendtest-165520.appspot.com/ndb_api/increment_download_count", obj,/*new JSONObject(params),*/
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response)
+                    {
+                        //Log.d(logTag, "Received: " + response.toString());
+                        try
+                        {
+
+                            String responseString = response.getString("result");
+                            //Log.d(logTag, "done with increment");
+                            Toast.makeText(getBaseContext(), "Drink Added!", Toast.LENGTH_SHORT).show();
+
+
+                            onBackPressed();
+                        }
+                        catch(Exception e)
+                        {
+                            //mapped value was not a string, didn't exist, etc
+                            //Log.d(logTag, "Couldn't get mapped value for key 'result' ");
+                            Toast.makeText(getBaseContext(), "Drink Added!", Toast.LENGTH_SHORT).show();
+
+            /*Intent intent = new Intent(DisplayDrink.this, LibraryActivity.class);
+              intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+              startActivity(intent);*/
+                            onBackPressed();
+                        }
+
+
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error)
+            {
+                Toast.makeText(getBaseContext(), "Drink Added!", Toast.LENGTH_SHORT).show();
+
+            /*Intent intent = new Intent(DisplayDrink.this, LibraryActivity.class);
+              intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+              startActivity(intent);*/
+                onBackPressed();
+            }
+        });
+
+
+        appInfo.queue.add(jsobj);
+
+
+        //calling loadRecipes directly from add recipes to check in the console that recipes
+        //are being added properly. A lot of repeats will be printed, I've been testing with the
+        //same recipes via android, local host, app engine, etc.
+
+
+        //add an actual row item on screen
+        //adapter.add(new DrinkRecipe("Default", R.drawable.ic_launcher));
+    }
 }
 

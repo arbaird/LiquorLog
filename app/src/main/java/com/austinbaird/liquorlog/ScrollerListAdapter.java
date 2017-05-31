@@ -1,6 +1,7 @@
 package com.austinbaird.liquorlog;
 
 import android.app.Activity;
+import android.media.MediaPlayer;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -61,12 +62,14 @@ class ScrollerListAdapter extends ArrayAdapter<Ingredient> {
     Context context;
     String logTag ="";
     ArrayList<Ingredient> data;
+    MediaPlayer mp1;
 
     public ScrollerListAdapter(Context _context, int _resource, ArrayList<Ingredient> items) {
         super(_context, _resource, items);
         resource = _resource;
         context = _context;
         this.data = items;
+        mp1 = MediaPlayer.create(context, R.raw.zeldadeleteing);
     }
 
     @Override
@@ -92,7 +95,7 @@ class ScrollerListAdapter extends ArrayAdapter<Ingredient> {
         b.setText("Delete");
 
         // Sets a listener for the button, and a tag for the button as well.
-        b.setTag(new Integer(position));
+        b.setTag(new Integer(position+1));
         b.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -100,17 +103,19 @@ class ScrollerListAdapter extends ArrayAdapter<Ingredient> {
                 // Gets the integer tag of the button.
                 String s = v.getTag().toString();
                 int duration = Toast.LENGTH_SHORT;
-                Toast toast = Toast.makeText(context, s, duration);
+                Toast toast = Toast.makeText(context, "Ingredient " + s + " removed", duration);
                 toast.show();
+                mp1.start();
                 // Let's remove the list item.
                 int i = Integer.parseInt(s);
-                data.remove(i);//TODO i = position
+                i = i-1;
+                data.remove(i);//TODO i = position (ALEX fixed this)
                 notifyDataSetChanged();
             }
         });
 
         // Set a listener for the whole list item.
-        newView.setTag(w.getQty() + " " + w.getMeasure() + w.getIngredient());
+        newView.setTag(w.getQty() + " " + w.getMeasure() + " " + w.getIngredient());
         newView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

@@ -1,10 +1,12 @@
 package com.austinbaird.liquorlog;
 
 import android.content.Intent;
+import android.media.MediaPlayer;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.GridView;
 import android.widget.Toast;
 
@@ -14,6 +16,7 @@ public class EditDrinkImage extends AppCompatActivity {
     AppInfo appInfo;
     Boolean alreadyCreated;
     int drinkPos;
+    MediaPlayer mp2;
 
     String descriptionList[] = {"Blue", "BlueIce", "BlueUmbrella", "BlueFruit", "BlueIceUmbrella", "BlueIceFruit", "BlueUmbrellaFruit", "BlueIceUmbrellaFruit",
             "DarkBrown", "DarkBrownIce", "DarkBrownUmbrella", "DarkBrownFruit", "DarkBrownIceUmbrella", "DarkBrownIceFruit", "DarkBrownUmbrellaFruit", "DarkBrownIceUmbrellaFruit",
@@ -41,13 +44,16 @@ public class EditDrinkImage extends AppCompatActivity {
         alreadyCreated = getIntent().getExtras().getBoolean("alreadyCreated");
         drinkPos = getIntent().getExtras().getInt("drinkPosition");
 
+        final MediaPlayer mp1 = MediaPlayer.create(this, R.raw.zeldamenuequip);
+        mp2 = MediaPlayer.create(this, R.raw.zeldaimageclose);
+
         gridView = (GridView) findViewById(R.id.gridView);
         GridAdapter adapter = new GridAdapter(EditDrinkImage.this, drinksIcon, descriptionList);
         gridView.setAdapter(adapter);
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener(){
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
+                mp1.start();
                 Toast.makeText(EditDrinkImage.this, "Saving Image as: " + descriptionList[position], Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(EditDrinkImage.this, EditDrinkActivity.class);
                 intent.putExtra("imageId", drinksIcon[position]);
@@ -60,4 +66,12 @@ public class EditDrinkImage extends AppCompatActivity {
             }
         });
     }
+
+    @Override
+    public void onBackPressed()
+    {
+        mp2.start();
+        super.onBackPressed();
+    }
+
 }

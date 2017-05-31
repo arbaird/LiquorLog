@@ -3,40 +3,32 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
+    android:background="@drawable/beerbackgroundme"
     >
     <TextView
         android:id="@+id/textView1"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:text="@string/your_list"
-        android:layout_alignParentTop="true">
+        android:layout_alignParentTop="true"
+        android:visibility="invisible">
     </TextView>
 
     <Button
         android:id="@+id/butt1"
-        android:text="@string/add_string"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
         android:layout_alignParentBottom="true"
-        android:onClick="goToEdit">
-    </Button>
-    <Button
-        android:id="@+id/butt2"
-        android:text="library"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_toRightOf="@+id/butt1"
         android:layout_centerHorizontal="true"
-        android:layout_alignParentBottom="true"
-        android:onClick="goToLibrary">
-    </Button>
+        android:onClick="goToEdit"
+        android:text="@string/edit_string"></Button>
+
     <ListView
         android:id="@+id/mobile_list"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="2dip"
-        android:layout_marginBottom="2dip"
+        android:layout_marginTop="43dip"
+        android:layout_marginBottom="65dip"
         android:drawSelectorOnTop="false"
         android:visibility="visible"
         android:layout_below="@+id/textView1"

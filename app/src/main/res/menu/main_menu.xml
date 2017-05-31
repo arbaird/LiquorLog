@@ -9,6 +9,9 @@
         android:id="@+id/item_option2"
         android:title="Add from Library"
         />
-
+    <item
+        android:id="@+id/item_option3"
+        android:title="Delete Drink"
+        />
 
 </menu>

@@ -7,24 +7,32 @@
     android:layout_height="fill_parent"
     android:descendantFocusability="beforeDescendants"
     android:focusableInTouchMode="true"
+    android:background="@drawable/beerbackgroundmeothertwo"
     >
+
     <EditText
         android:id="@+id/editDrinkName"
-        android:hint="Drink Name"
-        android:layout_width="fill_parent"
+        android:layout_width="270dp"
         android:layout_height="wrap_content"
-        android:text=""
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="15dp"
         android:layout_toRightOf="@+id/textView1"
-        android:layout_alignParentTop="true">
-    </EditText>
+        android:hint="Drink Name (max char = 44)"
+        android:inputType="textCapWords"
+        android:selectAllOnFocus="false"
+        android:singleLine="false"
+        android:text=""
+        android:textColor="@android:color/black"></EditText>
 
     <TextView
         android:id="@+id/textView1"
-        android:layout_width="85dp"
+        android:layout_width="45dp"
+        android:layout_marginLeft="20dp"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
-        android:layout_marginTop="10dip"
+        android:layout_marginTop="24dip"
         android:text="@string/edit_name"
+        android:textColor="@android:color/black"
         android:textSize="14sp"
         android:textStyle="bold"></TextView>
 
@@ -58,15 +66,14 @@
         android:layout_width="100dp"
         android:layout_height="wrap_content"
 
-        android:layout_toRightOf="@+id/measureSpinner"
         android:layout_alignBaseline="@+id/measureSpinner"
+        android:layout_toRightOf="@+id/measureSpinner"
 
-        android:hint="name"
+        android:hint="Name (30)"
 
+        android:textColor="@android:color/black"
         android:textSize="16sp"
-        android:textStyle="bold"
-         >
-    </EditText>
+        android:textStyle="bold"></EditText>
 
     <Button
         android:layout_width="100dp"
@@ -88,18 +95,18 @@
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
         android:text="Add Ingredient"
-        />
+        android:textColor="@android:color/black"
+        android:textStyle="bold" />
 
 
     <Button
         android:id="@+id/btnSaveDrink"
-        android:text="@string/add_string"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
+        android:onClick="saveDrink"
+        android:text="@string/save_string"
         android:layout_alignParentBottom="true"
-        android:onClick="saveDrink">
-    </Button>
+        android:layout_centerHorizontal="true"></Button>
 
     <Button
         android:id="@+id/btnDeleteDrink"
@@ -114,20 +121,21 @@
 
     <EditText
         android:id="@+id/messageEnter"
-        android:hint="message/Directions"
-        android:inputType="textMultiLine"
-        android:lines="4"
-        android:minLines="4"
-        android:gravity="start"
-        android:maxLines="4"
-        android:layout_height="wrap_content"
-        android:layout_width="fill_parent"
-        android:scrollbars="vertical"
+        android:layout_width="320dp"
+        android:layout_height="50dp"
         android:layout_above="@+id/btnSaveDrink"
         android:layout_marginTop="15dp"
-        android:ems="10"
+        android:layout_marginLeft="15dp"
         android:background="@drawable/edit_text_bg"
-        />
+        android:ems="10"
+        android:gravity="start"
+        android:hint="Message/Procedure (500)"
+        android:inputType="textMultiLine"
+        android:lines="4"
+        android:maxLines="4"
+        android:minLines="4"
+        android:scrollbars="vertical"
+        android:textColor="@android:color/black" />
     />
     <ListView
         android:id="@+id/mobile_list"
@@ -143,26 +151,59 @@
 
     <Button
         android:id="@+id/EditImageButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
         android:text="@string/edit_image"
         android:onClick="editDrinkImage"
-        android:layout_below="@+id/measureSpinner"
-        android:layout_toLeftOf="@+id/ingredientEdit"
-        android:layout_toStartOf="@+id/ingredientEdit"
-        android:layout_marginTop="30dp"
-        />
+        android:layout_marginLeft="22dp"
+        android:layout_marginStart="22dp"
+        android:layout_alignTop="@+id/imageViewDrink"
+        android:layout_alignLeft="@+id/editDrinkName"
+        android:layout_alignStart="@+id/editDrinkName" />
 
     <ImageView
         android:id="@+id/imageViewDrink"
+        android:layout_width="70dp"
+        android:layout_height="69dp"
+        app:srcCompat="@drawable/emptysmall"
+        android:layout_above="@+id/messageEnter"
+        android:layout_toRightOf="@+id/EditImageButton"
+        android:layout_toEndOf="@+id/EditImageButton"
+        android:layout_marginLeft="38dp"
+        android:layout_marginStart="38dp" />
+
+    <TextView
+        android:id="@+id/textViewCharCount1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/EditImageButton"
-        android:layout_alignLeft="@+id/ingredientEdit"
-        android:layout_alignStart="@+id/ingredientEdit"
-        app:srcCompat="@drawable/emptysmall"
-        android:layout_below="@+id/measureSpinner"
-        android:layout_marginTop="30dp"
-         />
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/textView1"
+        android:layout_marginLeft="9dp"
+        android:layout_marginStart="10dp"
+        android:visibility="invisible"
+        android:text="TextView" />
+
+    <TextView
+        android:id="@+id/textViewCharCount2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="10dp"
+        android:layout_marginStart="10dp"
+        android:layout_toEndOf="@+id/btnSaveDrink"
+        android:layout_toRightOf="@+id/btnSaveDrink"
+        android:visibility="invisible"
+        android:text="TextView" />
+
+    <TextView
+        android:id="@+id/textViewVharCount3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="invisible"
+        android:text="TextView"
+        android:layout_below="@+id/EditImageButton"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
 </RelativeLayout>
 

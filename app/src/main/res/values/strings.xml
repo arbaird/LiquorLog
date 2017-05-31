@@ -1,11 +1,15 @@
 <resources>
-    <string name="app_name">LiquorLog</string>
+    <string name="app_name">LiquorList</string>
+    <string name="home1">Welcome to LiquorList!</string>
+    <string name="home2">Loading your drinks...</string>
     <string name="add_string">Add</string>
+    <string name="save_string">Save Drink</string>
     <string name="edit_string">Edit</string>
+    <string name="edit_string2">Edit Info</string>
     <string name="edit_name">Drink Name:</string>
-    <string name="your_list">Your cocktail recipes</string>
+    <string name="your_list">Your Liquor List</string>
     <string name="edit_image">Edit Image</string>
-
+    <string name="edit_name_ing">Name (30)</string>
     <string name="scrollPrompt">-</string>
 
 

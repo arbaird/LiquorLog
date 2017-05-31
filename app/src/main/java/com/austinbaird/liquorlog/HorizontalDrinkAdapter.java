@@ -40,6 +40,8 @@ public class HorizontalDrinkAdapter extends RecyclerView.Adapter< HorizontalDrin
     public void onBindViewHolder(ViewHolder viewHolder, int i) {
         viewHolder.tvSpecies.setText(alName.get(i).getName());
         viewHolder.imgThumbnail.setImageResource(alName.get(i).getImageID());
+        viewHolder.downloadCount.setText(alName.get(i).getDownloads());
+
     }
 
     @Override
@@ -52,6 +54,7 @@ public class HorizontalDrinkAdapter extends RecyclerView.Adapter< HorizontalDrin
 
         public ImageView imgThumbnail;
         public TextView tvSpecies;
+        public TextView downloadCount;
         //private ItemClickListener clickListener;
 
         public ViewHolder(View itemView)
@@ -59,6 +62,7 @@ public class HorizontalDrinkAdapter extends RecyclerView.Adapter< HorizontalDrin
             super(itemView);
             imgThumbnail = (ImageView) itemView.findViewById(R.id.img_thumbnail);
             tvSpecies = (TextView) itemView.findViewById(R.id.dbdrinkName);
+            downloadCount = (TextView) itemView.findViewById(R.id.dbdrinkDownloads);
         }
 
     }

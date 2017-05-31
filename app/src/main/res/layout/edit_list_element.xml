@@ -5,11 +5,14 @@
     android:padding="8dp">
 
     <TextView
+        android:id="@+id/itemText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_weight="1"
         android:text="New Text"
-        android:id="@+id/itemText"
-        android:layout_weight="1" />
+        android:textColor="@android:color/black"
+        android:textSize="18sp"
+        android:textStyle="bold" />
 
     <Button
         android:layout_width="wrap_content"

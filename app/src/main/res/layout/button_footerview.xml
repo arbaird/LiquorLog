@@ -28,18 +28,18 @@
         android:layout_toRightOf="@+id/fractionSpinner"
         />
 
-    <EditText xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/ingredientEdit"
-        android:layout_width="100dp"
-        android:layout_height="wrap_content"
+        <EditText xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@+id/ingredientEdit"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
 
-        android:layout_toRightOf="@+id/measureSpinner"
-        android:layout_alignBaseline="@+id/measureSpinner"
+            android:layout_alignBaseline="@+id/measureSpinner"
+            android:layout_toRightOf="@+id/measureSpinner"
 
-        android:textSize="16sp"
-        android:textStyle="bold"
-        android:text="txt" >
-    </EditText>
+            android:text="txt"
+            android:textColor="@android:color/white"
+            android:textSize="16sp"
+            android:textStyle="bold"></EditText>
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

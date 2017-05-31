@@ -3,7 +3,9 @@ package com.austinbaird.liquorlog;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v7.widget.PopupMenu;
 import android.view.ContextMenu;
 import android.view.Menu;
@@ -62,9 +64,9 @@ import java.util.Map;
 
 public class MainActivity extends AppCompatActivity
 {
-
     RequestQueue queue;
 
+    //alswilli  private static int SPLASH_TIME_OUT = 4000;
 
     Button popupMenuButton;
     Button contextMenuButton;
@@ -80,10 +82,14 @@ public class MainActivity extends AppCompatActivity
 
     Boolean fromPause = false;
 
+    Boolean alreadyCreated;
 
+    int drinkPos;
 
+    MediaPlayer mp1;
+    MediaPlayer mp2;
 
-
+    Boolean switchToDelete;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -91,11 +97,27 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         queue = Volley.newRequestQueue(this);
 
+        /*new Handler().postDelayed(new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                Intent homeIntent = new Intent(MainActivity.this, HomeActivity.class);
+                startActivity(homeIntent);
+                finish();
+            }
+        }, SPLASH_TIME_OUT);*/
+
         Log.d(logTag, "OnCreate()");
 
         //registerForContextMenu(contextMenuButton);
         //contextMenuButton = (Button)findViewById(R.id.butt1);
         //registerForContextMenu(contextMenuButton);
+
+        mp1 = MediaPlayer.create(this, R.raw.zeldaselecting);
+        mp2 = MediaPlayer.create(this, R.raw.backbuttonsuper);
+
+        alreadyCreated = false;
 
         popupMenuButton = (Button)findViewById(R.id.butt1);
 
@@ -106,7 +128,7 @@ public class MainActivity extends AppCompatActivity
             {
                 PopupMenu popupMenu = new PopupMenu(MainActivity.this, popupMenuButton);
                 popupMenu.getMenuInflater().inflate(R.menu.main_menu, popupMenu.getMenu());
-
+                mp1.start();
                 popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener()
                 {
                     @Override
@@ -114,15 +136,24 @@ public class MainActivity extends AppCompatActivity
                     {
                         switch (item.getItemId()){
                             case R.id.item_option1:
-                                String toastMsg1 = "Creating new drink";
+                                String toastMsg1 = "Creating New Drink";
                                 Toast.makeText(getApplicationContext(),toastMsg1,Toast.LENGTH_SHORT).show();
+                                mp1.start();
                                 //addDrink(null);
                                 goToEdit(null);
                                 break;
 
                             case R.id.item_option2:
-                                String toastMsg2 = "Adding from Library ";
+                                String toastMsg2 = "Adding from Library";
                                 Toast.makeText(getApplicationContext(),toastMsg2,Toast.LENGTH_SHORT).show();
+                                mp1.start();
+                                goToLibrary(null);
+                                break;
+
+                            case R.id.item_option3:
+                                String toastMsg3 = "Select a Drink to Delete";
+                                Toast.makeText(getApplicationContext(),toastMsg3,Toast.LENGTH_SHORT).show();
+
                                 break;
                         }
                         //Toast.makeText(MainActivity.this, "" + item.getTitle(), Toast.LENGTH_SHORT).show();
@@ -139,6 +170,27 @@ public class MainActivity extends AppCompatActivity
 
         rowItems = new ArrayList<>();
 
+            /*closeButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v)
+                {
+                    searchView.onActionViewCollapsed();
+                    searchView.setQuery("", false);
+                    searchView.clearFocus();
+
+                    if(searchRecyclerView != null)
+                    {
+
+                        searchDrinks.clear();
+                        searchAdapter.notifyDataSetChanged();
+                        searchRecyclerView.setVisibility(View.GONE);
+
+                        userMadeRecyclerView.setVisibility(View.VISIBLE);
+                        libRecyclerView.setVisibility(View.VISIBLE);
+                    }
+                }
+            });*/
+
         adapter = new CustomListAdapter(this, rowItems);
         final ListView listView = (ListView) findViewById(R.id.mobile_list);
         listView.setAdapter(adapter);
@@ -148,7 +200,7 @@ public class MainActivity extends AppCompatActivity
                                     int position, long id) {
 
                 DrinkRecipe drink = (DrinkRecipe)listView.getItemAtPosition(position);
-                String toastMsg = "Going to " + drink.getName();
+                String toastMsg = "Displaying " + drink.getName();
                 try
                 {
                     Log.d(logTag, "First ingredient is: " + drink.getIngredientList().get(0).getIngredient());
@@ -161,12 +213,49 @@ public class MainActivity extends AppCompatActivity
                 Toast toast= Toast.makeText(getBaseContext() ,toastMsg,Toast.LENGTH_SHORT);
                 toast.show();
 
+                mp1.start();
+
                 Intent intent = new Intent(MainActivity.this, DisplayDrink.class);
                 intent.putExtra("drinkPosition", position);
                 startActivity(intent);
             }
         });
 
+        /*adapter = new CustomListAdapter(this, rowItems);
+        final ListView listView = (ListView) findViewById(R.id.mobile_list);
+        listView.setAdapter(adapter);
+
+        Button delete = (Button) newView.findViewById(R.id.itemButton);
+        delete.setText("Delete");
+
+        // Sets a listener for the button, and a tag for the button as well.
+        delete.setTag(new Integer(position));
+        delete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Reacts to a button press.
+                // Gets the integer tag of the button.
+                String s = v.getTag().toString();
+                int duration = Toast.LENGTH_SHORT;
+                Toast toast = Toast.makeText(context, s, duration);
+                toast.show();
+                // Let's remove the list item.
+                int i = Integer.parseInt(s);
+                data.remove(i);//TODO i = position
+                notifyDataSetChanged();
+            }
+        });*/
+
+
+        /*if(switchToDelete != null)
+        {
+            searchDrinks.clear();
+            searchAdapter.notifyDataSetChanged();
+            searchRecyclerView.setVisibility(View.GONE);
+
+            userMadeRecyclerView.setVisibility(View.VISIBLE);
+            libRecyclerView.setVisibility(View.VISIBLE);
+        }*/
 
         appInfo = AppInfo.getInstance(this);
 
@@ -226,11 +315,17 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onResume()
     {
-
-
         super.onResume();
 
+        Bundle extras = getIntent().getExtras();
 
+        if(extras != null)
+        {
+            //image = extras.getInt("imageId");
+            drinkPos = extras.getInt("drinkPosition");
+            alreadyCreated = extras.getBoolean("alreadyCreated");
+            Log.d(logTag, "editing already created?" + alreadyCreated);
+        }
 
         rowItems.clear();
         for (DrinkRecipe recipe : appInfo.savedDrinks)
@@ -247,11 +342,12 @@ public class MainActivity extends AppCompatActivity
         adapter.notifyDataSetChanged();
         //Log.d(logTag, "rowItems size before add: " + rowItems.size());
 
+    }
 
-
-
-
-
+    @Override
+    public void onBackPressed() {
+        mp2.start();
+        super.onBackPressed();
     }
 
     @Override
@@ -324,6 +420,27 @@ public class MainActivity extends AppCompatActivity
         SharedPreferences.Editor editor = settings.edit();
         editor.putString("drinksAsJSON", jArray.toString());
         editor.commit();
+    }
+
+    public void deleteListView(View v)
+    {
+
+    }
+
+    public void deleteDrink(View v)
+    {
+        if(alreadyCreated)
+        {
+            appInfo.savedDrinks.remove(drinkPos);
+        }
+
+        //Intent intent = new Intent(EditDrinkActivity.this, MainActivity.class);
+        appInfo.sharedString1 = null;
+        appInfo.sharedString2 = null;
+
+        saveDrinksAsJSON();
+
+        //startActivity(intent);
     }
 
     public void loadDrinksFromPrefs()

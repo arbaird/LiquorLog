@@ -18,6 +18,8 @@ public class DrinkRecipe {
     public boolean userMade;
 
     public String logTag = "";
+    public String downloads = "0";
+    public String uniqueId;
 
     public DrinkRecipe(String name, ArrayList<Ingredient> ingredientList, String msg, boolean userMade, int img) {
         this.name = name;
@@ -54,6 +56,20 @@ public class DrinkRecipe {
         setDrinksAsJSON();
     }
 
+    public DrinkRecipe(String name, ArrayList<Ingredient> ingredientList, String msg, int img, String uniqueid, int downloads) {
+        this.name = name;
+        if(ingredientList == null)
+            ingredientList = new ArrayList<>();
+        this.ingredientList = ingredientList;
+        this.msg = msg;
+        drinkAsJSON = new JSONObject();
+        this.userMade = true;
+        this.imageID = img;
+        this.uniqueId = uniqueid;
+        this.downloads = "" + downloads;
+        setDrinksAsJSON();
+    }
+
 
     /*public String getQty() {return ingredientList.getQty();}
     public String getMeasure() {return ingredientList.getMeasure();}
@@ -80,6 +96,10 @@ public class DrinkRecipe {
         return msg;
     }
 
+    public String getDownloads() {
+        return downloads;
+    }
+
     public void setName(String name) {
         this.name = name;
         setDrinksAsJSON();
@@ -88,6 +108,9 @@ public class DrinkRecipe {
     public void setMsg(String msg) {
         this.msg = msg;
         setDrinksAsJSON();
+    }
+    public void setDownloads(String downloads) {
+        this.downloads = downloads;
     }
 
     public void setImageID(int imageID)

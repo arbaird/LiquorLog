@@ -1,11 +1,13 @@
 package com.austinbaird.liquorlog;
 
 import android.content.Intent;
+import android.media.MediaPlayer;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.SearchView;
 import android.widget.ImageView;
 
@@ -39,8 +41,20 @@ public class LibraryActivity extends AppCompatActivity
     RecyclerView libRecyclerView;
     RecyclerView.Adapter libAdapter;
 
+    public ArrayList<DrinkRecipe> popDrinks;
+    RecyclerView popRecyclerView;
+    RecyclerView.Adapter popAdapter;
+
     SearchView searchView;
 
+    MediaPlayer mp1;
+    MediaPlayer mp2;
+    MediaPlayer mp3;
+    //MediaPlayer mp4;
+    MediaPlayer mp5;
+    MediaPlayer mp6;
+
+    boolean enteringLibrary;
 
     public String logTag = "Library";
     AppInfo appInfo;
@@ -51,17 +65,34 @@ public class LibraryActivity extends AppCompatActivity
             setContentView(R.layout.activity_library);
             appInfo = AppInfo.getInstance(this);
 
+            mp1 = MediaPlayer.create(this, R.raw.librarysong);
+            mp2 = MediaPlayer.create(this, R.raw.zeldaselecting);
+            mp3 = MediaPlayer.create(this, R.raw.backbutton);
+            mp6 = MediaPlayer.create(this, R.raw.zeldacancel);
+            //mp4 = MediaPlayer.create(this, R.raw.zeldasearchopen); // Didn't know where to put this for proper function
+            mp5 = MediaPlayer.create(this, R.raw.zeldasearchclick);
+
+            //mp1.start();
+            //mp1.setLooping(true);
+
             //Toolbar myToolbar = (Toolbar) findViewById(R.id.toolbar);
             //setSupportActionBar(myToolbar);
 
             searchView=(SearchView) findViewById(R.id.searchView);
+            //searchView.setOnClickListener(new View.OnClickListener() {
+                //@Override
+                //public void onClick(View v) {
+                    //mp4.start();
+                //}
+            //});
             //searchView.setQueryHint("Drink Name or Ingredient");
 
             searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
 
                 @Override
                 public boolean onQueryTextSubmit(String query) {
-                    Toast.makeText(getBaseContext(), query, Toast.LENGTH_LONG).show();
+                    Toast.makeText(getBaseContext(), "Displaying results for phrase '" + query + "' in Library", Toast.LENGTH_LONG).show();
+                    mp5.start();
                     search(query, null, null);
                     searchView.clearFocus();
                     return true;
@@ -86,6 +117,7 @@ public class LibraryActivity extends AppCompatActivity
                     searchView.onActionViewCollapsed();
                     searchView.setQuery("", false);
                     searchView.clearFocus();
+                    mp6.start();
 
                     if(searchRecyclerView != null)
                     {
@@ -96,6 +128,7 @@ public class LibraryActivity extends AppCompatActivity
 
                         userMadeRecyclerView.setVisibility(View.VISIBLE);
                         libRecyclerView.setVisibility(View.VISIBLE);
+                        popRecyclerView.setVisibility(View.VISIBLE);
                     }
                 }
             });
@@ -110,12 +143,57 @@ public class LibraryActivity extends AppCompatActivity
 
         loadRecipes(null, /*"get_userMade_recipes"*/"get_recipes_fancy", databaseDrinks, userMadeAdapter);
         loadRecipes(null, "get_library_recipes", libDrinks, libAdapter);
+        loadRecipes(null, "get_popular_drinks", popDrinks, popAdapter);
+    }
 
+    @Override
+    protected void onPause() {
+        //mp1.stop();
+        super.onPause();
+    }
+
+    @Override
+    public void onBackPressed() {
+        mp1.stop();
+        mp3.start();
+
+        //enteringLibrary = false;
+        super.onBackPressed();
+
+
+    }
+
+    @Override
+    protected void onStart() {
+
+        //if(enteringLibrary == true)
+        //{
+            //mp1.start();
+            //mp1.setLooping(true);
+           // enteringLibrary = true;
+        //}
+        super.onStart();
     }
 
     @Override
     protected void onResume()
     {
+        //if(mp1.isPlaying())
+        //{
+            //do nothing
+        //}
+        //else
+        //{
+            //mp1.start();
+            //mp1.setLooping(true);
+            //enteringLibrary = true;
+        //}
+        mp1.start();
+        mp1.setLooping(true);
+        Log.d(logTag, "LIB ON RESUME");
+        loadRecipes(null, /*"get_userMade_recipes"*/"get_recipes_fancy", databaseDrinks, userMadeAdapter);
+        loadRecipes(null, "get_library_recipes", libDrinks, libAdapter);
+        loadRecipes(null, "get_popular_drinks", popDrinks, popAdapter);
         super.onResume();
     }
 
@@ -202,6 +280,7 @@ public class LibraryActivity extends AppCompatActivity
                         {
                             userMadeRecyclerView.setVisibility(View.GONE);
                             libRecyclerView.setVisibility(View.GONE);
+                            popRecyclerView.setVisibility(View.GONE);
                             searchRecyclerView.setVisibility(View.VISIBLE);
 
                             String responseString = response.getString("results");
@@ -261,8 +340,11 @@ public class LibraryActivity extends AppCompatActivity
                 }
 
                 int imgId = Integer.parseInt(jsonDrinkRecipe.getString("imgId"));
+                String uniqueId = jsonDrinkRecipe.getString("uniqueid");
                 String msg = jsonDrinkRecipe.getString("msg");
-                drinkArrayList.add(new DrinkRecipe(name, ingredients, msg, imgId));
+                //Log.d(logTag, name + " has unique id " + uniqueId);
+                int downloads = jsonDrinkRecipe.getInt("downloads");
+                drinkArrayList.add(new DrinkRecipe(name, ingredients, msg, imgId, uniqueId, downloads));
             }
 
         }
@@ -310,6 +392,24 @@ public class LibraryActivity extends AppCompatActivity
 
         libRecyclerView.addOnItemTouchListener(
                 new RecyclerItemClickListener(this, userMadeRecyclerView, new drinkListener(libDrinks)));
+
+
+        popDrinks = new ArrayList<>();
+
+        popRecyclerView = (RecyclerView) findViewById(R.id.pop_recycler_view);
+        popRecyclerView.setHasFixedSize(false);
+
+        // The number of Columns
+        RecyclerView.LayoutManager  popLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
+        popRecyclerView.setLayoutManager(popLayoutManager);
+
+        popAdapter = new HorizontalDrinkAdapter(LibraryActivity.this, popDrinks);//databaseDrinks);
+        popRecyclerView.setAdapter(popAdapter);
+
+
+        popRecyclerView.addOnItemTouchListener(
+                new RecyclerItemClickListener(this, popRecyclerView, new drinkListener(popDrinks)));
+
     }
 
 
@@ -327,8 +427,13 @@ public class LibraryActivity extends AppCompatActivity
         @Override public void onItemClick(View view, int position) {
             //Log.d(logTag, "You clicked " + position);
             appInfo.drinkFromLib = drinks.get(position);
+            String drinkName = appInfo.drinkFromLib.getName().toString();
             Intent intent = new Intent(LibraryActivity.this, DisplayDrink.class);
             intent.putExtra("fromLib", true);
+            String toastMsg = "Displaying " + drinkName;
+            Toast toast= Toast.makeText(getBaseContext() ,toastMsg,Toast.LENGTH_SHORT);
+            toast.show();
+            mp2.start();
             startActivity(intent);
         }
         @Override public void onItemLongClick(View v, int pos)
@@ -336,7 +441,6 @@ public class LibraryActivity extends AppCompatActivity
             //nothing
         }
     }
-
 
 
 
