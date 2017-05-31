@@ -24,7 +24,9 @@
         <activity android:name=".DisplayDrink" />
         <activity
             android:name=".LibraryActivity"
-            android:windowSoftInputMode="adjustPan" />
+            android:windowSoftInputMode="adjustPan"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"
+            />
         <activity android:name=".EditDrinkImage"></activity>
         <activity android:name=".MainActivity"></activity>
     </application>

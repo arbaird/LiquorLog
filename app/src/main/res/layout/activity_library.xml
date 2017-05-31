@@ -8,7 +8,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/facebookme"
+    android:background="@drawable/newlib"
     tools:context="com.austinbaird.liquorlog.LibraryActivity"
     >
 
@@ -21,6 +21,36 @@
         android:layout_height="wrap_content">
     </SearchView>
 
+    <ImageView
+        android:id="@+id/libtitle"
+        android:layout_width="wrap_content"
+        android:src="@drawable/libtitle"
+        android:layout_toRightOf="@+id/searchView"
+        android:layout_toLeftOf="@+id/refreshbutton"
+        android:layout_height="wrap_content"
+        android:text="LiquorLibrary"
+        android:textColor="@android:color/white"
+        android:layout_above="@+id/textViewUserDrinks"
+    />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+
+        android:id="@+id/refreshbutton"
+        android:onClick="refreshUserDrinks"
+
+
+        android:drawableTop="@drawable/refresh"
+
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        >
+    </Button>
+
+
+
+
     <TextView
         android:id="@+id/textViewUserDrinks"
         android:layout_width="fill_parent"
@@ -29,22 +59,23 @@
         android:layout_below="@+id/searchView"
 
         android:textColor="@android:color/white"
+
+        android:gravity="center"
+        android:background="#ba68c8"
         >
     </TextView>
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recycler_view"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:layout_below="@+id/textViewUserDrinks"
-        android:layout_above="@+id/textViewLibraryDrinks"
         />
     <android.support.v7.widget.RecyclerView
         android:id="@+id/search_recycler_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@+id/textViewUserDrinks"
-        android:layout_above="@+id/textViewLibraryDrinks"
         android:visibility="gone"
         />
 
@@ -53,10 +84,15 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
+
+        android:layout_below="@+id/recycler_view"
         android:text="Library Drinks"
 
+
         android:textColor="@android:color/white"
+
+        android:gravity="center"
+        android:background="#A1887F"
         >
     </TextView>
 
@@ -77,6 +113,9 @@
 
         android:text="Popular Drinks"
         android:textColor="@android:color/white"
+
+        android:gravity="center"
+        android:background="#607d8b"
         >
     </TextView>
 

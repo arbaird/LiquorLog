@@ -3,11 +3,11 @@ package com.austinbaird.liquorlog;
 import android.content.Intent;
 import android.media.MediaPlayer;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
+import android.widget.Button;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
+import android.widget.TextView;
 import android.widget.SearchView;
 import android.widget.ImageView;
 
@@ -24,6 +24,9 @@ import android.support.v7.widget.RecyclerView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+
+import android.view.View.OnTouchListener;
+import android.view.MotionEvent;
 
 
 public class LibraryActivity extends AppCompatActivity
@@ -59,6 +62,10 @@ public class LibraryActivity extends AppCompatActivity
     public String logTag = "Library";
     AppInfo appInfo;
 
+
+
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
@@ -78,14 +85,34 @@ public class LibraryActivity extends AppCompatActivity
             //Toolbar myToolbar = (Toolbar) findViewById(R.id.toolbar);
             //setSupportActionBar(myToolbar);
 
-            searchView=(SearchView) findViewById(R.id.searchView);
-            //searchView.setOnClickListener(new View.OnClickListener() {
-                //@Override
-                //public void onClick(View v) {
-                    //mp4.start();
-                //}
-            //});
+        //mp1.setLooping(true);
+
+        //Toolbar myToolbar = (Toolbar) findViewById(R.id.toolbar);
+        //setSupportActionBar(myToolbar);
+
+
+
+
+        searchView=(SearchView) findViewById(R.id.searchView);
+
+        searchView.setOnSearchClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Button btn = (Button) findViewById(R.id.refreshbutton);
+                btn.setVisibility(View.GONE);
+                Log.d(logTag, "searchCLick");
+            }
+        });
+
+            /*searchView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Button btn = (Button) findViewById(R.id.refreshbutton);
+                    btn.setVisibility(View.GONE);
+                }
+            });*/
             //searchView.setQueryHint("Drink Name or Ingredient");
+
 
             searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
 
@@ -129,7 +156,20 @@ public class LibraryActivity extends AppCompatActivity
                         userMadeRecyclerView.setVisibility(View.VISIBLE);
                         libRecyclerView.setVisibility(View.VISIBLE);
                         popRecyclerView.setVisibility(View.VISIBLE);
+
+                        TextView userText = (TextView)findViewById(R.id.textViewUserDrinks);
+                        userText.setVisibility(View.VISIBLE);
+                        TextView libText = (TextView)findViewById(R.id.textViewLibraryDrinks);
+                        libText.setVisibility(View.VISIBLE);
+                        TextView popText = (TextView)findViewById(R.id.textViewPopularDrinks);
+                        popText.setVisibility(View.VISIBLE);
+
+                        Button btn = (Button) findViewById(R.id.refreshbutton);
+                        btn.setVisibility(View.VISIBLE);
+
                     }
+                    Button btn = (Button) findViewById(R.id.refreshbutton);
+                    btn.setVisibility(View.VISIBLE);
                 }
             });
 
@@ -191,7 +231,7 @@ public class LibraryActivity extends AppCompatActivity
         mp1.start();
         mp1.setLooping(true);
         Log.d(logTag, "LIB ON RESUME");
-        loadRecipes(null, /*"get_userMade_recipes"*/"get_recipes_fancy", databaseDrinks, userMadeAdapter);
+        loadRecipes(null, "get_recipes_fancy", databaseDrinks, userMadeAdapter);
         loadRecipes(null, "get_library_recipes", libDrinks, libAdapter);
         loadRecipes(null, "get_popular_drinks", popDrinks, popAdapter);
         super.onResume();
@@ -281,6 +321,15 @@ public class LibraryActivity extends AppCompatActivity
                             userMadeRecyclerView.setVisibility(View.GONE);
                             libRecyclerView.setVisibility(View.GONE);
                             popRecyclerView.setVisibility(View.GONE);
+
+                            TextView userText = (TextView)findViewById(R.id.textViewUserDrinks);
+                            userText.setVisibility(View.GONE);
+                            TextView libText = (TextView)findViewById(R.id.textViewLibraryDrinks);
+                            libText.setVisibility(View.GONE);
+                            TextView popText = (TextView)findViewById(R.id.textViewPopularDrinks);
+                            popText.setVisibility(View.GONE);
+
+
                             searchRecyclerView.setVisibility(View.VISIBLE);
 
                             String responseString = response.getString("results");
@@ -355,6 +404,13 @@ public class LibraryActivity extends AppCompatActivity
 
         adapter.notifyDataSetChanged();
     }
+
+    public void refreshUserDrinks(View v)
+    {
+        loadRecipes(v, "get_recipes_fancy", databaseDrinks, userMadeAdapter);
+        Log.d(logTag, "refresh");
+    }
+
 
     public void initRecycleViews()
     {
@@ -441,6 +497,7 @@ public class LibraryActivity extends AppCompatActivity
             //nothing
         }
     }
+
 
 
 
