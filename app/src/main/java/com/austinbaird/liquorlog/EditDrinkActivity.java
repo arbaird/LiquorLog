@@ -162,7 +162,7 @@ public class EditDrinkActivity extends AppCompatActivity
 
         //mp = MediaPlayer.create(EditDrinkActivity.this, R.raw.zeldafanfare);
 
-        //addPreDefined(); //uncomment to add library dirnks to data base. make sure to clear these first before re adding
+        //addPreDefined(); //uncomment to add library drinks to data base. make sure to clear these first before re adding
 
         drinkName = "";
         msg = "";

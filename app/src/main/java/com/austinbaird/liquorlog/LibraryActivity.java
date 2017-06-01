@@ -23,10 +23,15 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.widget.Toast;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+
 import java.util.ArrayList;
 
 import android.view.View.OnTouchListener;
 import android.view.MotionEvent;
+
+import android.app.ProgressDialog;
 
 
 public class LibraryActivity extends AppCompatActivity
@@ -62,7 +67,7 @@ public class LibraryActivity extends AppCompatActivity
     public String logTag = "Library";
     AppInfo appInfo;
 
-
+    AlertDialog.Builder alertDialog;
 
 
 
@@ -245,6 +250,12 @@ public class LibraryActivity extends AppCompatActivity
     public void loadRecipes(View v, String apiMethod, final ArrayList<DrinkRecipe> drinkArrayList, final RecyclerView.Adapter adapter)
     {
 
+        final ProgressDialog progress = new ProgressDialog(this, ProgressDialog.STYLE_SPINNER);
+        progress.setTitle("Loading");
+        progress.setMessage("Loading recipes...");
+        progress.setCancelable(false); // disable dismiss by tapping outside of the dialog
+        progress.show();
+
         String url = "https://backendtest-165520.appspot.com/ndb_api/" + apiMethod;//get_userMade_recipes";
 
         JsonObjectRequest jsObjRequest = new JsonObjectRequest
@@ -253,6 +264,7 @@ public class LibraryActivity extends AppCompatActivity
                     @Override
                     public void onResponse(JSONObject response) {
 
+                        progress.dismiss();
                         Log.d(logTag, "Received: " + response.toString());
                         // Ok, let's disassemble a bit the json object.
                         try {
@@ -269,11 +281,31 @@ public class LibraryActivity extends AppCompatActivity
                     public void onErrorResponse(VolleyError error) {
                         // TODO Auto-generated method stub
                         Log.d(logTag, error.toString());
+                        progress.dismiss();
+
+                        if (alertDialog == null)
+                        {
+                            alertDialog = new AlertDialog.Builder(LibraryActivity.this);
+                            alertDialog.setTitle("No Connection");
+                            alertDialog.setMessage("Sorry, there was an issue connecting to server.")
+                                    .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                                        public void onClick(DialogInterface dialog, int id) {
+
+                                            dialog.dismiss();
+                                            alertDialog = null;
+                                        }
+                                    });
+
+
+                            alertDialog.show();
+                        }
+
                     }
                 });
 
         // In some cases, we don't want to cache the request.
         // jsObjRequest.setShouldCache(false);
+
 
         appInfo.queue.add(jsObjRequest);
     }
@@ -408,6 +440,8 @@ public class LibraryActivity extends AppCompatActivity
     public void refreshUserDrinks(View v)
     {
         loadRecipes(v, "get_recipes_fancy", databaseDrinks, userMadeAdapter);
+        loadRecipes(v, "get_library_recipes", libDrinks, libAdapter);
+        loadRecipes(v, "get_popular_drinks", popDrinks, popAdapter);
         Log.d(logTag, "refresh");
     }
 
