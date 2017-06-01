@@ -264,11 +264,12 @@ public class DisplayDrink extends AppCompatActivity {
                     public void onClick(DialogInterface dialog, int id) {
                         appInfo.addDrink(displayedDrink);
                         mp3.start();
-                        Toast.makeText(getBaseContext(), "Drink Added!", Toast.LENGTH_SHORT).show();
+                        //Toast.makeText(getBaseContext(), "Drink Added!", Toast.LENGTH_SHORT).show();
                         /*Intent intent = new Intent(DisplayDrink.this, LibraryActivity.class);
                         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         startActivity(intent);*/
-                        onBackPressed();
+                        incrementDownloads(displayedDrink);
+                        //onBackPressed();
 
                     }
                 })
