@@ -23,15 +23,17 @@
         android:textStyle="bold"></TextView>
 
     <ListView
-        android:layout_width="wrap_content"
-        android:layout_height="300dp"
+
         android:id="@+id/mobileViewDisplay"
-        android:paddingBottom="5dp"
-        android:layout_marginBottom="225dip"
-        android:layout_marginTop="115dip"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="2dip"
+        android:layout_marginBottom="2dip"
+        android:drawSelectorOnTop="true"
+        android:visibility="visible"
+        android:layout_below="@+id/drinkImage"
+        android:layout_above="@+id/textView3"
+        />
 
     <ImageView
         android:id="@+id/drinkImage"
@@ -51,10 +53,13 @@
         android:id="@+id/textView3"
         android:layout_width="320dp"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
+
         android:layout_marginLeft="17dp"
-        android:layout_marginTop="292dip"
+        android:layout_marginBottom="125dp"
+        android:layout_marginTop="5dp"
+
         android:fontFamily="casual"
+        android:layout_above="@+id/butt_edit"
 
         android:text="@string/your_list"
         android:textAllCaps="false"
