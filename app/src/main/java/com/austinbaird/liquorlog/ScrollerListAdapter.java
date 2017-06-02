@@ -28,49 +28,27 @@ import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
 
-
-/*class ScrollerRowItem
-{
-    public IngredientList ingredientList;
-    private String name;
-    private String msg;
-    public ScrollerRowItem(IngredientList ingredientList)
-    {
-        this.ingredientList = ingredientList;
-    }
-    public ScrollerRowItem(String name, IngredientList ingredientList, String msg)
-    {
-        this.name = name;
-        this.ingredientList = ingredientList;
-        this.msg = msg;
-    }
-    public String getQty() {return ingredientList.getQty();}
-    public String getMeasure() {return ingredientList.getMeasure();}
-    public String getIngredient() {return ingredientList.getIngredient();}
-    public IngredientList getIngredientList() {return ingredientList;}
-    public void setQty(String qty) {ingredientList.setQty(qty);}
-    public void setMeasure(String measure) {ingredientList.setMeasure(measure);}
-    public void setIngredient(String ingredient) {ingredientList.setIngredient(ingredient);}
-    public void setName(String name) {this.name = name;}
-    public void setMsg(String msg) {this.msg = msg;}
-}*/
+/*
+An adapter for a list of ingredients and delete buttons. Also includes sound effects
+ */
 
 
 class ScrollerListAdapter extends ArrayAdapter<Ingredient> {
 
     int resource;
     Context context;
-    String logTag ="";
     ArrayList<Ingredient> data;
     MediaPlayer mp1;
 
-    public ScrollerListAdapter(Context _context, int _resource, ArrayList<Ingredient> items) {
+    public ScrollerListAdapter(Context _context, int _resource, ArrayList<Ingredient> items)
+    {
         super(_context, _resource, items);
         resource = _resource;
         context = _context;
         this.data = items;
         mp1 = MediaPlayer.create(context, R.raw.zeldadeleteing);
     }
+
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
@@ -94,7 +72,8 @@ class ScrollerListAdapter extends ArrayAdapter<Ingredient> {
         tv.setText((w.getQty() + " " + w.getMeasure() + " " + w.getIngredient().trim()));
         b.setText("Delete");
 
-        // Sets a listener for the button, and a tag for the button as well.
+        // Sets a listener for the button ot delete rowItem when pressed. Adapted from ListView example
+        //provided by the professor
         b.setTag(new Integer(position+1));
         b.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -109,7 +88,7 @@ class ScrollerListAdapter extends ArrayAdapter<Ingredient> {
                 // Let's remove the list item.
                 int i = Integer.parseInt(s);
                 i = i-1;
-                data.remove(i);//TODO i = position (ALEX fixed this)
+                data.remove(i);
                 notifyDataSetChanged();
             }
         });

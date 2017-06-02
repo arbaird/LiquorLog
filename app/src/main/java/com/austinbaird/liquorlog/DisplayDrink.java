@@ -30,15 +30,21 @@ import java.util.List;
 
 public class DisplayDrink extends AppCompatActivity {
 
-    int mydrink = 0;
+    //position of drink in appInfo.sharedDrinks
+    int drinkPos = 0;
     AppInfo appInfo;
+    //name of drink
     String name = "";
+    //ingredients of drink
     ArrayList<Ingredient> ingredients;
+    //info about each ingredient
     String qty = "";
     String measure = "";
     String ingredient = "";
     String msg = "";
+
     String total;
+    //Drink being displayed
     DrinkRecipe displayedDrink;
     MediaPlayer mp1;
     MediaPlayer mp2;
@@ -58,6 +64,7 @@ public class DisplayDrink extends AppCompatActivity {
 
     private ArrayList<ListElement> aList;
 
+    //adapter for list of textLables, built from stings in ListElement above
     private class MyAdapter extends ArrayAdapter<ListElement> {
 
         int resource;
@@ -100,11 +107,15 @@ public class DisplayDrink extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_display_drink);
         appInfo = AppInfo.getInstance(this);
+        //list for ingredients to display
         aList = new ArrayList<ListElement>();
+        //atach adapter to aList
         aa = new MyAdapter(this, R.layout.list_element_display, aList); // ArrayList of list elements
         ListView myListView = (ListView) findViewById(R.id.mobileViewDisplay);
+        //set adapter for ListView displayed on screen
         myListView.setAdapter(aa);
         aa.notifyDataSetChanged();
+        //set up souds for this activity
         mp1 = MediaPlayer.create(this, R.raw.zeldaselecting);
         mp2 = MediaPlayer.create(this, R.raw.backbutton);
         mp3 = MediaPlayer.create(this, R.raw.zeldaaddlibrarydrink);
@@ -117,11 +128,12 @@ public class DisplayDrink extends AppCompatActivity {
     {
         super.onResume();
         Bundle extras = getIntent().getExtras();
-        //DrinkRecipe displayedDrink;
+
+        //see if this activty was started from library activity
         if(extras.containsKey("fromLib") && extras.getBoolean("fromLib"))
         {
+            //changed button to save drink if user came from library, rather than edit drink
             Button b = (Button)findViewById(R.id.butt_edit);
-            //b.setVisibility(View.GONE);
             b.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
                     // Perform action on click
@@ -132,80 +144,64 @@ public class DisplayDrink extends AppCompatActivity {
             displayedDrink = appInfo.drinkFromLib;
         }
 
-        else {
-            mydrink = extras.getInt("drinkPosition");
-            displayedDrink = appInfo.savedDrinks.get(mydrink);
+        else
+        {
+            //get drink that is being displayed from appInfo
+            drinkPos = extras.getInt("drinkPosition");
+            displayedDrink = appInfo.savedDrinks.get(drinkPos);
             View b = findViewById(R.id.butt_edit);
             b.setVisibility(View.VISIBLE);
         }
 
-        TextView tv1 = (TextView) findViewById(R.id.textView1);
-        //TextView tv2 = (TextView) findViewById(R.id.textView2);
-        TextView tv3 = (TextView) findViewById(R.id.textView3);
-
+        //get views displayed on screen
+        TextView tvName = (TextView) findViewById(R.id.textView1);
+        TextView tvMsg = (TextView) findViewById(R.id.textView3);
         ImageView imageView = (ImageView) findViewById(R.id.drinkImage);
 
-       // TextView tv5 = (TextView) findViewById(R.id.textView5);
-        //TextView tv6 = (TextView) findViewById(R.id.textView6);
-        //TextView tv4 = (TextView) findViewById(R.id.textView3); // THIS SHOULD BE WHATEVER THE VIEW IS FOR IMAGES
-        //if (appInfo.savedDrinks.get(mydrink) != null) {
-          //  DrinkRecipe displayedDrink = appInfo.savedDrinks.get(mydrink);
-            name = displayedDrink.getName();
-            ingredients = displayedDrink.getIngredientList();
 
-            aList.clear();
-            for(int i = 0; i < ingredients.size(); i++)
-            {
-                qty = ingredients.get(i).getQty();
-                measure = ingredients.get(i).getMeasure();
-                ingredient = ingredients.get(i).getIngredient();
-                total = qty + " " + measure + " " + ((qty + measure).equals("") ? "" : "of ") + ingredient;
-                aList.add(new ListElement(total.trim()));
-                aa.notifyDataSetChanged();
+        name = displayedDrink.getName();
+        msg = displayedDrink.getMsg();
+        ingredients = displayedDrink.getIngredientList();
 
-            }
+        //copy ingredients in the drink being displayed into the arraylist used to display ingredients
+        aList.clear();
+        for(int i = 0; i < ingredients.size(); i++)
+        {
+            qty = ingredients.get(i).getQty();
+            measure = ingredients.get(i).getMeasure();
+            ingredient = ingredients.get(i).getIngredient();
+            total = qty + " " + measure + " " + ((qty + measure).equals("") ? "" : "of ") + ingredient;
+            //add ingredient to list
+            aList.add(new ListElement(total.trim()));
+            //update screen
+            aa.notifyDataSetChanged();
+        }
 
-            msg = displayedDrink.getMsg();
-            //int imageID = displayedDrink.getImageID();
-            tv1.setText(name);
-            //tv5.setText("Ingredients: ");
-            //tv2.setText(qty + " " + measure + " of " + ingredient);
-            //tv6.setText("Directions: ");
-            tv3.setText(msg);
 
-            imageView.setImageResource(displayedDrink.getImageID());
-            //tv4.setText(imageID) //THIS SHOULD BE DIFFERENT
+        //set values to be displayed on screen in each view
+        tvName.setText(name);
+        tvMsg.setText(msg);
+        imageView.setImageResource(displayedDrink.getImageID());
+
 
     }
 
+    //goes to edit drink activity
     public void clickEdit(View V) {
 
-        /*TextView tv1 = (TextView) findViewById(R.id.textView1);
-        String text1 = tv1.getText().toString();
-        //appInfo.setColor1(text1);
-        //appInfo.addDrink(mydrink); = text1;*/
+
 
         TextView tv1 = (TextView) findViewById(R.id.textView1);
         String text1 = tv1.getText().toString();
-        //appInfo.setColor2(text2);
-        appInfo.sharedString1 = text1;
+
 
         TextView tv3 = (TextView) findViewById(R.id.textView3);
-        String text3 = tv3.getText().toString();
-        //appInfo.setColor1(text1);
-        appInfo.sharedString2 = text3;
-/*
-        TextView tv2 = (TextView) findViewById(R.id.textView2);
-        String text3 = tv2.getText().toString();
-        //appInfo.setColor1(text1);
-        appInfo.sharedString2 = text2;
 
-        TextView tv2 = (TextView) findViewById(R.id.textView2);
-        String text3 = tv2.getText().toString();
-        //appInfo.setColor1(text1);
-        appInfo.sharedString2 = text2;*/
 
-        DrinkRecipe displayedDrink = appInfo.savedDrinks.get(mydrink);
+
+
+
+        DrinkRecipe displayedDrink = appInfo.savedDrinks.get(drinkPos);
         //appInfo.setIngredientsToEdit(displayedDrink.getIngredientList());
         appInfo.drinkToEdit = displayedDrink;
 
@@ -213,26 +209,28 @@ public class DisplayDrink extends AppCompatActivity {
 
         Intent intent = new Intent(this, EditDrinkActivity.class);
 
-        intent.putExtra("alreadyCreated", true); //setFlag that drink being edited has already been created
-        intent.putExtra("drinkPosition", mydrink);
-        //intent.putExtra("name", name);
-        //intent.putExtra("qty", qty);
-        //intent.putExtra("measure", measure);
-        //intent.putExtra("ingredient", ingredient);
-        //intent.putExtra("msg", msg);
+        //setFlag that drink being edited has already been created, rather than being a brand new drink
+        intent.putExtra("alreadyCreated", true);
+        //give position of drink in appInfo.savedDrinks
+        intent.putExtra("drinkPosition", drinkPos);
+
         Toast.makeText(getBaseContext(), "Editing " + text1, Toast.LENGTH_SHORT).show();
         mp1.start();
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP); //May neee to change this location to other activities instead
+        //go to edit activity
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);
     }
 
+    //saves drink, used when display drink is accessed from library activity rather than main activity
     public void saveDrink()
     {
 
+        //check if a drink exists in user's list
         if(isDuplicateName(displayedDrink.getName()))
         {
             duplicateDialog();
         }
+        //else, add drink to user's list and increment download count of this drink to track popularity
         else
         {
             appInfo.addDrink(displayedDrink);
@@ -243,6 +241,7 @@ public class DisplayDrink extends AppCompatActivity {
         }
     }
 
+    //checks if a drink in the user's list has the same name as this drink
     public boolean isDuplicateName(String name)
     {
         for(DrinkRecipe recipe : appInfo.savedDrinks)
@@ -253,6 +252,8 @@ public class DisplayDrink extends AppCompatActivity {
         return false;
     }
 
+    //alerts user that saving this drink to their list will mean they will have two drinks with
+    //the same name
     public void duplicateDialog()
     {
         AlertDialog.Builder alertDialog = new AlertDialog.Builder(DisplayDrink.this);//.create();
@@ -262,19 +263,19 @@ public class DisplayDrink extends AppCompatActivity {
         alertDialog.setMessage("A drink with this name already exists in your log.\nAdd this drink anyway?(Existing drink will remain)")
                 .setPositiveButton("Add", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
+                        //if user is okay with dupliacte names, save drink and increment downloads to
+                        //track popularity
                         appInfo.addDrink(displayedDrink);
                         mp3.start();
-                        //Toast.makeText(getBaseContext(), "Drink Added!", Toast.LENGTH_SHORT).show();
-                        /*Intent intent = new Intent(DisplayDrink.this, LibraryActivity.class);
-                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                        startActivity(intent);*/
+
                         incrementDownloads(displayedDrink);
-                        //onBackPressed();
+
 
                     }
                 })
                 .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
+                        //if user doesn't want duplicate, dismiss dialogue
                         mp4.start();
                         dialog.dismiss();
                     }
@@ -289,15 +290,14 @@ public class DisplayDrink extends AppCompatActivity {
         super.onBackPressed();
     }
 
-
+    //increments the download count for this drink to track populatiry
     public void incrementDownloads(DrinkRecipe recipe)
     {
-
+        //get this drink's unique id to increment its download count in the database
         JSONObject obj = new JSONObject();
         try
         {
             obj.put("drinkId", recipe.uniqueId);
-
 
         }
         catch(Exception e)
@@ -305,35 +305,28 @@ public class DisplayDrink extends AppCompatActivity {
 
         }
 
-        //Log.d(logTag, "" + recipe.uniqueId);
 
 
         JsonObjectRequest jsobj = new JsonObjectRequest(
-                "https://backendtest-165520.appspot.com/ndb_api/increment_download_count", obj,/*new JSONObject(params),*/
+                "https://backendtest-165520.appspot.com/ndb_api/increment_download_count", obj,
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response)
                     {
-                        //Log.d(logTag, "Received: " + response.toString());
+
                         try
                         {
-
-                            String responseString = response.getString("result");
-                            //Log.d(logTag, "done with increment");
                             Toast.makeText(getBaseContext(), "Drink Added!", Toast.LENGTH_SHORT).show();
 
-
+                            //when drink is added, return to library activity
                             onBackPressed();
                         }
                         catch(Exception e)
                         {
-                            //mapped value was not a string, didn't exist, etc
-                            //Log.d(logTag, "Couldn't get mapped value for key 'result' ");
-                            Toast.makeText(getBaseContext(), "Drink Added!", Toast.LENGTH_SHORT).show();
 
-            /*Intent intent = new Intent(DisplayDrink.this, LibraryActivity.class);
-              intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-              startActivity(intent);*/
+                            Toast.makeText(getBaseContext(), "Drink Not Added", Toast.LENGTH_SHORT).show();
+
+
                             onBackPressed();
                         }
 
@@ -343,11 +336,9 @@ public class DisplayDrink extends AppCompatActivity {
             @Override
             public void onErrorResponse(VolleyError error)
             {
-                Toast.makeText(getBaseContext(), "Drink Added!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getBaseContext(), "Drink Not Added!", Toast.LENGTH_SHORT).show();
 
-            /*Intent intent = new Intent(DisplayDrink.this, LibraryActivity.class);
-              intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-              startActivity(intent);*/
+
                 onBackPressed();
             }
         });
@@ -356,13 +347,6 @@ public class DisplayDrink extends AppCompatActivity {
         appInfo.queue.add(jsobj);
 
 
-        //calling loadRecipes directly from add recipes to check in the console that recipes
-        //are being added properly. A lot of repeats will be printed, I've been testing with the
-        //same recipes via android, local host, app engine, etc.
-
-
-        //add an actual row item on screen
-        //adapter.add(new DrinkRecipe("Default", R.drawable.ic_launcher));
     }
 }
 

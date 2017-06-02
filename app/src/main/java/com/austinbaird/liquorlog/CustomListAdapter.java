@@ -12,73 +12,13 @@ import java.util.ArrayList;
 import android.util.Log;
 
 
-
-/*class RowItem
-{
-    private String drinkName;
-    private int imageID;
-    private String message;
-    private ArrayList<Ingredient> ingredients;
-
-    public RowItem(String drinkName, int imageID)
-    {
-        this.drinkName = drinkName;
-        this.imageID = imageID;
-    }
-
-    public RowItem(String drinkName, int imageID, String message, ArrayList<Ingredient> ingredients)
-    {
-        this.drinkName = drinkName;
-        this.imageID = imageID;
-        this.message = message;
-        this.ingredients = ingredients;
-    }
-
-    public String getName()
-    {
-        return drinkName;
-    }
-
-    public String getMessage()
-    {
-        return message;
-    }
-
-    public ArrayList<Ingredient> getIngredients()
-    {
-        return ingredients;
-    }
-
-    public int getImageID()
-    {
-        return imageID;
-    }
-
-    public void setName(String drinkName)
-    {
-        this.drinkName = drinkName;
-    }
-
-    public void setImageID(int imageID)
-    {
-        this.imageID = imageID;
-    }
-
-    public void setMessage(String message) {this.message= message;}
-
-    public void setIngredients(ArrayList<Ingredient> ingredients) {this.ingredients = ingredients;}
-
-    public void addIngredient(Ingredient ingredient)
-    {
-        this.ingredients.add(ingredient);
-    }
-
-}*/
-
+/*
+Custom List adapter for dsiplaying the drink image and name in a vertical listver. Used in main activity
+ */
 
 public class CustomListAdapter extends BaseAdapter {
 
-    private String logTag = "tag";
+
 
     private final Activity context;
     private ArrayList<DrinkRecipe> data;

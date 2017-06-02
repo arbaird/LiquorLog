@@ -13,7 +13,7 @@ import android.util.Log;
  */
 public class AppInfo {
 
-
+    //used for addPreDefined in Edit drink activity
     int drinksIcon[] = { R.drawable.bluesmall, R.drawable.blueicesmall, R.drawable.blueumbrellasmall, R.drawable.bluefruitsmall,
             R.drawable.blueiceumbrellasmall, R.drawable.blueicefruitsmall, R.drawable.blueumbrellafruitsmall, R.drawable.blueiceumbrellafruitsmall,
             R.drawable.darkbrownsmall, R.drawable.darkbrownicesmall, R.drawable.darkbrownumbrellasmall, R.drawable.darkbrownfruitsmall,
@@ -27,8 +27,7 @@ public class AppInfo {
 
 
     private static AppInfo instance = null;
-    private static final String COLOR_NAME1 = "color1";
-    private static final String COLOR_NAME2 = "color2";
+
 
     public static String logTag;
 
@@ -36,19 +35,27 @@ public class AppInfo {
         // Exists only to defeat instantiation.
     }
 
-    public String sharedString1;
-    public String sharedString2;
+
 
     private Context my_context;
 
     // Here are some values we want to keep global.
+
+    //the list of saved drinks for the user
     public ArrayList<DrinkRecipe> savedDrinks;
 
+    //drink to be displayed when going from library activity to display activity
     public DrinkRecipe drinkFromLib;
 
+    //handles all Volley requests.
     public RequestQueue queue;
 
+    //drink to edit when going from display drink to edit drink acitivty.
     public DrinkRecipe drinkToEdit;
+
+    //ingredients to edit when going from display drink to edit drink acitivty. Easier to extract
+    //separate from DrinkRecipe since these ingredients are used for a custom list adapter in both
+    //activities
     public ArrayList<Ingredient> ingredientsToEdit;
 
     public static AppInfo getInstance(Context context) {
@@ -61,8 +68,7 @@ public class AppInfo {
             instance.drinkToEdit = null;
             instance.queue = Volley.newRequestQueue(context);
             SharedPreferences settings = context.getSharedPreferences(MainActivity.MYPREFS, 0);
-            instance.sharedString1 = settings.getString(COLOR_NAME1, null);
-            instance.sharedString2 = settings.getString(COLOR_NAME2, null);
+
             Log.d(logTag, "First AppInfo!");
 
 
@@ -70,28 +76,11 @@ public class AppInfo {
         return instance;
     }
 
-    public void setColor1(String c) {
-        instance.sharedString1 = c;
-        SharedPreferences settings = my_context.getSharedPreferences(MainActivity.MYPREFS, 0);
-        SharedPreferences.Editor editor = settings.edit();
-        editor.putString(COLOR_NAME1, c);
-        editor.commit();
-    }
 
-    public void setColor2(String c) {
-        instance.sharedString2 = c;
-        SharedPreferences settings = my_context.getSharedPreferences(MainActivity.MYPREFS, 0);
-        SharedPreferences.Editor editor = settings.edit();
-        editor.putString(COLOR_NAME2, c);
-        editor.commit();
-    }
 
     public void addDrink(DrinkRecipe drink) {
         instance.savedDrinks.add(drink);
-        /*SharedPreferences settings = my_context.getSharedPreferences(MainActivity.MYPREFS, 0);
-        SharedPreferences.Editor editor = settings.edit();
-        editor.putString(COLOR_NAME, c);
-        editor.commit();*/
+
     }
 
     public void setIngredientsToEdit(ArrayList<Ingredient> ingredients)

@@ -28,8 +28,6 @@ import android.content.DialogInterface;
 
 import java.util.ArrayList;
 
-import android.view.View.OnTouchListener;
-import android.view.MotionEvent;
 
 import android.app.ProgressDialog;
 
@@ -37,6 +35,7 @@ import android.app.ProgressDialog;
 public class LibraryActivity extends AppCompatActivity
 {
 
+    //recycler views and their adapters/ arraylists displayed in this activity
     public ArrayList<DrinkRecipe> databaseDrinks;
     RecyclerView userMadeRecyclerView;
     RecyclerView.Adapter userMadeAdapter;
@@ -55,6 +54,7 @@ public class LibraryActivity extends AppCompatActivity
 
     SearchView searchView;
 
+    //sounds used in this activity
     MediaPlayer mp1;
     MediaPlayer mp2;
     MediaPlayer mp3;
@@ -62,7 +62,7 @@ public class LibraryActivity extends AppCompatActivity
     MediaPlayer mp5;
     MediaPlayer mp6;
 
-    boolean enteringLibrary;
+
 
     public String logTag = "Library";
     AppInfo appInfo;
@@ -73,33 +73,25 @@ public class LibraryActivity extends AppCompatActivity
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-            super.onCreate(savedInstanceState);
-            setContentView(R.layout.activity_library);
-            appInfo = AppInfo.getInstance(this);
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_library);
+        appInfo = AppInfo.getInstance(this);
+        //get sounds used in this activity
+        mp1 = MediaPlayer.create(this, R.raw.librarysong);
+        mp2 = MediaPlayer.create(this, R.raw.zeldaselecting);
+        mp3 = MediaPlayer.create(this, R.raw.backbutton);
+        mp6 = MediaPlayer.create(this, R.raw.zeldacancel);
+        //mp4 = MediaPlayer.create(this, R.raw.zeldasearchopen); // Didn't know where to put this for proper function
+        mp5 = MediaPlayer.create(this, R.raw.zeldasearchclick);
 
-            mp1 = MediaPlayer.create(this, R.raw.librarysong);
-            mp2 = MediaPlayer.create(this, R.raw.zeldaselecting);
-            mp3 = MediaPlayer.create(this, R.raw.backbutton);
-            mp6 = MediaPlayer.create(this, R.raw.zeldacancel);
-            //mp4 = MediaPlayer.create(this, R.raw.zeldasearchopen); // Didn't know where to put this for proper function
-            mp5 = MediaPlayer.create(this, R.raw.zeldasearchclick);
 
-            //mp1.start();
-            //mp1.setLooping(true);
-
-            //Toolbar myToolbar = (Toolbar) findViewById(R.id.toolbar);
-            //setSupportActionBar(myToolbar);
-
-        //mp1.setLooping(true);
-
-        //Toolbar myToolbar = (Toolbar) findViewById(R.id.toolbar);
-        //setSupportActionBar(myToolbar);
 
 
 
 
         searchView=(SearchView) findViewById(R.id.searchView);
 
+        //when search view is clicked, hids refresh button
         searchView.setOnSearchClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -109,40 +101,31 @@ public class LibraryActivity extends AppCompatActivity
             }
         });
 
-            /*searchView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Button btn = (Button) findViewById(R.id.refreshbutton);
-                    btn.setVisibility(View.GONE);
-                }
-            });*/
-            //searchView.setQueryHint("Drink Name or Ingredient");
 
 
-            searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
 
-                @Override
-                public boolean onQueryTextSubmit(String query) {
-                    Toast.makeText(getBaseContext(), "Displaying results for phrase '" + query + "' in Library", Toast.LENGTH_LONG).show();
-                    mp5.start();
-                    search(query, null, null);
-                    searchView.clearFocus();
-                    return true;
-                }
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
 
-                @Override
-                public boolean onQueryTextChange(String newText) {
-                    //Toast.makeText(getBaseContext(), newText, Toast.LENGTH_LONG).show();
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                Toast.makeText(getBaseContext(), "Displaying results for phrase '" + query + "' in Library", Toast.LENGTH_LONG).show();
+                mp5.start();
+                search(query, null, null);
+                searchView.clearFocus();
+                return true;
+            }
+             @Override
+             public boolean onQueryTextChange(String newText) {
+                 //necessary to override, boiler plate
 
                     return false;
                 }
             });
-         // Catch event on [x] button inside search view
-             int searchCloseButtonId = searchView.getContext().getResources()
-                .getIdentifier("android:id/search_close_btn", null, null);
-                ImageView closeButton = (ImageView) this.searchView.findViewById(searchCloseButtonId);
-                // Set on click listener
-                closeButton.setOnClickListener(new View.OnClickListener() {
+        // Catch event on [x] button inside search view
+        int searchCloseButtonId = searchView.getContext().getResources().getIdentifier("android:id/search_close_btn", null, null);
+        ImageView closeButton = (ImageView) this.searchView.findViewById(searchCloseButtonId);
+        //When pressed, collapse search view and make recycler views visible again, and hide search recycler view
+        closeButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v)
                 {
@@ -182,11 +165,9 @@ public class LibraryActivity extends AppCompatActivity
 
         initRecycleViews();
 
-        Log.d(logTag, userMadeAdapter.toString());
-        Log.d(logTag, libAdapter.toString());
 
-
-        loadRecipes(null, /*"get_userMade_recipes"*/"get_recipes_fancy", databaseDrinks, userMadeAdapter);
+        //load recipes for each recylcer view
+        loadRecipes(null, "get_recipes_fancy", databaseDrinks, userMadeAdapter);
         loadRecipes(null, "get_library_recipes", libDrinks, libAdapter);
         loadRecipes(null, "get_popular_drinks", popDrinks, popAdapter);
     }
@@ -202,7 +183,6 @@ public class LibraryActivity extends AppCompatActivity
         mp1.stop();
         mp3.start();
 
-        //enteringLibrary = false;
         super.onBackPressed();
 
 
@@ -211,31 +191,17 @@ public class LibraryActivity extends AppCompatActivity
     @Override
     protected void onStart() {
 
-        //if(enteringLibrary == true)
-        //{
-            //mp1.start();
-            //mp1.setLooping(true);
-           // enteringLibrary = true;
-        //}
         super.onStart();
     }
 
     @Override
     protected void onResume()
     {
-        //if(mp1.isPlaying())
-        //{
-            //do nothing
-        //}
-        //else
-        //{
-            //mp1.start();
-            //mp1.setLooping(true);
-            //enteringLibrary = true;
-        //}
+        //set sound effects
         mp1.start();
         mp1.setLooping(true);
-        Log.d(logTag, "LIB ON RESUME");
+
+        //load recipes
         loadRecipes(null, "get_recipes_fancy", databaseDrinks, userMadeAdapter);
         loadRecipes(null, "get_library_recipes", libDrinks, libAdapter);
         loadRecipes(null, "get_popular_drinks", popDrinks, popAdapter);
@@ -245,11 +211,12 @@ public class LibraryActivity extends AppCompatActivity
 
 
     /*
-    This function prints every recipe in the cloud datastore to the console.
+    This function loads recipes into an arraylist given an api method
      */
     public void loadRecipes(View v, String apiMethod, final ArrayList<DrinkRecipe> drinkArrayList, final RecyclerView.Adapter adapter)
     {
 
+        //display spinning progress bar while waiting for database response
         final ProgressDialog progress = new ProgressDialog(this, ProgressDialog.STYLE_SPINNER);
         progress.setTitle("Loading");
         progress.setMessage("Loading recipes...");
@@ -266,20 +233,22 @@ public class LibraryActivity extends AppCompatActivity
 
                         progress.dismiss();
                         Log.d(logTag, "Received: " + response.toString());
-                        // Ok, let's disassemble a bit the json object.
-                        try {
+
+                        try
+                        {
+                            //load received list into the given arraylist and update the screen
                             JSONArray receivedList = response.getJSONArray("results");
                             decodeJSON(receivedList, drinkArrayList, adapter);
 
                         } catch (Exception e) {
-                            Log.d(logTag, "Aaauuugh, received bad json: " + e.getStackTrace());
+                            Log.d(logTag, ""+ e.getStackTrace());
                         }
                     }
                 }, new Response.ErrorListener() {
 
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        // TODO Auto-generated method stub
+                        // Dismiss progress bar and let user know there was an issue connecting to server
                         Log.d(logTag, error.toString());
                         progress.dismiss();
 
@@ -303,10 +272,6 @@ public class LibraryActivity extends AppCompatActivity
                     }
                 });
 
-        // In some cases, we don't want to cache the request.
-        // jsObjRequest.setShouldCache(false);
-
-
         appInfo.queue.add(jsObjRequest);
     }
 
@@ -317,24 +282,28 @@ public class LibraryActivity extends AppCompatActivity
         try
         {
             obj.put("q",q);
-
         }
         catch(Exception e)
         {
-
+            Log.d(logTag, "Problem putting query in POST");
         }
 
+        //initialize seach recylcer view if it is null
         if (searchRecyclerView == null)
         {
+            //init arraylist and find recylcer view by id
             searchDrinks = new ArrayList<>();
             searchRecyclerView = (RecyclerView) findViewById(R.id.search_recycler_view);
             searchRecyclerView.setHasFixedSize(false);
 
+            //set horizontal layout
             RecyclerView.LayoutManager userLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
             searchRecyclerView.setLayoutManager(userLayoutManager);
 
-            searchAdapter = new HorizontalDrinkAdapter(LibraryActivity.this, searchDrinks);//databaseDrinks);
+            //attack adapter to search array list and set this adapter to the recycler view on screen
+            searchAdapter = new HorizontalDrinkAdapter(LibraryActivity.this, searchDrinks);
             searchRecyclerView.setAdapter(searchAdapter);
+            //add touch listener that goes to display drink
             searchRecyclerView.addOnItemTouchListener(
                     new RecyclerItemClickListener(this, userMadeRecyclerView, new drinkListener(searchDrinks)));
         }
@@ -342,7 +311,7 @@ public class LibraryActivity extends AppCompatActivity
 
 
         JsonObjectRequest jsobj = new JsonObjectRequest(
-                "https://backendtest-165520.appspot.com/ndb_api/search", obj,/*new JSONObject(params),*/
+                "https://backendtest-165520.appspot.com/ndb_api/good_search", obj,/*new JSONObject(params),*/
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response)
@@ -350,6 +319,7 @@ public class LibraryActivity extends AppCompatActivity
                         Log.d(logTag, "Received: " + response.toString());
                         try
                         {
+                            //hide all other recycler views and display the search results
                             userMadeRecyclerView.setVisibility(View.GONE);
                             libRecyclerView.setVisibility(View.GONE);
                             popRecyclerView.setVisibility(View.GONE);
@@ -364,18 +334,16 @@ public class LibraryActivity extends AppCompatActivity
 
                             searchRecyclerView.setVisibility(View.VISIBLE);
 
-                            String responseString = response.getString("results");
-                            Log.d(logTag,responseString );
 
+                            //load search results into the search arraylist and notify adapter to
+                            //update the scrren
                             JSONArray receivedList = response.getJSONArray("results");
                             decodeJSON(receivedList, searchDrinks, searchAdapter);
 
                         }
                         catch(Exception e)
                         {
-                            //mapped value was not a string, didn't exist, etc
-                            Log.d(logTag, "Couldn't get mapped value for key 'results' ");
-                            //detailView.setText("Couldn't get mapped value for key 'result' ");
+                            Log.d(logTag, "Issue with search response" + e.getStackTrace());
                         }
 
 
@@ -395,22 +363,27 @@ public class LibraryActivity extends AppCompatActivity
     }
 
 
-
+    /*
+    Create DrinkRecipe objects from the JSON array and load them into the array list and then have
+    adapter notify to update the screen
+     */
     public void decodeJSON(JSONArray jArray, ArrayList<DrinkRecipe> drinkArrayList, RecyclerView.Adapter adapter)
     {
 
         try
         {
-            //JSONArray jArray = new JSONArray(drinksAsJSON);
-            Log.d(logTag, jArray.toString());
+            //clear current arraylist to copy new drinks into it
             drinkArrayList.clear();
-            for(int i = 0; i < jArray.length(); i++)//JSONArray drinkRecipe : jArray)
+            for(int i = 0; i < jArray.length(); i++)
             {
                 JSONObject jsonDrinkRecipe = jArray.getJSONObject(i);
-                String name = jsonDrinkRecipe.getString("name"); //name of drink is first element in each list
+                //get name
+                String name = jsonDrinkRecipe.getString("name");
 
+                //get ingredient list
                 JSONArray jsonIngredients = jsonDrinkRecipe.getJSONArray("ingredients");
                 ArrayList<Ingredient> ingredients = new ArrayList<>();
+                //add each component of json ingredient list to DrinkRecipe ingredient list
                 for(int j = 0; j < jsonIngredients.length(); j++)
                 {
                     JSONObject jsonIngredientComponents = jsonIngredients.getJSONObject(j);
@@ -420,11 +393,15 @@ public class LibraryActivity extends AppCompatActivity
                     ingredients.add(new Ingredient(qty, measure, ingName));
                 }
 
+                //get img id
                 int imgId = Integer.parseInt(jsonDrinkRecipe.getString("imgId"));
+                //get unique id to keep track of drinks that are downloaded so we can track popularity
                 String uniqueId = jsonDrinkRecipe.getString("uniqueid");
+                //get message
                 String msg = jsonDrinkRecipe.getString("msg");
-                //Log.d(logTag, name + " has unique id " + uniqueId);
+                //get downloads
                 int downloads = jsonDrinkRecipe.getInt("downloads");
+                //add this drink to the array list
                 drinkArrayList.add(new DrinkRecipe(name, ingredients, msg, imgId, uniqueId, downloads));
             }
 
@@ -439,64 +416,73 @@ public class LibraryActivity extends AppCompatActivity
 
     public void refreshUserDrinks(View v)
     {
+        //reload all vrecycler views
         loadRecipes(v, "get_recipes_fancy", databaseDrinks, userMadeAdapter);
         loadRecipes(v, "get_library_recipes", libDrinks, libAdapter);
         loadRecipes(v, "get_popular_drinks", popDrinks, popAdapter);
         Log.d(logTag, "refresh");
     }
 
-
+    /*
+    initalize all the recycler views
+     */
     public void initRecycleViews()
     {
+        //init array list
         databaseDrinks = new ArrayList<>();
 
-        // Calling the RecyclerView
+        // get recycler view
         userMadeRecyclerView = (RecyclerView) findViewById(R.id.recycler_view);
         userMadeRecyclerView.setHasFixedSize(false);
 
-        // The number of Columns
+        // set recycler view to horizontal layout
         RecyclerView.LayoutManager userLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
         userMadeRecyclerView.setLayoutManager(userLayoutManager);
 
+        //attach array list to adapter and attach adapter to recycler view on screen
         userMadeAdapter = new HorizontalDrinkAdapter(LibraryActivity.this, databaseDrinks);//databaseDrinks);
         userMadeRecyclerView.setAdapter(userMadeAdapter);
 
-
+        //add on touch listener that goes to display drink when touched
         userMadeRecyclerView.addOnItemTouchListener(
                 new RecyclerItemClickListener(this, userMadeRecyclerView, new drinkListener(databaseDrinks)));
 
 
-
+        //init array list
         libDrinks = new ArrayList<>();
 
+        // get recycler view
         libRecyclerView = (RecyclerView) findViewById(R.id.lib_recycler_view);
         libRecyclerView.setHasFixedSize(false);
 
-        // The number of Columns
+        // set recycler view to horizontal layout
         RecyclerView.LayoutManager  libLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
         libRecyclerView.setLayoutManager(libLayoutManager);
 
+        //attach array list to adapter and attach adapter to recycler view on screen
         libAdapter = new HorizontalDrinkAdapter(LibraryActivity.this, libDrinks);//databaseDrinks);
         libRecyclerView.setAdapter(libAdapter);
 
-
+        //add on touch listener that goes to display drink when touched
         libRecyclerView.addOnItemTouchListener(
                 new RecyclerItemClickListener(this, userMadeRecyclerView, new drinkListener(libDrinks)));
 
-
+        //init array list
         popDrinks = new ArrayList<>();
 
+        // get recycler view
         popRecyclerView = (RecyclerView) findViewById(R.id.pop_recycler_view);
         popRecyclerView.setHasFixedSize(false);
 
-        // The number of Columns
+        // set recycler view to horizontal layout
         RecyclerView.LayoutManager  popLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
         popRecyclerView.setLayoutManager(popLayoutManager);
 
+        //attach array list to adapter and attach adapter to recycler view on screen
         popAdapter = new HorizontalDrinkAdapter(LibraryActivity.this, popDrinks);//databaseDrinks);
         popRecyclerView.setAdapter(popAdapter);
 
-
+        //add on touch listener that goes to display drink when touched
         popRecyclerView.addOnItemTouchListener(
                 new RecyclerItemClickListener(this, popRecyclerView, new drinkListener(popDrinks)));
 
@@ -505,7 +491,10 @@ public class LibraryActivity extends AppCompatActivity
 
 
 
-
+    /*
+    same on click listener used by every recycler view. On click, it goes to display drink activity
+    for the drinks that has been clicked on
+     */
     class drinkListener implements RecyclerItemClickListener.OnItemClickListener
     {
         ArrayList<DrinkRecipe> drinks;
@@ -514,11 +503,14 @@ public class LibraryActivity extends AppCompatActivity
             this.drinks = drinks;
         }
 
-        @Override public void onItemClick(View view, int position) {
-            //Log.d(logTag, "You clicked " + position);
+        @Override public void onItemClick(View view, int position)
+        {
+            //store drink to be displayed in appInfo
             appInfo.drinkFromLib = drinks.get(position);
             String drinkName = appInfo.drinkFromLib.getName().toString();
+            //creat intent to go to Diplay Drink Activity
             Intent intent = new Intent(LibraryActivity.this, DisplayDrink.class);
+            //put extra that specifies that we are coming from lib activity
             intent.putExtra("fromLib", true);
             String toastMsg = "Displaying " + drinkName;
             Toast toast= Toast.makeText(getBaseContext() ,toastMsg,Toast.LENGTH_SHORT);
@@ -528,7 +520,7 @@ public class LibraryActivity extends AppCompatActivity
         }
         @Override public void onItemLongClick(View v, int pos)
         {
-            //nothing
+            //nothing, bolierplate necessary
         }
     }
 

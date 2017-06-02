@@ -5,7 +5,7 @@ import android.util.Log;
 import org.json.JSONObject;
 
 /**
- * Created by austinbaird on 5/2/17.
+ * A class that holds info about each individual ingredient
  */
 
 public class Ingredient
@@ -26,6 +26,7 @@ public class Ingredient
 
         this.ingredient = ingredient;
 
+        //convenient to have JSON representation of this class for quick exchanges with database
         try {
             jsonIngredientComponents = new JSONObject();
             jsonIngredientComponents.put("qty", qty);

@@ -36,7 +36,8 @@ public class EditDrinkImage extends AppCompatActivity {
             R.drawable.rediceumbrellasmall, R.drawable.redicefruitsmall, R.drawable.redumbrellafruitsmall, R.drawable.rediceumbrellafruitsmall};
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_drink_image);
         appInfo = AppInfo.getInstance(this);
@@ -56,11 +57,14 @@ public class EditDrinkImage extends AppCompatActivity {
                 mp1.start();
                 Toast.makeText(EditDrinkImage.this, "Saving Image as: " + descriptionList[position], Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(EditDrinkImage.this, EditDrinkActivity.class);
+                //put imageId in extras to update the image in edit drink activity
                 intent.putExtra("imageId", drinksIcon[position]);
+                //return the alreadyCreated boolean and drinkPos for edit drink activty to display
+                //same drink it was displaying before entering edit image activity
                 intent.putExtra("alreadyCreated", alreadyCreated);
                 intent.putExtra("drinkPosition", drinkPos);
                 appInfo.drinkToEdit.setImageID(drinksIcon[position]);
-                //intent.putExtra("alreadyCreated", alreadyCreated);
+
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(intent);
             }

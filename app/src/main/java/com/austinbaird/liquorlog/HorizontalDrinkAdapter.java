@@ -1,7 +1,7 @@
 package com.austinbaird.liquorlog;
 
 /**
- * Created by austinbaird on 5/13/17.
+ * Adapter used for horizontal Recycler View holding card views for a Drink Recipe
  */
 
 import android.content.Context;
@@ -19,15 +19,16 @@ import java.util.ArrayList;
 
 public class HorizontalDrinkAdapter extends RecyclerView.Adapter< HorizontalDrinkAdapter.ViewHolder> {
 
-    ArrayList<DrinkRecipe> alName;
+    ArrayList<DrinkRecipe> data;
     Context context;
 
     public HorizontalDrinkAdapter(Context context, ArrayList<DrinkRecipe> alName) {
         super();
         this.context = context;
-        this.alName = alName;
+        this.data= alName;
     }
 
+    //inflate view group and return viewholder
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
         View v = LayoutInflater.from(viewGroup.getContext())
@@ -36,32 +37,33 @@ public class HorizontalDrinkAdapter extends RecyclerView.Adapter< HorizontalDrin
         return viewHolder;
     }
 
+    //update the displayed name, image, and download count
     @Override
     public void onBindViewHolder(ViewHolder viewHolder, int i) {
-        viewHolder.tvSpecies.setText(alName.get(i).getName());
-        viewHolder.imgThumbnail.setImageResource(alName.get(i).getImageID());
-        viewHolder.downloadCount.setText(alName.get(i).getDownloads());
+        viewHolder.drinkName.setText(data.get(i).getName());
+        viewHolder.imgThumbnail.setImageResource(data.get(i).getImageID());
+        viewHolder.downloadCount.setText(data.get(i).getDownloads());
 
     }
 
     @Override
     public int getItemCount() {
-        return alName.size();
+        return data.size();
     }
 
+    //holds the imageview for image, and the textviews for download count and name
     public static class ViewHolder extends RecyclerView.ViewHolder
     {
 
         public ImageView imgThumbnail;
-        public TextView tvSpecies;
+        public TextView drinkName;
         public TextView downloadCount;
-        //private ItemClickListener clickListener;
 
         public ViewHolder(View itemView)
         {
             super(itemView);
             imgThumbnail = (ImageView) itemView.findViewById(R.id.img_thumbnail);
-            tvSpecies = (TextView) itemView.findViewById(R.id.dbdrinkName);
+            drinkName = (TextView) itemView.findViewById(R.id.dbdrinkName);
             downloadCount = (TextView) itemView.findViewById(R.id.dbdrinkDownloads);
         }
 
