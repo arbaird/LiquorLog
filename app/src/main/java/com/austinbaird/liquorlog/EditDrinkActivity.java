@@ -374,6 +374,26 @@ public class EditDrinkActivity extends AppCompatActivity
     }
 
     @Override
+    protected void onPause()
+    {
+        msg = editMsg.getText().toString();
+        drinkName = editName.getText().toString();
+
+
+        ArrayList<Ingredient> ingredients = new ArrayList<>();
+
+        for(Ingredient drink : rowItems)
+        {
+            ingredients.add(drink);
+        }
+        DrinkRecipe recipe = new DrinkRecipe(drinkName, ingredients, msg);
+        recipe.setImageID(image);
+
+        appInfo.drinkToEdit = recipe;
+        super.onPause();
+    }
+
+    @Override
     protected void onResume() {
 
 
