@@ -171,6 +171,8 @@ public class DisplayDrink extends AppCompatActivity {
             measure = ingredients.get(i).getMeasure();
             ingredient = ingredients.get(i).getIngredient();
             total = qty + " " + measure + " " + ((qty + measure).equals("") ? "" : "of ") + ingredient;
+            if(!qty.equals("") && measure.equals(""))
+                total = qty + " " + ingredient;
             //add ingredient to list
             aList.add(new ListElement(total.trim()));
             //update screen

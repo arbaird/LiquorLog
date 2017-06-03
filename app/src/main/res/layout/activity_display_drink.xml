@@ -48,18 +48,28 @@
         android:layout_marginLeft="23dp"
         android:layout_marginStart="23dp" />
 
+    <TextView
+        android:id="@+id/center"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
 
+        android:layout_centerVertical="true"
+
+
+        ></TextView>
     <TextView
         android:id="@+id/textView3"
         android:layout_width="320dp"
         android:layout_height="wrap_content"
 
         android:layout_marginLeft="17dp"
-        android:layout_marginBottom="125dp"
+
         android:layout_marginTop="5dp"
 
+        android:layout_below="@+id/center"
+
         android:fontFamily="casual"
-        android:layout_above="@+id/butt_edit"
+
 
         android:text="@string/your_list"
         android:textAllCaps="false"

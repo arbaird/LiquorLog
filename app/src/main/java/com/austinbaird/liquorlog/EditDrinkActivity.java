@@ -160,10 +160,9 @@ public class EditDrinkActivity extends AppCompatActivity
         mp8 = MediaPlayer.create(this, R.raw.zeldacancel);
 
         //mp = MediaPlayer.create(EditDrinkActivity.this, R.raw.zeldafanfare);
-
         //addPreDefined(); //uncomment to add library drinks to data base. make sure to clear these first before re adding
 
-        //initalize
+        //initalize values
         drinkName = "";
         msg = "";
         image = R.drawable.emptysmall;
