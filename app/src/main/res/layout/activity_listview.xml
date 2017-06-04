@@ -19,10 +19,23 @@
         android:layout_height="wrap_content"
 
         android:layout_toRightOf="@+id/drink_image"
+        android:layout_toLeftOf="@+id/deleteButton"
         android:padding="10sp"
         android:textSize="16sp"
         android:textStyle="bold"
         android:text="txt" >
     </TextView>
+
+    <Button
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:text="Delete"
+        android:id="@+id/deleteButton"
+        android:visibility="invisible"
+
+
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="17dp"
+        />
 
 </RelativeLayout>

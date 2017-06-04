@@ -69,6 +69,13 @@ public class LibraryActivity extends AppCompatActivity
 
     AlertDialog.Builder alertDialog;
 
+    //keeps track of if this is the first time lobrary is loaded, only refresh user drinks if it is first time
+    //so that drinks are only randomized when user clicks refresh
+    boolean firstLoad;
+
+    boolean toDisplay;
+
+
 
 
     @Override
@@ -76,6 +83,10 @@ public class LibraryActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_library);
         appInfo = AppInfo.getInstance(this);
+
+
+        firstLoad = true;
+        toDisplay = false;
         //get sounds used in this activity
         mp1 = MediaPlayer.create(this, R.raw.librarysong);
         mp2 = MediaPlayer.create(this, R.raw.zeldaselecting);
@@ -166,15 +177,12 @@ public class LibraryActivity extends AppCompatActivity
         initRecycleViews();
 
 
-        //load recipes for each recylcer view
-        loadRecipes(null, "get_recipes_fancy", databaseDrinks, userMadeAdapter);
-        loadRecipes(null, "get_library_recipes", libDrinks, libAdapter);
-        loadRecipes(null, "get_popular_drinks", popDrinks, popAdapter);
     }
 
     @Override
     protected void onPause() {
-        //mp1.stop();
+        if(!toDisplay)
+            mp1.pause();
         super.onPause();
     }
 
@@ -202,9 +210,23 @@ public class LibraryActivity extends AppCompatActivity
         mp1.setLooping(true);
 
         //load recipes
-        loadRecipes(null, "get_recipes_fancy", databaseDrinks, userMadeAdapter);
-        loadRecipes(null, "get_library_recipes", libDrinks, libAdapter);
-        loadRecipes(null, "get_popular_drinks", popDrinks, popAdapter);
+        Bundle extras = getIntent().getExtras();
+
+        //see if this activty was started from library activity
+        if(extras.containsKey("fromMain") && extras.getBoolean("fromMain") && firstLoad)
+        {
+
+            refreshDrinks(null);
+            firstLoad = false;
+        }
+        else
+        {
+            loadRecipes(null, "get_library_recipes", libDrinks, libAdapter);
+            loadRecipes(null, "get_popular_drinks", popDrinks, popAdapter);
+        }
+
+        //reset where we are going to play music only when in this activity and display activity
+        toDisplay = false;
         super.onResume();
     }
 
@@ -311,7 +333,7 @@ public class LibraryActivity extends AppCompatActivity
 
 
         JsonObjectRequest jsobj = new JsonObjectRequest(
-                "https://backendtest-165520.appspot.com/ndb_api/good_search", obj,/*new JSONObject(params),*/
+                "https://backendtest-165520.appspot.com/ndb_api/search", obj,
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response)
@@ -414,10 +436,10 @@ public class LibraryActivity extends AppCompatActivity
         adapter.notifyDataSetChanged();
     }
 
-    public void refreshUserDrinks(View v)
+    public void refreshDrinks(View v)
     {
         //reload all vrecycler views
-        loadRecipes(v, "get_recipes_fancy", databaseDrinks, userMadeAdapter);
+        loadRecipes(v, "get_user_recipes", databaseDrinks, userMadeAdapter);
         loadRecipes(v, "get_library_recipes", libDrinks, libAdapter);
         loadRecipes(v, "get_popular_drinks", popDrinks, popAdapter);
         Log.d(logTag, "refresh");
@@ -508,13 +530,14 @@ public class LibraryActivity extends AppCompatActivity
             //store drink to be displayed in appInfo
             appInfo.drinkFromLib = drinks.get(position);
             String drinkName = appInfo.drinkFromLib.getName().toString();
-            //creat intent to go to Diplay Drink Activity
+            //create intent to go to Diplay Drink Activity
             Intent intent = new Intent(LibraryActivity.this, DisplayDrink.class);
             //put extra that specifies that we are coming from lib activity
             intent.putExtra("fromLib", true);
             String toastMsg = "Displaying " + drinkName;
             Toast toast= Toast.makeText(getBaseContext() ,toastMsg,Toast.LENGTH_SHORT);
             toast.show();
+            toDisplay = true;
             mp2.start();
             startActivity(intent);
         }

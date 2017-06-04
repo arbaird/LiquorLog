@@ -1,64 +1,39 @@
 package com.austinbaird.liquorlog;
 
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.media.MediaPlayer;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v7.widget.PopupMenu;
-import android.view.ContextMenu;
-import android.view.Menu;
+
 import android.view.MenuItem;
 
-import android.app.Activity;
-import android.view.ContextMenu;
-import android.view.Menu;
-import android.view.MenuItem;
+
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.GridView;
-import android.widget.ListView;
-
-
-import android.os.Bundle;
-import android.app.Activity;
-import android.view.Menu;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Arrays;
-
-
-import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
-
-import android.net.Uri;
-import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
-import android.util.Log;
 import android.widget.TextView;
+import android.widget.Button;
+import android.widget.ListView;
+
+
+import java.util.ArrayList;
+
+
+
+import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
+
+
 import android.widget.Toast;
 
-import com.android.volley.AuthFailureError;
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.net.URLEncoder;
-import java.util.HashMap;
-import java.util.Map;
+
 
 
 
@@ -144,6 +119,8 @@ public class MainActivity extends AppCompatActivity
                             case R.id.item_option3:
                                 String toastMsg3 = "Select a Drink to Delete";
                                 Toast.makeText(getApplicationContext(),toastMsg3,Toast.LENGTH_SHORT).show();
+                                mp1.start();
+                                deleteDrink(null);
                                 break;
                         }
                         //Toast.makeText(MainActivity.this, "" + item.getTitle(), Toast.LENGTH_SHORT).show();
@@ -196,13 +173,25 @@ public class MainActivity extends AppCompatActivity
         SharedPreferences settings = getSharedPreferences(MainActivity.MYPREFS, 0);
         SharedPreferences.Editor editor = settings.edit();
 
+        //editor.putBoolean("first_time", true);
+        //editor.commit();
 
         //special actions for first time user opens app
         if (settings.getBoolean("first_time", true)) {
 
-            Log.d(logTag, "First time");
+            //display message to welcome user to LiquorList!
+            AlertDialog.Builder alertDialog = new AlertDialog.Builder(MainActivity.this);
+            alertDialog.setTitle("Welcome!");
+            alertDialog.setMessage("Welcome to LiquorList! To get started, press 'Edit' below" +
+                    " to start creating your own drinks or load drinks from the library!")
+                    .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
 
-            //TODO
+                            dialog.dismiss();
+                        }
+                    });
+
+            alertDialog.show();
 
             editor.putBoolean("first_time", false);
             editor.commit();
@@ -238,6 +227,11 @@ public class MainActivity extends AppCompatActivity
         {
             rowItems.add(recipe);
         }
+        TextView hintText = (TextView) findViewById(R.id.textViewHint);
+        if(rowItems.size() == 0)
+            hintText.setVisibility(View.VISIBLE);
+        else
+            hintText.setVisibility(View.INVISIBLE);
 
         //update screen
         adapter.notifyDataSetChanged();
@@ -277,6 +271,7 @@ public class MainActivity extends AppCompatActivity
     public void goToLibrary(View v)
     {
         Intent intent = new Intent(MainActivity.this, LibraryActivity.class);
+        intent.putExtra("fromMain", true);
 
         startActivity(intent);
     }
@@ -310,14 +305,79 @@ public class MainActivity extends AppCompatActivity
 
     public void deleteDrink(View v)
     {
-        if(alreadyCreated)
+
+        adapter.addDeleteButtons();
+
+
+        popupMenuButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                // Perform action on click
+                cancel();
+            }
+        });
+        popupMenuButton.setText("Done");
+
+    }
+
+    public void cancel()
+    {
+        //get rid of delete buttons
+        adapter.removeDeleteButtons();
+        popupMenuButton.setText("Edit");
+
+        //set the click listener back to its original onclick action
+        popupMenuButton.setOnClickListener(new View.OnClickListener()
         {
-            appInfo.savedDrinks.remove(drinkPos);
-        }
+            @Override
+            public void onClick(View view)
+            {
+                PopupMenu popupMenu = new PopupMenu(MainActivity.this, popupMenuButton);
+                popupMenu.getMenuInflater().inflate(R.menu.main_menu, popupMenu.getMenu());
+                mp1.start();
+                popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener()
+                {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item)
+                    {
+                        switch (item.getItemId()){
+                            case R.id.item_option1:
+                                String toastMsg1 = "Creating New Drink";
+                                Toast.makeText(getApplicationContext(),toastMsg1,Toast.LENGTH_SHORT).show();
+                                mp1.start();
+                                goToEdit(null);
+                                break;
 
+                            case R.id.item_option2:
+                                String toastMsg2 = "Adding from Library";
+                                Toast.makeText(getApplicationContext(),toastMsg2,Toast.LENGTH_SHORT).show();
+                                mp1.start();
+                                goToLibrary(null);
+                                break;
 
+                            case R.id.item_option3:
+                                String toastMsg3 = "Select a Drink to Delete";
+                                Toast.makeText(getApplicationContext(),toastMsg3,Toast.LENGTH_SHORT).show();
+                                mp1.start();
+                                deleteDrink(null);
+                                break;
+                        }
+                        //Toast.makeText(MainActivity.this, "" + item.getTitle(), Toast.LENGTH_SHORT).show();
+                        return true;
+                    }
 
-        saveDrinksAsJSON();
+                });
+
+                popupMenu.show();
+
+            }
+        });
+
+        //check to see if the size of the list became 0 and show message if it has
+        TextView hintText = (TextView) findViewById(R.id.textViewHint);
+        if(rowItems.size() == 0)
+            hintText.setVisibility(View.VISIBLE);
+        else
+            hintText.setVisibility(View.INVISIBLE);
 
 
     }

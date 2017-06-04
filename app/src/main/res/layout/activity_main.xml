@@ -33,4 +33,16 @@
         android:visibility="visible"
         android:layout_below="@+id/textView1"
         android:layout_above="@+id/butt1" />
+
+    <TextView
+        android:id="@+id/textViewHint"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="Add drinks by pressing 'Edit' below!"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:gravity="center"
+        android:visibility="invisible">
+    </TextView>
+
 </RelativeLayout>
