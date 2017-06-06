@@ -14,6 +14,7 @@
 
 
     <string-array name="measure_array">
+        <item>msr</item>
         <item></item>
         <item>Pint</item>
         <item>OZ</item>

@@ -21,7 +21,7 @@ import org.json.JSONObject;
 
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.widget.Toast;
+
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -119,7 +119,7 @@ public class LibraryActivity extends AppCompatActivity
 
             @Override
             public boolean onQueryTextSubmit(String query) {
-                Toast.makeText(getBaseContext(), "Displaying results for phrase '" + query + "' in Library", Toast.LENGTH_LONG).show();
+
                 mp5.start();
                 search(query, null, null);
                 searchView.clearFocus();
@@ -534,9 +534,7 @@ public class LibraryActivity extends AppCompatActivity
             Intent intent = new Intent(LibraryActivity.this, DisplayDrink.class);
             //put extra that specifies that we are coming from lib activity
             intent.putExtra("fromLib", true);
-            String toastMsg = "Displaying " + drinkName;
-            Toast toast= Toast.makeText(getBaseContext() ,toastMsg,Toast.LENGTH_SHORT);
-            toast.show();
+
             toDisplay = true;
             mp2.start();
             startActivity(intent);

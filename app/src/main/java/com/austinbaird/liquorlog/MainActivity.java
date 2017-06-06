@@ -77,6 +77,7 @@ public class MainActivity extends AppCompatActivity
 
 
 
+
         //set up sounds
         mp1 = MediaPlayer.create(this, R.raw.zeldaselecting);
         mp2 = MediaPlayer.create(this, R.raw.backbuttonsuper);
@@ -150,11 +151,7 @@ public class MainActivity extends AppCompatActivity
 
                 //get clicked drink
                 DrinkRecipe drink = (DrinkRecipe)listView.getItemAtPosition(position);
-                String toastMsg = "Displaying " + drink.getName();
 
-
-                Toast toast= Toast.makeText(getBaseContext() ,toastMsg,Toast.LENGTH_SHORT);
-                toast.show();
 
                 mp1.start();
 

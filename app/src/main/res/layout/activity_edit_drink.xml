@@ -36,44 +36,77 @@
         android:textSize="14sp"
         android:textStyle="bold"></TextView>
 
-    <Spinner
-        android:id="@+id/qtySpinner"
+
+    <RelativeLayout
+        android:id="@+id/qtySpinnerLayout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:prompt="@+string/editPrompt"
+        android:layout_below="@+id/IngredientPrompt"
+        android:background="@drawable/edit_text_bg"
+        >
+        <Spinner
+            android:id="@+id/qtySpinner"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:prompt="@+string/editPrompt"
+
+
+            />
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/fractionSpinnerLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@+id/qtySpinnerLayout"
         android:layout_below="@+id/IngredientPrompt"
 
-        />
-    <Spinner
-        android:id="@+id/fractionSpinner"
-        android:entries="@array/fraction_array"
+        android:background="@drawable/edit_text_bg"
+        >
+        <Spinner
+            android:id="@+id/fractionSpinner"
+            android:entries="@array/fraction_array"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+
+            />
+
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/measureSpinnerLayout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_toRightOf="@+id/qtySpinner"
+        android:layout_toRightOf="@+id/fractionSpinnerLayout"
         android:layout_below="@+id/IngredientPrompt"
+        android:background="@drawable/edit_text_bg" >
+        <Spinner
+            android:id="@+id/measureSpinner"
+            android:entries="@array/measure_array"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
         />
-    <Spinner
-        android:id="@+id/measureSpinner"
-        android:entries="@array/measure_array"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_toRightOf="@+id/fractionSpinner"
-        android:layout_below="@+id/IngredientPrompt"
-        />
+    </RelativeLayout>
 
     <EditText xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/ingredientEdit"
         android:layout_width="100dp"
         android:layout_height="wrap_content"
 
-        android:layout_alignBaseline="@+id/measureSpinner"
-        android:layout_toRightOf="@+id/measureSpinner"
+
+        android:layout_below="@+id/IngredientPrompt"
+        android:layout_toRightOf="@+id/measureSpinnerLayout"
+
+        android:layout_marginTop="-10dp"
 
         android:hint="Name (30)"
 
         android:textColor="@android:color/black"
         android:textSize="16sp"
-        android:textStyle="bold"></EditText>
+        android:textStyle="bold"/>
 
     <Button
         android:layout_width="100dp"

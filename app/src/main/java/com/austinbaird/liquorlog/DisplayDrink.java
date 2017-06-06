@@ -216,7 +216,7 @@ public class DisplayDrink extends AppCompatActivity {
         //give position of drink in appInfo.savedDrinks
         intent.putExtra("drinkPosition", drinkPos);
 
-        Toast.makeText(getBaseContext(), "Editing " + text1, Toast.LENGTH_SHORT).show();
+
         mp1.start();
         //go to edit activity
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -318,7 +318,7 @@ public class DisplayDrink extends AppCompatActivity {
 
                         try
                         {
-                            Toast.makeText(getBaseContext(), "Drink Added!", Toast.LENGTH_SHORT).show();
+
 
                             //when drink is added, return to library activity
                             onBackPressed();
@@ -326,7 +326,7 @@ public class DisplayDrink extends AppCompatActivity {
                         catch(Exception e)
                         {
 
-                            Toast.makeText(getBaseContext(), "Drink Not Added", Toast.LENGTH_SHORT).show();
+
 
 
                             onBackPressed();

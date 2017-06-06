@@ -55,7 +55,7 @@ public class EditDrinkImage extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 mp1.start();
-                Toast.makeText(EditDrinkImage.this, "Saving Image as: " + descriptionList[position], Toast.LENGTH_SHORT).show();
+
                 Intent intent = new Intent(EditDrinkImage.this, EditDrinkActivity.class);
                 //put imageId in extras to update the image in edit drink activity
                 intent.putExtra("imageId", drinksIcon[position]);

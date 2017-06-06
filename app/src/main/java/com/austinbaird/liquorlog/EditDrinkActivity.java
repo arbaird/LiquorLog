@@ -160,7 +160,6 @@ public class EditDrinkActivity extends AppCompatActivity
         mp8 = MediaPlayer.create(this, R.raw.zeldacancel);
 
         //mp = MediaPlayer.create(EditDrinkActivity.this, R.raw.zeldafanfare);
-        //addPreDefined(); //uncomment to add library drinks to data base. make sure to clear these first before re adding
 
         //initalize values
         drinkName = "";
@@ -189,6 +188,7 @@ public class EditDrinkActivity extends AppCompatActivity
 
         // Spinner Drop down elements, allow slection from nothing ("") to 10 for qty
         ArrayList<String> qtys = new ArrayList<String>();
+        qtys.add("qty");
         qtys.add("");
         for(int i = 1; i < 11; i++)
         {
@@ -437,9 +437,7 @@ public class EditDrinkActivity extends AppCompatActivity
     public void editDrinkImage(View v)
     {
 
-        String toastMsg = "Editing Drink Image";
-        Toast toast= Toast.makeText(getBaseContext(),toastMsg,Toast.LENGTH_SHORT);
-        toast.show();
+
         Intent intent = new Intent(EditDrinkActivity.this, EditDrinkImage.class);
         //keep track of if this drink is already created or not when returning from edit image activity
         intent.putExtra("alreadyCreated", alreadyCreated);
@@ -462,7 +460,7 @@ public class EditDrinkActivity extends AppCompatActivity
     public void add(View v)
     {
         //get the entered name for the ingredient
-        String name = (String)editIngredientName.getText().toString();
+        String name = editIngredientName.getText().toString();
         //make sure that a name for the ingredient has been entered, display warning Toast if not
         if(name.trim().equals(""))
         {
@@ -476,6 +474,11 @@ public class EditDrinkActivity extends AppCompatActivity
         String qty = (String)qtySpinner.getSelectedItem();
         String measure = (String)measureSpinner.getSelectedItem();
         String fraction = (String)fractionSpinner.getSelectedItem();
+
+        if(qty.equals("qty"))
+            qty = "";
+        if(measure.equals("msr"))
+            measure = "";
 
 
         //formatting, add space between qty and fraction if a fraction is specified
@@ -543,22 +546,15 @@ public class EditDrinkActivity extends AppCompatActivity
             }
 
             //save drink to database
-            addDrinkToNDB(null, recipe);
+            addDrinkToNDBDialogue(recipe);
 
             //clear appInfo.drinkToEdit
             appInfo.drinkToEdit = new DrinkRecipe("",null,"");
 
             saveDrinksAsJSON();
 
-            String toastMsg = "Drink Saved!";
-            Toast toast= Toast.makeText(getBaseContext() ,toastMsg,Toast.LENGTH_SHORT);
-            toast.show();
-            Intent intent = new Intent(EditDrinkActivity.this, MainActivity.class);
 
-            //add extra that drink has been added and clear stack
-            intent.putExtra("drinkAdded", true);
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            startActivity(intent);
+
         }
     }
 
@@ -663,6 +659,44 @@ public class EditDrinkActivity extends AppCompatActivity
         alertDialog.show();
     }
 
+    public void addDrinkToNDBDialogue(final DrinkRecipe recipe)
+    {
+        AlertDialog.Builder alertDialog = new AlertDialog.Builder(EditDrinkActivity.this);//.create();
+        alertDialog.setTitle("Save to Library");
+
+        //prompt user to make sure they want to delete this drink
+        alertDialog.setMessage(("Drink saved to your list! Would you like to add this drink to the " +
+                "Liquor Library for all user to be able to view? (You can add it later if you don't want to add it now!)"))
+                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        //add to database if user allows this
+                        addDrinkToNDB(null, recipe);
+
+
+                        Intent intent = new Intent(EditDrinkActivity.this, MainActivity.class);
+
+                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
+                        saveDrinksAsJSON();
+
+
+                        startActivity(intent);
+                    }
+                })
+                .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+
+                        Intent intent = new Intent(EditDrinkActivity.this, MainActivity.class);
+
+                        saveDrinksAsJSON();
+                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        startActivity(intent);
+                    }
+                });
+
+        alertDialog.show();
+    }
+
     @Override
     public void onBackPressed()
     {
@@ -697,111 +731,4 @@ public class EditDrinkActivity extends AppCompatActivity
         editor.commit();
     }
 
-    /*
-    loads library drinks from Drinks.txt file and stores them in the database
-     */
-    public void addPreDefined()
-    {
-        ArrayList<DrinkRecipe> recipes = new ArrayList<>();
-
-        try
-        {
-            BufferedReader br = new BufferedReader(
-                    new InputStreamReader(getAssets().open("Drinks.txt")));
-            String line;
-            int lineNum = 1; //used for error reporting
-
-            while ((line = br.readLine()) != null)
-            {
-                try
-                {
-
-                    String drinkName = line;
-                    ArrayList<Ingredient> ingredients = new ArrayList<>();
-                    String ings;
-                    ings = br.readLine();
-                    while(!ings.equals("-"))
-                    {
-                        lineNum++;
-                        Map<String, String> ingInfo = parseFileLine(ings);
-                        ingredients.add(new Ingredient(ingInfo.get("qty"), ingInfo.get("measure"), ingInfo.get("ingredient")));
-                        ings = br.readLine();
-                    }
-                    int id = Integer.parseInt(br.readLine());
-                    String msg = br.readLine();
-
-                    recipes.add(new DrinkRecipe(drinkName, ingredients, msg, false, appInfo.drinksIcon[id]));
-                    lineNum++;
-                    br.readLine(); // clear newline
-
-                }
-                catch(Exception ex)
-                {
-                    System.err.println("Invalid item format in file at line " +
-                            lineNum);
-                }
-                lineNum++;
-
-            }
-        }
-        catch(FileNotFoundException ex)
-        {
-            Log.d(logTag, "File not found");
-        }
-        catch(Exception e)
-        {
-            Log.d(logTag, "Fucked up");
-        }
-        for(DrinkRecipe recipe : recipes)
-        {
-            Log.d(logTag, recipe.drinkAsJSON.toString());
-            addDrinkToNDB(null, recipe);
-        }
-
-
-    }
-
-    Map<String,String> parseFileLine(String line)
-    {
-        Map<String, String> lineInfo = new HashMap<>(); //= new String[];
-        String[] tokens = line.split(" ");
-        if(tokens[0].equals("/")) //this means no qty or measure is specified
-        {
-            lineInfo.put("qty", "");
-            lineInfo.put("measure", "");
-            String name = "";
-            for(int i = 1; i < tokens.length; i++)
-            {
-                name += tokens[i] + " ";
-            }
-            name = name.trim();
-            lineInfo.put("ingredient", name);
-        }
-        else if(tokens[1].equals("/")) //this means no measure is specified
-        {
-            lineInfo.put("qty", tokens[0]);
-            lineInfo.put("measure", "");
-            String name = "";
-            for(int i = 2; i < tokens.length; i++)
-            {
-                name += tokens[i] + " ";
-            }
-            name = name.trim();
-            lineInfo.put("ingredient", name);
-        }
-        else
-        {
-            lineInfo.put("qty", tokens[0]);
-            lineInfo.put("measure", tokens[1]);
-            String name = "";
-            for(int i = 2; i < tokens.length; i++)
-            {
-                name += tokens[i] + " ";
-            }
-            name = name.trim();
-            lineInfo.put("ingredient", name);
-        }
-        return lineInfo;
-
-    }
 }
