@@ -281,13 +281,13 @@ public class MainActivity extends AppCompatActivity
         JSONArray jArray = new JSONArray();
         for(DrinkRecipe savedRecipe : appInfo.savedDrinks)
         {
-            try {
-
+            try
+            {
                 jArray.put(savedRecipe.drinkAsJSON);
             }
             catch(Exception e)
             {
-                //json key access didn't work
+                Log.e(logTag, "Error saving drinks as json: " + e.getStackTrace());
             }
         }
 

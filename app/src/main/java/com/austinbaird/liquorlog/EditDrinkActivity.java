@@ -59,6 +59,7 @@ public class EditDrinkActivity extends AppCompatActivity
 
     //sounds for activity
     MediaPlayer mp1;
+    MediaPlayer mp2;
     MediaPlayer mp3;
     MediaPlayer mp9;
     MediaPlayer mp7;
@@ -95,7 +96,7 @@ public class EditDrinkActivity extends AppCompatActivity
     //the drink's position in appInfo.sharedDrinks, if it is an already existing drink
     int drinkPos;
 
-    //tracks if
+    //tracks if drink has already been created and is being edited or if it is a brand new one from scratch
     Boolean alreadyCreated;
 
     @Override
@@ -112,7 +113,7 @@ public class EditDrinkActivity extends AppCompatActivity
 
         //attach sounds play when buttons are clicked
         Button two = (Button)this.findViewById(R.id.btnAddIngredient);
-        final MediaPlayer mp2 = MediaPlayer.create(this, R.raw.zeldamenuequip);
+        mp2 = MediaPlayer.create(this, R.raw.zeldamenuequip);
         mp3 = MediaPlayer.create(this, R.raw.zeldamenuno);
         two.setOnClickListener(new OnClickListener(){
 
@@ -661,10 +662,10 @@ public class EditDrinkActivity extends AppCompatActivity
 
     public void addDrinkToNDBDialogue(final DrinkRecipe recipe)
     {
-        AlertDialog.Builder alertDialog = new AlertDialog.Builder(EditDrinkActivity.this);//.create();
-        alertDialog.setTitle("Save to Library");
+        AlertDialog.Builder alertDialog = new AlertDialog.Builder(EditDrinkActivity.this);
+        alertDialog.setTitle("Drink Added to List!");
 
-        //prompt user to make sure they want to delete this drink
+        //prompt user to confirm if they want to add drink to data base
         alertDialog.setMessage(("Drink saved to your list! Would you like to add this drink to the " +
                 "Liquor Library for all user to be able to view? (You can add it later if you don't want to add it now!)"))
                 .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
@@ -672,7 +673,7 @@ public class EditDrinkActivity extends AppCompatActivity
                         //add to database if user allows this
                         addDrinkToNDB(null, recipe);
 
-
+                        mp2.start();
                         Intent intent = new Intent(EditDrinkActivity.this, MainActivity.class);
 
                         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -686,8 +687,9 @@ public class EditDrinkActivity extends AppCompatActivity
                 .setNegativeButton("No", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
 
+                        //return to main without adding to data base
                         Intent intent = new Intent(EditDrinkActivity.this, MainActivity.class);
-
+                        mp8.start();
                         saveDrinksAsJSON();
                         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         startActivity(intent);
