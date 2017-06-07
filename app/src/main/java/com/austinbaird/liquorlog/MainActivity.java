@@ -104,15 +104,11 @@ public class MainActivity extends AppCompatActivity
                     {
                         switch (item.getItemId()){
                             case R.id.item_option1:
-                                String toastMsg1 = "Creating New Drink";
-                                Toast.makeText(getApplicationContext(),toastMsg1,Toast.LENGTH_SHORT).show();
                                 mp1.start();
                                 goToEdit(null);
                                 break;
 
                             case R.id.item_option2:
-                                String toastMsg2 = "Adding from Library";
-                                Toast.makeText(getApplicationContext(),toastMsg2,Toast.LENGTH_SHORT).show();
                                 mp1.start();
                                 goToLibrary(null);
                                 break;
@@ -338,15 +334,12 @@ public class MainActivity extends AppCompatActivity
                     {
                         switch (item.getItemId()){
                             case R.id.item_option1:
-                                String toastMsg1 = "Creating New Drink";
-                                Toast.makeText(getApplicationContext(),toastMsg1,Toast.LENGTH_SHORT).show();
+
                                 mp1.start();
                                 goToEdit(null);
                                 break;
 
                             case R.id.item_option2:
-                                String toastMsg2 = "Adding from Library";
-                                Toast.makeText(getApplicationContext(),toastMsg2,Toast.LENGTH_SHORT).show();
                                 mp1.start();
                                 goToLibrary(null);
                                 break;

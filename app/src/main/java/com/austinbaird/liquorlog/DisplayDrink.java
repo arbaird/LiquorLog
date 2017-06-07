@@ -237,11 +237,13 @@ public class DisplayDrink extends AppCompatActivity {
         {
             appInfo.addDrink(displayedDrink);
             mp3.start();
-
+            Toast.makeText(getBaseContext(), "Drink Added!", Toast.LENGTH_SHORT).show();
+            
             incrementDownloads(displayedDrink);
 
         }
     }
+
 
     //checks if a drink in the user's list has the same name as this drink
     public boolean isDuplicateName(String name)
@@ -269,6 +271,8 @@ public class DisplayDrink extends AppCompatActivity {
                         //track popularity
                         appInfo.addDrink(displayedDrink);
                         mp3.start();
+                        Toast.makeText(getBaseContext(), "Drink Added!", Toast.LENGTH_SHORT).show();
+
 
                         incrementDownloads(displayedDrink);
 
