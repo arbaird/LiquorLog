@@ -10,7 +10,6 @@ import org.json.JSONObject;
 
 public class Ingredient
 {
-    public String[] components;
     public String qty;
     public String measure;
     public String ingredient;
@@ -21,13 +20,12 @@ public class Ingredient
     {
 
         this.qty = qty;
-
         this.measure = measure;
-
         this.ingredient = ingredient;
 
         //convenient to have JSON representation of this class for quick exchanges with database
-        try {
+        try
+        {
             jsonIngredientComponents = new JSONObject();
             jsonIngredientComponents.put("qty", qty);
             jsonIngredientComponents.put("measure", measure);
@@ -39,6 +37,7 @@ public class Ingredient
         }
     }
 
+    //getters and setters
     public String getQty() {return qty;}
     public String getMeasure() {return measure;}
     public String getIngredient() {return ingredient;}
@@ -80,6 +79,4 @@ public class Ingredient
     {
         return jsonIngredientComponents;
     }
-
-
 }

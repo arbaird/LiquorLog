@@ -1,38 +1,41 @@
 package com.austinbaird.liquorlog;
 
-/**
- * Created by austinbaird on 5/3/17.
- */
 import org.json.JSONArray;
 import org.json.JSONObject;
 import android.util.Log;
 
 import java.util.ArrayList;
 
-public class DrinkRecipe {
+/*
+    Holds information about a drink recipe. Also has method to get json version of a drink recipe
+    for easy access when loading and saving drinks to shared preferences
+ */
+public class DrinkRecipe
+{
+    //list of ingredients
     public ArrayList<Ingredient> ingredientList;
+
     private String name;
     private String msg;
+
     private int imageID;
+
+    //the drink as a JSON object
     public JSONObject drinkAsJSON;
+
+    //if the drink is user made or obtained from pre defined library
     public boolean userMade;
 
     public String logTag = "";
+
+    //amount of times this drink has been downloaded from database
     public String downloads = "0";
+
+    //unique id representing this drink in the database
     public String uniqueId;
 
-    public DrinkRecipe(String name, ArrayList<Ingredient> ingredientList, String msg, boolean userMade, int img) {
-        this.name = name;
-        this.ingredientList = ingredientList;
-        this.msg = msg;
-        this.imageID = img;
-        drinkAsJSON = new JSONObject();
-        this.userMade = userMade;
-        setDrinksAsJSON();
-    }
-
-
-    public DrinkRecipe(String name, ArrayList<Ingredient> ingredientList, String msg) {
+    public DrinkRecipe(String name, ArrayList<Ingredient> ingredientList, String msg)
+    {
         this.name = name;
         if(ingredientList == null)
             ingredientList = new ArrayList<>();
@@ -41,10 +44,14 @@ public class DrinkRecipe {
         this.imageID = R.drawable.emptysmall;
         drinkAsJSON = new JSONObject();
         this.userMade = true;
+
+        //set the JSON representation of this drink
         setDrinksAsJSON();
     }
 
-    public DrinkRecipe(String name, ArrayList<Ingredient> ingredientList, String msg, int img) {
+    //overloaded constructor
+    public DrinkRecipe(String name, ArrayList<Ingredient> ingredientList, String msg, int img)
+    {
         this.name = name;
         if(ingredientList == null)
             ingredientList = new ArrayList<>();
@@ -56,7 +63,9 @@ public class DrinkRecipe {
         setDrinksAsJSON();
     }
 
-    public DrinkRecipe(String name, ArrayList<Ingredient> ingredientList, String msg, int img, String uniqueid, int downloads) {
+    //overloaded constructor
+    public DrinkRecipe(String name, ArrayList<Ingredient> ingredientList, String msg, int img, String uniqueid, int downloads)
+    {
         this.name = name;
         if(ingredientList == null)
             ingredientList = new ArrayList<>();
@@ -70,19 +79,10 @@ public class DrinkRecipe {
         setDrinksAsJSON();
     }
 
-
-    /*public String getQty() {return ingredientList.getQty();}
-    public String getMeasure() {return ingredientList.getMeasure();}
-    public String getIngredient() {return ingredientList.getIngredient();}*/
-
+    //getters and setters
     public ArrayList<Ingredient> getIngredientList() {
         return ingredientList;
     }
-
-
-    /*public void setQty(String qty) {ingredientList.setQty(qty);}
-    public void setMeasure(String measure) {ingredientList.setMeasure(measure);}
-    public void setIngredient(String ingredient) {ingredientList.setIngredient(ingredient);}*/
 
     public String getName() {
         return this.name;
@@ -100,18 +100,18 @@ public class DrinkRecipe {
         return downloads;
     }
 
-    public void setName(String name) {
+    public void setName(String name)
+    {
         this.name = name;
         setDrinksAsJSON();
     }
 
-    public void setMsg(String msg) {
+    public void setMsg(String msg)
+    {
         this.msg = msg;
         setDrinksAsJSON();
     }
-    public void setDownloads(String downloads) {
-        this.downloads = downloads;
-    }
+
 
     public void setImageID(int imageID)
     {
@@ -119,41 +119,37 @@ public class DrinkRecipe {
         setDrinksAsJSON();
     }
 
-    public void setIngredientList(ArrayList<Ingredient> ingredientList) {
+    //set list of ingredients
+    public void setIngredientList(ArrayList<Ingredient> ingredientList)
+    {
         this.ingredientList.clear();
-        for (Ingredient ingredient : ingredientList) {
+        for (Ingredient ingredient : ingredientList)
+        {
             this.ingredientList.add(ingredient);
         }
         setDrinksAsJSON();
     }
 
-
+    //save a JSON representation of this drink
     public void setDrinksAsJSON()
     {
-        //JSONObject drinkRecipe = new JSONObject();
-
         try
         {
             JSONArray ingredientArray = new JSONArray();
             for (Ingredient ingredient : ingredientList)
             {
                 ingredientArray.put(ingredient.getJsonIngredient());
-                //jArray.put(new JSONArray(ingredient)); this would be ideal, but is unsupported before API 19 for android
             }
             drinkAsJSON.put("name", name);
             drinkAsJSON.put("ingredients", ingredientArray);
             drinkAsJSON.put("msg", msg);
             drinkAsJSON.put("userMade", userMade);
             drinkAsJSON.put("img", imageID);
-            //jArray.put(drinkRecipe);
+
         }
-        catch (Exception e) {
+        catch (Exception e)
+        {
             Log.d(logTag, "Didn't set JSON properly in DrinkRecipe class" );
         }
-
-
-
-
-
     }
 }

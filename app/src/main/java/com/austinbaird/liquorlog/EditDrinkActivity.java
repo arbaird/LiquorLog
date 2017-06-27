@@ -1,48 +1,32 @@
 package com.austinbaird.liquorlog;
 
-import java.io.*;
+
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.graphics.Color;
-import android.media.Image;
 import android.media.MediaPlayer;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Editable;
-import android.text.Selection;
 import android.text.TextWatcher;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Button;
-import android.widget.RelativeLayout;
 import android.content.Intent;
-import android.widget.AdapterView.OnItemSelectedListener;
-import android.widget.AdapterView;
-
-import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
-
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-
 import android.view.View;
 import android.util.Log;
 import android.widget.ArrayAdapter;
 import android.view.View.OnClickListener;
-
-import android.widget.FrameLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.Spinner;
-
-import android.os.Parcelable;
-
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -53,10 +37,11 @@ import static com.austinbaird.liquorlog.R.id.textViewCharCount1;
 import static com.austinbaird.liquorlog.R.id.textViewCharCount2;
 import static com.austinbaird.liquorlog.R.id.textViewVharCount3;
 
+/*
+    Used to edit a drink and save to the user's list
+ */
 public class EditDrinkActivity extends AppCompatActivity
 {
-
-
     //sounds for activity
     MediaPlayer mp1;
     MediaPlayer mp2;
@@ -66,8 +51,11 @@ public class EditDrinkActivity extends AppCompatActivity
     MediaPlayer mp8;
     MediaPlayer mp10;
 
-    ArrayList<Ingredient> rowItems; //the row items that are displayed in the list
-    ScrollerListAdapter adapter; //used to make viewable items on screem from data in rowItems
+    //the row items that are displayed in the list
+    ArrayList<Ingredient> rowItems;
+
+    //used to make viewable items on screem from data in rowItems
+    ScrollerListAdapter adapter;
 
     //fields that the user will fill in this activity
     Spinner qtySpinner;
@@ -76,13 +64,11 @@ public class EditDrinkActivity extends AppCompatActivity
     EditText editName;
     EditText editMsg;
     EditText editIngredientName;
+
     //used for displaying char counts for text fields
     private TextView charCount;
     private TextView charCountIng;
     private TextView charCountMsg;
-
-
-
 
     String logTag = "tag";
 
@@ -109,9 +95,11 @@ public class EditDrinkActivity extends AppCompatActivity
         //set up sounds
         mp1 = MediaPlayer.create(this, R.raw.zeldafanfare);
         mp10 = MediaPlayer.create(this, R.raw.backbutton);
+        mp7 = MediaPlayer.create(this, R.raw.zeldadelete2);
+        mp8 = MediaPlayer.create(this, R.raw.zeldacancel);
         mp9 = MediaPlayer.create(this, R.raw.cantsave);
 
-        //attach sounds play when buttons are clicked
+        //attach sounds to play when buttons are clicked
         Button two = (Button)this.findViewById(R.id.btnAddIngredient);
         mp2 = MediaPlayer.create(this, R.raw.zeldamenuequip);
         mp3 = MediaPlayer.create(this, R.raw.zeldamenuno);
@@ -121,6 +109,7 @@ public class EditDrinkActivity extends AppCompatActivity
                 String name = (String)editIngredientName.getText().toString();
                 if(name.trim().equals(""))
                 {
+                    //if the name has not been inputted, don't add and display message
                     String toastMsg = "Specify ingredient name!";
                     Toast toast= Toast.makeText(getBaseContext() ,toastMsg,Toast.LENGTH_SHORT);
                     toast.show();
@@ -128,6 +117,7 @@ public class EditDrinkActivity extends AppCompatActivity
                 }
                 else
                 {
+                    //else, add drink
                     String toastMsg = "Ingredient Added!";
                     Toast toast= Toast.makeText(getBaseContext() ,toastMsg,Toast.LENGTH_SHORT);
                     toast.show();
@@ -157,35 +147,26 @@ public class EditDrinkActivity extends AppCompatActivity
             }
         });
 
-        mp7 = MediaPlayer.create(this, R.raw.zeldadelete2);
-        mp8 = MediaPlayer.create(this, R.raw.zeldacancel);
-
-        //mp = MediaPlayer.create(EditDrinkActivity.this, R.raw.zeldafanfare);
 
         //initalize values
         drinkName = "";
         msg = "";
         image = R.drawable.emptysmall;
+
         //initalize to false, may be updated to true in onResume
         alreadyCreated = false;
 
         //initalize array list and set adapter to this array list
         rowItems = new ArrayList<>();
         adapter = new ScrollerListAdapter(this, R.layout.edit_list_element, rowItems);
+
         //attach adapter to listview to display items on the screen
         final ListView listView = (ListView) findViewById(R.id.mobile_list);
         listView.setAdapter(adapter);
 
-
-
-
-        final MediaPlayer mp5 = MediaPlayer.create(this, R.raw.zeldaselecting); // Didn't use because of weird glitch when starting activity
-
         //get spinners on screen for convenience
         qtySpinner = (Spinner) findViewById(R.id.qtySpinner);
         fractionSpinner = (Spinner) findViewById(R.id.fractionSpinner);
-
-
 
         // Spinner Drop down elements, allow slection from nothing ("") to 10 for qty
         ArrayList<String> qtys = new ArrayList<String>();
@@ -204,12 +185,7 @@ public class EditDrinkActivity extends AppCompatActivity
 
         // attaching data adapter to spinner
         qtySpinner.setAdapter(dataAdapter);
-
-
         measureSpinner = (Spinner) findViewById(R.id.measureSpinner);
-
-
-
 
         //assign values to the textfield variables for convenience
         editName = (EditText) findViewById(editDrinkName);
@@ -221,11 +197,15 @@ public class EditDrinkActivity extends AppCompatActivity
         charCountIng = (TextView) findViewById(textViewCharCount2);
         charCountMsg = (TextView) findViewById(textViewVharCount3);
 
-        final TextWatcher txwatcher1 = new TextWatcher() {
+        //set text watchers to count the number of characters that have been inputted
+        final TextWatcher txwatcher1 = new TextWatcher()
+        {
+            //override necessary methods
             @Override
             public void afterTextChanged(Editable arg0)
             {
-                if(editName.isFocused() && editName.getText().toString().trim().length() > 44){
+                if(editName.isFocused() && editName.getText().toString().trim().length() > 44)
+                {
                     editName.setText(arg0.toString().substring(0, 44));
                     editName.setSelection(arg0.length()-1);
                     mp3.start();
@@ -239,7 +219,6 @@ public class EditDrinkActivity extends AppCompatActivity
             @Override
             public void onTextChanged(CharSequence arg0, int arg1, int arg2, int arg3)
             {
-                //charCount.setText(44 -   arg0.toString().length());
                 if(editName.isFocused())
                 {
                     charCount.setVisibility(View.VISIBLE);
@@ -274,20 +253,22 @@ public class EditDrinkActivity extends AppCompatActivity
                         charCount.setTextColor(Color.BLUE);
                     }
                 }
-                //else if(etPassword.isFocused() && etPassword.getText().length() == 10)
-                //Toast.makeText(MyActivity.this, "The password must be at most 10 characters!" , Toast.LENGTH_SHORT).show();
             }
         };
 
-        final TextWatcher txwatcher2 = new TextWatcher() {
+        final TextWatcher txwatcher2 = new TextWatcher()
+        {
+            //override necessary methods
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
+                //nothing
             }
 
             @Override
-            public void onTextChanged(CharSequence arg0, int start, int before, int count) {
-                if (editIngredientName.isFocused()) {
+            public void onTextChanged(CharSequence arg0, int start, int before, int count)
+            {
+                if (editIngredientName.isFocused())
+                {
                     charCountIng.setVisibility(View.VISIBLE);
                     charCountIng.setText("Chars = " + (String.valueOf(30 - arg0.length())));
                     if (arg0.length() > 25 && arg0.length() != 30) // Less than 5
@@ -304,8 +285,10 @@ public class EditDrinkActivity extends AppCompatActivity
             }
 
             @Override
-            public void afterTextChanged(Editable arg0) {
-                if (editIngredientName.isFocused() && editIngredientName.getText().toString().trim().length() > 30) {
+            public void afterTextChanged(Editable arg0)
+            {
+                if (editIngredientName.isFocused() && editIngredientName.getText().toString().trim().length() > 30)
+                {
                     editIngredientName.setText(arg0.toString().substring(0, 30));
                     editIngredientName.setSelection(arg0.length() - 1);
                     mp3.start();
@@ -314,7 +297,9 @@ public class EditDrinkActivity extends AppCompatActivity
             }
         };
 
-        final TextWatcher txwatcher3 = new TextWatcher() {
+        final TextWatcher txwatcher3 = new TextWatcher()
+        {
+            //override necessary methods
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
@@ -339,8 +324,10 @@ public class EditDrinkActivity extends AppCompatActivity
             }
 
             @Override
-            public void afterTextChanged(Editable arg0) {
-                if (editMsg.isFocused() && editMsg.getText().toString().trim().length() > 300) {
+            public void afterTextChanged(Editable arg0)
+            {
+                if (editMsg.isFocused() && editMsg.getText().toString().trim().length() > 300)
+                {
                     editMsg.setText(arg0.toString().substring(0, 300));
                     editMsg.setSelection(arg0.length() - 1);
                     mp3.start();
@@ -348,11 +335,6 @@ public class EditDrinkActivity extends AppCompatActivity
                 }
             }
         };
-
-        /*if(!(editName.isFocused()))
-        {
-            charCount.setVisibility(View.INVISIBLE);
-        }*/
 
         //assign textListeners to each text field
         editName.addTextChangedListener(txwatcher1);
@@ -368,18 +350,15 @@ public class EditDrinkActivity extends AppCompatActivity
                 }
             }
         });
-
-
-
-
     }
 
+    //save inputted information if this activity loses focus
     @Override
     protected void onPause()
     {
+        //create recipe and set appInfo.drinkToEdit
         msg = editMsg.getText().toString();
         drinkName = editName.getText().toString();
-
 
         ArrayList<Ingredient> ingredients = new ArrayList<>();
 
@@ -395,10 +374,9 @@ public class EditDrinkActivity extends AppCompatActivity
     }
 
     @Override
-    protected void onResume() {
-
-
-
+    protected void onResume()
+    {
+        //set test fields and image
         editName.setText(appInfo.drinkToEdit.getName() );
         editMsg.setText(appInfo.drinkToEdit.getMsg());
 
@@ -438,21 +416,19 @@ public class EditDrinkActivity extends AppCompatActivity
     public void editDrinkImage(View v)
     {
 
-
         Intent intent = new Intent(EditDrinkActivity.this, EditDrinkImage.class);
+
         //keep track of if this drink is already created or not when returning from edit image activity
         intent.putExtra("alreadyCreated", alreadyCreated);
+
         //keep track of drink position in appInfo.sharedDrinks
         intent.putExtra("drinkPosition", drinkPos);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
-
         //save drink being edited in appInfo so entered info will remain after returning from edit
         //drink activity
         appInfo.drinkToEdit.setName(editName.getText().toString());
-
         appInfo.drinkToEdit.setMsg(editMsg.getText().toString());
-
         appInfo.drinkToEdit.setIngredientList(rowItems);
 
         startActivity(intent);
@@ -462,6 +438,7 @@ public class EditDrinkActivity extends AppCompatActivity
     {
         //get the entered name for the ingredient
         String name = editIngredientName.getText().toString();
+
         //make sure that a name for the ingredient has been entered, display warning Toast if not
         if(name.trim().equals(""))
         {
@@ -476,16 +453,15 @@ public class EditDrinkActivity extends AppCompatActivity
         String measure = (String)measureSpinner.getSelectedItem();
         String fraction = (String)fractionSpinner.getSelectedItem();
 
+        //if defaults were not changed, set values to blank strings
         if(qty.equals("qty"))
             qty = "";
         if(measure.equals("msr"))
             measure = "";
 
-
         //formatting, add space between qty and fraction if a fraction is specified
         if(!fraction.equals(""))
             qty += " " + fraction;
-
 
         //add new ingredient to rowItems and update screen
         rowItems.add(new Ingredient(qty, measure, name));
@@ -495,20 +471,18 @@ public class EditDrinkActivity extends AppCompatActivity
         qtySpinner.setSelection(0);
         fractionSpinner.setSelection(0);
         measureSpinner.setSelection(0);
-
         editIngredientName.setText("");
 
     }
 
+    //save the drink to the user's list in main activity
     public void saveDrink(View v)
     {
-
+        //get drink info
         msg = editMsg.getText().toString();
         drinkName = editName.getText().toString();
 
-
         ArrayList<Ingredient> ingredients = new ArrayList<>();
-
         for(Ingredient drink : rowItems)
         {
             ingredients.add(drink);
@@ -517,7 +491,6 @@ public class EditDrinkActivity extends AppCompatActivity
         //make sure all entries have been filled before saving drink
         if(msg.isEmpty() || drinkName.isEmpty() || ingredients.size() == 0 || image == R.drawable.emptysmall)
         {
-            //Toast.makeText(EditDrinkActivity.this, editName.getText().toString(), Toast.LENGTH_SHORT).show();
             mp9.start();
             Toast.makeText(EditDrinkActivity.this, "Drink Invalid! Please provide a Drink Name, Ingredient, Message/Procedure, and Drink Image", Toast.LENGTH_LONG).show();
             return;
@@ -553,15 +526,12 @@ public class EditDrinkActivity extends AppCompatActivity
             appInfo.drinkToEdit = new DrinkRecipe("",null,"");
 
             saveDrinksAsJSON();
-
-
-
         }
     }
 
+    //save drink recipe to database
     public void addDrinkToNDB(View v, DrinkRecipe recipe)
     {
-
         //create JSON representation of drink being added to database
         JSONObject obj = new JSONObject();
         try
@@ -574,19 +544,17 @@ public class EditDrinkActivity extends AppCompatActivity
             for (Ingredient ingredient : recipe.getIngredientList())
             {
                 jArray.put(ingredient.getJsonIngredient());
-                //jArray.put(new JSONArray(ingredient)); this would be ideal, but is unsupported before API 19 for android
             }
             final String ing = jArray.toString();
             obj.put("ingredients", ing);
             obj.put("userCreated", recipe.userMade);
-
         }
         catch(Exception e)
         {
             Log.d(logTag, "Didn't create JSON properly");
         }
 
-
+        //call backend method to add drink to database
         JsonObjectRequest jsobj = new JsonObjectRequest(
                 "https://backendtest-165520.appspot.com/ndb_api/add_recipe_fancy", obj,/*new JSONObject(params),*/
                 new Response.Listener<JSONObject>() {
@@ -606,7 +574,6 @@ public class EditDrinkActivity extends AppCompatActivity
 
                         }
 
-
                     }
                 }, new Response.ErrorListener() {
             @Override
@@ -616,10 +583,7 @@ public class EditDrinkActivity extends AppCompatActivity
             }
         });
 
-
         appInfo.queue.add(jsobj);
-
-
     }
 
     public void deleteDrink(View v)
@@ -640,13 +604,10 @@ public class EditDrinkActivity extends AppCompatActivity
 
                         mp7.start();
                         Intent intent = new Intent(EditDrinkActivity.this, MainActivity.class);
-
                         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
+                        //save that drink was deleted in shared preferences
                         saveDrinksAsJSON();
-
-                        //intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-
                         startActivity(intent);
                     }
                 })
@@ -656,10 +617,10 @@ public class EditDrinkActivity extends AppCompatActivity
                         dialog.dismiss();
                     }
                 });
-
         alertDialog.show();
     }
 
+    //ask user if they want to add drink to database
     public void addDrinkToNDBDialogue(final DrinkRecipe recipe)
     {
         AlertDialog.Builder alertDialog = new AlertDialog.Builder(EditDrinkActivity.this);
@@ -675,18 +636,14 @@ public class EditDrinkActivity extends AppCompatActivity
 
                         mp2.start();
                         Intent intent = new Intent(EditDrinkActivity.this, MainActivity.class);
-
                         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
                         saveDrinksAsJSON();
-
-
                         startActivity(intent);
                     }
                 })
                 .setNegativeButton("No", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-
                         //return to main without adding to data base
                         Intent intent = new Intent(EditDrinkActivity.this, MainActivity.class);
                         mp8.start();
@@ -702,7 +659,6 @@ public class EditDrinkActivity extends AppCompatActivity
     @Override
     public void onBackPressed()
     {
-
         mp10.start();
         super.onBackPressed();
     }
@@ -712,7 +668,6 @@ public class EditDrinkActivity extends AppCompatActivity
      */
     public void saveDrinksAsJSON()
     {
-
         JSONArray jArray = new JSONArray();
         for(DrinkRecipe savedRecipe : appInfo.savedDrinks)
         {
@@ -725,8 +680,6 @@ public class EditDrinkActivity extends AppCompatActivity
                 //json key access didn't work
             }
         }
-
-
         SharedPreferences settings = getSharedPreferences(MainActivity.MYPREFS, 0);
         SharedPreferences.Editor editor = settings.edit();
         editor.putString("drinksAsJSON", jArray.toString());

@@ -10,31 +10,25 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.SearchView;
 import android.widget.ImageView;
-
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
-
 import org.json.JSONArray;
 import org.json.JSONObject;
-
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-
-
 import android.app.AlertDialog;
 import android.content.DialogInterface;
-
 import java.util.ArrayList;
-
-
 import android.app.ProgressDialog;
 
-
+/*
+    Activity to display drinks in the data base separated by if they are user made or predefined
+    as well as by download counts
+ */
 public class LibraryActivity extends AppCompatActivity
 {
-
     //recycler views and their adapters/ arraylists displayed in this activity
     public ArrayList<DrinkRecipe> databaseDrinks;
     RecyclerView userMadeRecyclerView;
@@ -58,47 +52,39 @@ public class LibraryActivity extends AppCompatActivity
     MediaPlayer mp1;
     MediaPlayer mp2;
     MediaPlayer mp3;
-    //MediaPlayer mp4;
     MediaPlayer mp5;
     MediaPlayer mp6;
 
-
-
     public String logTag = "Library";
     AppInfo appInfo;
-
     AlertDialog.Builder alertDialog;
 
     //keeps track of if this is the first time lobrary is loaded, only refresh user drinks if it is first time
     //so that drinks are only randomized when user clicks refresh
     boolean firstLoad;
 
+    //used to properly play and stop music
     boolean toDisplay;
 
-
-
-
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_library);
         appInfo = AppInfo.getInstance(this);
 
-
+        //set firstLoad to true to load random set of user made drinks
         firstLoad = true;
+
+        //always set to false unless we are going to display drink activity
         toDisplay = false;
+
         //get sounds used in this activity
         mp1 = MediaPlayer.create(this, R.raw.librarysong);
         mp2 = MediaPlayer.create(this, R.raw.zeldaselecting);
         mp3 = MediaPlayer.create(this, R.raw.backbutton);
         mp6 = MediaPlayer.create(this, R.raw.zeldacancel);
-        //mp4 = MediaPlayer.create(this, R.raw.zeldasearchopen); // Didn't know where to put this for proper function
         mp5 = MediaPlayer.create(this, R.raw.zeldasearchclick);
-
-
-
-
-
 
         searchView=(SearchView) findViewById(R.id.searchView);
 
@@ -112,29 +98,30 @@ public class LibraryActivity extends AppCompatActivity
             }
         });
 
-
-
-
+        //set action to perform when the query button is pressed
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
 
             @Override
-            public boolean onQueryTextSubmit(String query) {
-
+            public boolean onQueryTextSubmit(String query)
+            {
+                //play sound and submit query to database
                 mp5.start();
                 search(query, null, null);
                 searchView.clearFocus();
                 return true;
             }
              @Override
-             public boolean onQueryTextChange(String newText) {
+             public boolean onQueryTextChange(String newText)
+             {
                  //necessary to override, boiler plate
-
                     return false;
-                }
+             }
             });
+
         // Catch event on [x] button inside search view
         int searchCloseButtonId = searchView.getContext().getResources().getIdentifier("android:id/search_close_btn", null, null);
         ImageView closeButton = (ImageView) this.searchView.findViewById(searchCloseButtonId);
+
         //When pressed, collapse search view and make recycler views visible again, and hide search recycler view
         closeButton.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -147,7 +134,7 @@ public class LibraryActivity extends AppCompatActivity
 
                     if(searchRecyclerView != null)
                     {
-
+                        //make recycler views visible after search recycler view is set to invisible
                         searchDrinks.clear();
                         searchAdapter.notifyDataSetChanged();
                         searchRecyclerView.setVisibility(View.GONE);
@@ -172,34 +159,25 @@ public class LibraryActivity extends AppCompatActivity
                 }
             });
 
-
-
+        //initalize recycler views. separated for cleaner code
         initRecycleViews();
-
-
     }
 
     @Override
-    protected void onPause() {
+    protected void onPause()
+    {
+        //pause the music if toDisplay is false. toDisplay is only true when going to display drink activity
         if(!toDisplay)
             mp1.pause();
         super.onPause();
     }
 
     @Override
-    public void onBackPressed() {
+    public void onBackPressed()
+    {
         mp1.stop();
         mp3.start();
-
         super.onBackPressed();
-
-
-    }
-
-    @Override
-    protected void onStart() {
-
-        super.onStart();
     }
 
     @Override
@@ -215,38 +193,38 @@ public class LibraryActivity extends AppCompatActivity
         //see if this activty was started from library activity
         if(extras.containsKey("fromMain") && extras.getBoolean("fromMain") && firstLoad)
         {
-
+            //if this is called from main, load random set of user made drinks
             refreshDrinks(null);
             firstLoad = false;
         }
         else
         {
+            //if this is not the first load, only reload the library and popular drinks
+            //so that user drinks are only changed when the user wants them to be
             loadRecipes(null, "get_library_recipes", libDrinks, libAdapter);
             loadRecipes(null, "get_popular_drinks", popDrinks, popAdapter);
         }
 
-        //reset where we are going to play music only when in this activity and display activity
+        //reset to false to keep playing music while in this activity
         toDisplay = false;
         super.onResume();
     }
-
-
 
     /*
     This function loads recipes into an arraylist given an api method
      */
     public void loadRecipes(View v, String apiMethod, final ArrayList<DrinkRecipe> drinkArrayList, final RecyclerView.Adapter adapter)
     {
-
         //display spinning progress bar while waiting for database response
         final ProgressDialog progress = new ProgressDialog(this, ProgressDialog.STYLE_SPINNER);
         progress.setTitle("Loading");
         progress.setMessage("Loading recipes...");
-        progress.setCancelable(false); // disable dismiss by tapping outside of the dialog
+
+        //disable dismiss by tapping outside of the dialog
+        progress.setCancelable(false);
         progress.show();
 
-        String url = "https://backendtest-165520.appspot.com/ndb_api/" + apiMethod;//get_userMade_recipes";
-
+        String url = "https://backendtest-165520.appspot.com/ndb_api/" + apiMethod;
         JsonObjectRequest jsObjRequest = new JsonObjectRequest
                 (Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
 
@@ -262,7 +240,8 @@ public class LibraryActivity extends AppCompatActivity
                             JSONArray receivedList = response.getJSONArray("results");
                             decodeJSON(receivedList, drinkArrayList, adapter);
 
-                        } catch (Exception e) {
+                        } catch (Exception e)
+                        {
                             Log.d(logTag, ""+ e.getStackTrace());
                         }
                     }
@@ -286,17 +265,15 @@ public class LibraryActivity extends AppCompatActivity
                                             alertDialog = null;
                                         }
                                     });
-
-
                             alertDialog.show();
                         }
-
                     }
                 });
 
         appInfo.queue.add(jsObjRequest);
     }
 
+    //call data base to perform query
     public void search(String q, final ArrayList<DrinkRecipe> drinkArrayList, final RecyclerView.Adapter adapter)
     {
 
@@ -384,7 +361,6 @@ public class LibraryActivity extends AppCompatActivity
 
     }
 
-
     /*
     Create DrinkRecipe objects from the JSON array and load them into the array list and then have
     adapter notify to update the screen
@@ -399,12 +375,14 @@ public class LibraryActivity extends AppCompatActivity
             for(int i = 0; i < jArray.length(); i++)
             {
                 JSONObject jsonDrinkRecipe = jArray.getJSONObject(i);
+
                 //get name
                 String name = jsonDrinkRecipe.getString("name");
 
                 //get ingredient list
                 JSONArray jsonIngredients = jsonDrinkRecipe.getJSONArray("ingredients");
                 ArrayList<Ingredient> ingredients = new ArrayList<>();
+
                 //add each component of json ingredient list to DrinkRecipe ingredient list
                 for(int j = 0; j < jsonIngredients.length(); j++)
                 {
@@ -417,12 +395,16 @@ public class LibraryActivity extends AppCompatActivity
 
                 //get img id
                 int imgId = Integer.parseInt(jsonDrinkRecipe.getString("imgId"));
+
                 //get unique id to keep track of drinks that are downloaded so we can track popularity
                 String uniqueId = jsonDrinkRecipe.getString("uniqueid");
+
                 //get message
                 String msg = jsonDrinkRecipe.getString("msg");
+
                 //get downloads
                 int downloads = jsonDrinkRecipe.getInt("downloads");
+
                 //add this drink to the array list
                 drinkArrayList.add(new DrinkRecipe(name, ingredients, msg, imgId, uniqueId, downloads));
             }
@@ -438,7 +420,7 @@ public class LibraryActivity extends AppCompatActivity
 
     public void refreshDrinks(View v)
     {
-        //reload all vrecycler views
+        //reload all recycler views
         loadRecipes(v, "get_user_recipes", databaseDrinks, userMadeAdapter);
         loadRecipes(v, "get_library_recipes", libDrinks, libAdapter);
         loadRecipes(v, "get_popular_drinks", popDrinks, popAdapter);
@@ -510,9 +492,6 @@ public class LibraryActivity extends AppCompatActivity
 
     }
 
-
-
-
     /*
     same on click listener used by every recycler view. On click, it goes to display drink activity
     for the drinks that has been clicked on
@@ -529,9 +508,10 @@ public class LibraryActivity extends AppCompatActivity
         {
             //store drink to be displayed in appInfo
             appInfo.drinkFromLib = drinks.get(position);
-            String drinkName = appInfo.drinkFromLib.getName().toString();
+
             //create intent to go to Diplay Drink Activity
             Intent intent = new Intent(LibraryActivity.this, DisplayDrink.class);
+
             //put extra that specifies that we are coming from lib activity
             intent.putExtra("fromLib", true);
 
@@ -544,8 +524,4 @@ public class LibraryActivity extends AppCompatActivity
             //nothing, bolierplate necessary
         }
     }
-
-
-
-
 }

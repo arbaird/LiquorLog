@@ -3,30 +3,27 @@ package com.austinbaird.liquorlog;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.media.MediaPlayer;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import java.util.ArrayList;
-import android.util.Log;
-import android.widget.Toast;
-
 import org.json.JSONArray;
 
 
 /*
-Custom List adapter for dsiplaying the drink image and name in a vertical listver. Used in main activity
+Custom List adapter for dsiplaying the drink image and name in a vertical listview. Used in main activity
  */
 
-public class CustomListAdapter extends BaseAdapter {
+public class CustomListAdapter extends BaseAdapter
+{
 
+    //sound effects
     MediaPlayer mp6;
     MediaPlayer mp7;
     MediaPlayer mp8;
@@ -34,6 +31,7 @@ public class CustomListAdapter extends BaseAdapter {
 
     private final Activity context;
     private ArrayList<DrinkRecipe> data;
+    //flag to set delete buttons as visible or invisible
     boolean deleteMode;
     AppInfo appInfo;
 
@@ -41,7 +39,7 @@ public class CustomListAdapter extends BaseAdapter {
     {
         this.context=context;
         this.data = data;
-        this.deleteMode = false;
+        this.deleteMode = false; //start out with no delete buttons
         appInfo = AppInfo.getInstance(this.context);
 
         mp6 = MediaPlayer.create(this.context, R.raw.zeldadelete1);
@@ -80,9 +78,9 @@ public class CustomListAdapter extends BaseAdapter {
     {
         ImageView imgIcon;
         TextView name;
-
     }
 
+    //displaying buttons is handled in getView, so we set boolean and notify data set changed
     public void addDeleteButtons()
     {
         deleteMode = true;
@@ -111,6 +109,7 @@ public class CustomListAdapter extends BaseAdapter {
             LayoutInflater inflater = ((Activity)context).getLayoutInflater();
             row = inflater.inflate(R.layout.activity_listview, parent, false);
 
+            //create holder to help convert code data items to View types that appear on screen
             holder = new ViewHolder();
             holder.imgIcon = (ImageView)row.findViewById(R.id.drink_image);
             holder.name = (TextView)row.findViewById(R.id.label);
@@ -123,9 +122,7 @@ public class CustomListAdapter extends BaseAdapter {
             holder = (ViewHolder)row.getTag();
         }
 
-
         Button b = (Button) row.findViewById(R.id.deleteButton);
-        //b.setText("Delete");
 
         // Sets a listener for the button ot delete rowItem when pressed. Adapted from ListView example
         //provided by the professor
@@ -136,8 +133,8 @@ public class CustomListAdapter extends BaseAdapter {
                 // Reacts to a button press.
                 // Gets the integer tag of the button.
 
-                AlertDialog.Builder alertDialog = new AlertDialog.Builder(context);//.create();
-                alertDialog.setTitle("Delete Prompt");
+                AlertDialog.Builder alertDialog = new AlertDialog.Builder(context);
+                alertDialog.setTitle("Delete");
 
                 //prompt user to make sure they want to delete this drink
                 alertDialog.setMessage("Are you sure you want to delete this drink?")
@@ -153,8 +150,6 @@ public class CustomListAdapter extends BaseAdapter {
 
                                 //update shared preferences
                                 saveDrinksAsJSON();
-
-
                             }
                         })
                         .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -167,23 +162,15 @@ public class CustomListAdapter extends BaseAdapter {
                 //play warning sound
                 mp6.start();
                 alertDialog.show();
-
-
-
-
             }
         });
 
+        //set buton visibility based on boolean
         if(deleteMode)
             b.setVisibility(View.VISIBLE);
         else
             b.setVisibility(View.GONE);
-
-
         //set xml view's data fields to data fields in row
-
-
-
         DrinkRecipe rowItem = data.get(position);
         holder.name.setText(rowItem.getName());
         holder.imgIcon.setImageResource(rowItem.getImageID());
@@ -191,11 +178,10 @@ public class CustomListAdapter extends BaseAdapter {
         return row;
     }
 
-
     public void saveDrinksAsJSON()
     {
-
         JSONArray jArray = new JSONArray();
+        //for every drink in appInfo.savedDrinks, add them to jArray
         for(DrinkRecipe savedRecipe : appInfo.savedDrinks)
         {
             try
@@ -207,13 +193,10 @@ public class CustomListAdapter extends BaseAdapter {
                 //json key access didn't work
             }
         }
-
-
+        //add jArray as a string to shared preferences to later be loaded in main activity
         SharedPreferences settings = context.getSharedPreferences(MainActivity.MYPREFS, 0);
         SharedPreferences.Editor editor = settings.edit();
         editor.putString("drinksAsJSON", jArray.toString());
         editor.commit();
     }
-
-
 }

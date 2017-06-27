@@ -9,7 +9,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 /**
- * Created by Alex Williamson on 5/13/2017.
+ * Used to display drink images in Edit Drink Image Activity
  */
 
 public class GridAdapter extends BaseAdapter{
@@ -44,7 +44,8 @@ public class GridAdapter extends BaseAdapter{
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
+    public View getView(int position, View convertView, ViewGroup parent)
+    {
 
         View gridView = convertView;
 
@@ -54,10 +55,7 @@ public class GridAdapter extends BaseAdapter{
         }
 
         ImageView icon = (ImageView) gridView.findViewById(R.id.icons);
-        //TextView description = (TextView) gridView.findViewById(R.id.descriptions);
-
         icon.setImageResource(icons[position]);
-        //description.setText(descriptions[position]);
 
         return gridView;
     }

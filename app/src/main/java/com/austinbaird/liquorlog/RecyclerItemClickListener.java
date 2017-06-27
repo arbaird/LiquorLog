@@ -3,7 +3,6 @@ package com.austinbaird.liquorlog;
 /**
  * Needed to implement click events in the Horizontal RecyclerView. Adapted from
  * http://www.programcreek.com/java-api-examples/index.php?class=android.support.v7.widget.RecyclerView&method=addOnItemTouchListener
- *
  */
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;

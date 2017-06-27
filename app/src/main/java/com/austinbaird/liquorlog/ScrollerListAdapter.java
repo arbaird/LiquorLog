@@ -108,6 +108,3 @@ class ScrollerListAdapter extends ArrayAdapter<Ingredient> {
         return newView;
     }
 }
-
-
-

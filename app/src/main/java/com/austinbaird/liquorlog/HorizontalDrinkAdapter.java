@@ -17,12 +17,14 @@ import android.widget.Toast;
 import java.util.ArrayList;
 
 
-public class HorizontalDrinkAdapter extends RecyclerView.Adapter< HorizontalDrinkAdapter.ViewHolder> {
+public class HorizontalDrinkAdapter extends RecyclerView.Adapter< HorizontalDrinkAdapter.ViewHolder>
+{
 
     ArrayList<DrinkRecipe> data;
     Context context;
 
-    public HorizontalDrinkAdapter(Context context, ArrayList<DrinkRecipe> alName) {
+    public HorizontalDrinkAdapter(Context context, ArrayList<DrinkRecipe> alName)
+    {
         super();
         this.context = context;
         this.data= alName;
@@ -39,11 +41,11 @@ public class HorizontalDrinkAdapter extends RecyclerView.Adapter< HorizontalDrin
 
     //update the displayed name, image, and download count
     @Override
-    public void onBindViewHolder(ViewHolder viewHolder, int i) {
+    public void onBindViewHolder(ViewHolder viewHolder, int i)
+    {
         viewHolder.drinkName.setText(data.get(i).getName());
         viewHolder.imgThumbnail.setImageResource(data.get(i).getImageID());
         viewHolder.downloadCount.setText(data.get(i).getDownloads());
-
     }
 
     @Override

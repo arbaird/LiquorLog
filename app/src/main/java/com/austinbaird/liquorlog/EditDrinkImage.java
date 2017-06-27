@@ -6,24 +6,33 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.Button;
 import android.widget.GridView;
-import android.widget.Toast;
 
-public class EditDrinkImage extends AppCompatActivity {
+
+/*
+    Activity to select the drink image
+ */
+public class EditDrinkImage extends AppCompatActivity
+{
 
     GridView gridView;
     AppInfo appInfo;
+
+    //keeps track of if this is a drink being edited or being created from scratch
     Boolean alreadyCreated;
+
+    //position of drink in appInfo.savedDrinks
     int drinkPos;
     MediaPlayer mp2;
 
+    //used for Toasts
     String descriptionList[] = {"Blue", "BlueIce", "BlueUmbrella", "BlueFruit", "BlueIceUmbrella", "BlueIceFruit", "BlueUmbrellaFruit", "BlueIceUmbrellaFruit",
             "DarkBrown", "DarkBrownIce", "DarkBrownUmbrella", "DarkBrownFruit", "DarkBrownIceUmbrella", "DarkBrownIceFruit", "DarkBrownUmbrellaFruit", "DarkBrownIceUmbrellaFruit",
             "Gold", "GoldIce", "GoldUmbrella", "GoldFruit", "GoldIceUmbrella", "GoldIceFruit", "GoldUmbrellaFruit", "GoldIceUmbrellaFruit",
             "Green", "GreenIce", "GreenUmbrella", "GreenFruit", "GreenIceUmbrella", "GreenIceFruit", "GreenUmbrellaFruit", "GreenIceUmbrellaFruit",
             "Red", "RedIce", "RedUmbrella", "RedFruit", "RedIceUmbrella", "RedIceFruit", "RedUmbrellaFruit", "RedIceUmbrellaFruit"};
 
+    //the img ids of each icon
     int drinksIcon[] = { R.drawable.bluesmall, R.drawable.blueicesmall, R.drawable.blueumbrellasmall, R.drawable.bluefruitsmall,
             R.drawable.blueiceumbrellasmall, R.drawable.blueicefruitsmall, R.drawable.blueumbrellafruitsmall, R.drawable.blueiceumbrellafruitsmall,
             R.drawable.darkbrownsmall, R.drawable.darkbrownicesmall, R.drawable.darkbrownumbrellasmall, R.drawable.darkbrownfruitsmall,
@@ -57,8 +66,10 @@ public class EditDrinkImage extends AppCompatActivity {
                 mp1.start();
 
                 Intent intent = new Intent(EditDrinkImage.this, EditDrinkActivity.class);
+
                 //put imageId in extras to update the image in edit drink activity
                 intent.putExtra("imageId", drinksIcon[position]);
+
                 //return the alreadyCreated boolean and drinkPos for edit drink activty to display
                 //same drink it was displaying before entering edit image activity
                 intent.putExtra("alreadyCreated", alreadyCreated);
