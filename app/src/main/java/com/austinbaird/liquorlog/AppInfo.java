@@ -11,6 +11,7 @@ import android.util.Log;
 
 public class AppInfo
 {
+    //hello
 
     private static AppInfo instance = null;
 
