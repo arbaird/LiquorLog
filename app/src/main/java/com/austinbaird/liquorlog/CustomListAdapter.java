@@ -23,7 +23,7 @@ Custom List adapter for dsiplaying the drink image and name in a vertical listvi
 public class CustomListAdapter extends BaseAdapter
 {
 
-    //sound effects
+    //sound effects here haha
     MediaPlayer mp6;
     MediaPlayer mp7;
     MediaPlayer mp8;
